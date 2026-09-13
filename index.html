@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Presslane — Runs the shop while you print.</title>
+  <meta name="description" content="Presslane is the storefront and back office for printers, embroiderers and sign makers. Customers see their logo on the product, every quote is chased, every stage is messaged, the phone is answered, and the floor updates the system by scanning a runsheet.">
+  <meta property="og:title" content="Presslane — Runs the shop while you print.">
+  <meta property="og:description" content="The storefront and back office for printers, embroiderers and sign makers. AI that chases quotes, answers the phone and tracks every job in your shop's name.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- The mark: two rails, one job square, 18 × 8 units. Master artwork, not redrawn. -->
+    <symbol id="mark" viewBox="0 0 18 8">
+      <rect class="mark-rail" x="0" y="0" width="18" height="1"/>
+      <rect class="mark-rail" x="0" y="7" width="18" height="1"/>
+      <rect class="mark-job" x="12" y="2" width="4" height="4"/>
+    </symbol>
+    <!-- Sample customer logos for the mock-up. Single colour so they read on any garment. -->
+    <symbol id="logo-okafor" viewBox="0 0 132 60">
+      <path d="M10 30 L34 10 L58 30 H48 L34 18 L20 30 Z" fill="currentColor"/>
+      <rect x="28" y="30" width="12" height="14" fill="currentColor"/>
+      <text x="66" y="28" font-family="Archivo, sans-serif" font-weight="800" font-size="15" fill="currentColor" letter-spacing="-0.5">OKAFOR</text>
+      <text x="66" y="44" font-family="Archivo, sans-serif" font-weight="400" font-size="11" fill="currentColor" letter-spacing="1.2">ROOFING</text>
+    </symbol>
+    <symbol id="logo-hartley" viewBox="0 0 132 60">
+      <circle cx="26" cy="30" r="17" fill="none" stroke="currentColor" stroke-width="5"/>
+      <path d="M26 16 V30 L36 36" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="square"/>
+      <text x="52" y="26" font-family="Archivo, sans-serif" font-weight="800" font-size="13" fill="currentColor">HARTLEY</text>
+      <text x="52" y="42" font-family="Archivo, sans-serif" font-weight="600" font-size="11" fill="currentColor" letter-spacing="0.8">PLUMBING</text>
+    </symbol>
+    <symbol id="logo-willink" viewBox="6 0 132 60">
+      <path d="M40 6 H80 V32 C80 44 60 54 60 54 C60 54 40 44 40 32 Z" fill="none" stroke="currentColor" stroke-width="4"/>
+      <path d="M50 20 H70 M50 30 H70 M60 20 V44" stroke="currentColor" stroke-width="4"/>
+    </symbol>
+  </defs>
+</svg>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="lockup" href="#top" aria-label="Presslane, home">
+      <svg viewBox="0 0 18 8" aria-hidden="true"><use href="#mark"/></svg>
+      <span>Presslane</span>
+    </a>
+    <nav aria-label="Page sections">
+      <ul class="nav-links">
+        <li><a href="#lane">What it does</a></li>
+        <li><a href="#mockup">See it work</a></li>
+        <li><a href="#who">Who it is for</a></li>
+        <li><a href="#included">Also included</a></li>
+      </ul>
+    </nav>
+    <a class="btn outline nav-watch" href="#film">Watch the film</a>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- HERO: the tagline as display type, with the product's own widgets woven through it. -->
+  <section class="hero">
+    <div class="wrap">
+      <p class="kicker">For printers, embroiderers and sign makers</p>
+
+      <div class="hero-stage" id="heroStage">
+        <div class="hero-type">
+          <h1 class="display">
+            <span class="hero-line">Runs the shop</span>
+            <span class="lane-rail" aria-hidden="true" id="heroRail">
+              <i></i><i></i><i></i><i></i><i></i><i></i>
+              <span class="lane-job" id="heroJob"></span>
+            </span>
+            <span class="hero-line second">while you print.</span>
+          </h1>
+          <div class="lane-row">
+            <p class="lane-label" id="heroLabel" aria-live="polite">Quote</p>
+            <span class="widget w-order" data-stage="2" aria-hidden="true"><i class="sq"></i>PL-04821 · Artwork approved by Sam</span>
+          </div>
+        </div>
+
+        <div class="hero-widgets" aria-hidden="true">
+          <div class="widget w-quote" data-stage="1">
+            <p class="kicker">Quote · PL-04821</p>
+            <strong>48 embroidered hoodies, left chest logo</strong>
+            <div class="price"><span>Total inc. VAT</span><span class="mono">£1,142.40</span></div>
+            <span class="btn" role="presentation">Accept quote</span>
+          </div>
+          <div class="widget w-scan" data-stage="3">
+            <svg viewBox="0 0 130 34" preserveAspectRatio="none" class="bars" data-code="PL04821"></svg>
+            <div class="code">PL04821</div>
+            <span class="beam"></span>
+          </div>
+          <div class="widget w-sms" data-stage="4">
+            <p class="from">Northside Print · SMS · 14:32</p>
+            <p>Your hoodies are being embroidered. We'll message when they're packed.</p>
+            <p class="foot">Order PL-04821 · Reply STOP to opt out</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-copy">
+        <div>
+          <p class="lead">Presslane is the storefront and back office for print and embroidery shops. Customers see their logo on the product before they order. Every quote is chased, every stage is messaged, the phone is answered and the floor updates the system by scanning a sheet. The chasing, answering and tracking are done by AI in your shop's name, so the only thing left to do is make the job.</p>
+          <p class="hero-meta small muted">Independent shops of 1 to 10 people, garment decorators, trade printers, sign makers and multi-site groups. UK first.</p>
+        </div>
+        <div class="btn-row">
+          <a class="btn" href="#film">Watch the film</a>
+          <a class="btn outline" href="#lane">See it work</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROBLEM -->
+  <section class="section dark" id="problem">
+    <div class="wrap">
+      <div class="head">
+        <h2 class="h1">A print shop loses money in the gaps between jobs, not in the jobs.</h2>
+        <p class="lead">The quote that was never chased. The customer who rang three times to ask where their hoodies were. The job that sat finished on a bench because nobody updated the system. Every one of these is time the owner spent not printing.</p>
+      </div>
+      <div class="cols">
+        <div>
+          <h3 class="h2">Quotes</h3>
+          <p class="small">Most quotes that do not convert were never followed up. Shops are too busy printing to chase.</p>
+        </div>
+        <div>
+          <h3 class="h2">Calls</h3>
+          <p class="small">“Where is my order?” is the most common inbound call. It has an answer; nobody has time to give it.</p>
+        </div>
+        <div>
+          <h3 class="h2">Status</h3>
+          <p class="small">The system is on a PC in the office. The job is on the floor. The two rarely agree.</p>
+        </div>
+      </div>
+      <div class="belief">
+        <p class="kicker">Our belief</p>
+        <p class="lead">The shop should run itself between the moments a person needs to be involved. Presslane exists to make those moments the only ones a printer has to touch.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FILM + PRESENTATION -->
+  <section class="section" id="film">
+    <div class="wrap">
+      <div class="film-wrap">
+        <div class="copy">
+          <h2 class="h1">Sixty seconds on the shop floor.</h2>
+          <p class="body">The film shows the gaps a print shop loses money in and what Presslane does about each one: the quote that gets chased, the customer who is told at every stage, the sheet that updates the system. Sound on.</p>
+          <div class="deck">
+            <a class="deck-cover" href="assets/presslane-presentation.pdf" target="_blank" rel="noopener" aria-label="Open the Presslane presentation (PDF)">
+              <span class="deck-kicker">Presentation · 2026</span>
+              <svg viewBox="0 0 18 8" aria-hidden="true"><use href="#mark"/></svg>
+              <span class="deck-title">Runs the shop while you print.</span>
+            </a>
+            <div class="deck-copy">
+              <h3 class="h3">The presentation</h3>
+              <p class="small">14 slides for the printer who wants the argument on paper: the problem, the three promises, the lane, the runsheet, the platform and who it is for.</p>
+              <a class="btn outline" href="assets/presslane-presentation.pdf" target="_blank" rel="noopener">Open the presentation (PDF, 1.4 MB)</a>
+            </div>
+          </div>
+        </div>
+        <figure class="promo" id="promo">
+          <video id="promoVideo" playsinline preload="metadata" poster="assets/presslane-promo-poster.webp" width="720" height="1280">
+            <source src="assets/presslane-promo.mp4" type="video/mp4">
+            Your browser cannot play this video. <a href="assets/presslane-promo.mp4">Download it</a> instead.
+          </video>
+          <button class="promo-play" type="button" id="promoPlay" aria-label="Play the film">
+            <span class="promo-play-square" aria-hidden="true"></span>
+            <span>Play · 60 s</span>
+          </button>
+          <figcaption class="caption"><span>Presslane · promotional film</span><span class="mono">1080 × 1920 · 60 s</span></figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- THE LANE + LIVE TRACKER -->
+  <section class="section" id="lane">
+    <div class="wrap">
+      <div class="head">
+        <h2 class="h1">One lane from quote to door.</h2>
+        <p class="lead">Every job travels the same six stages. The customer and the printer see the same picture, and the customer is told at each one, in the shop's own name and branding. Pick a stage to see what the customer sees.</p>
+      </div>
+
+      <div class="lane-tiles" role="group" aria-label="Stages of a job" id="laneTiles">
+        <button class="tile" aria-pressed="true" data-stage="1"><span class="n">01</span><span><strong>Order received</strong><span class="s">Paid and confirmed by email.</span></span></button>
+        <button class="tile" aria-pressed="false" data-stage="2"><span class="n">02</span><span><strong>Proof sent</strong><span class="s">Logo digitised and mocked up on the garment.</span></span></button>
+        <button class="tile" aria-pressed="false" data-stage="3"><span class="n">03</span><span><strong>Proof approved</strong><span class="s">One click from the customer. Runsheet prints.</span></span></button>
+        <button class="tile" aria-pressed="false" data-stage="4"><span class="n">04</span><span><strong>In production</strong><span class="s">Scanned at the bench. Customer told.</span></span></button>
+        <button class="tile" aria-pressed="false" data-stage="5"><span class="n">05</span><span><strong>Dispatched</strong><span class="s">Tracking number sent.</span></span></button>
+        <button class="tile" aria-pressed="false" data-stage="6"><span class="n">06</span><span><strong>Delivered</strong><span class="s">Reorder is one click.</span></span></button>
+      </div>
+
+      <div class="tracker">
+        <figure class="shot" style="margin:0">
+          <img src="assets/stage-1.webp" alt="Customer tracking page at stage 1, order received" width="1440" height="750" data-stage="1" loading="eager">
+          <img src="assets/stage-2.webp" alt="Customer tracking page at stage 2, artwork proof sent" width="1440" height="750" data-stage="2" hidden>
+          <img src="assets/stage-3.webp" alt="Customer tracking page at stage 3, proof approved" width="1440" height="750" data-stage="3" hidden>
+          <img src="assets/stage-4.webp" alt="Customer tracking page at stage 4, in production" width="1440" height="750" data-stage="4" hidden>
+          <img src="assets/stage-5.webp" alt="Customer tracking page at stage 5, dispatched with tracking number" width="1440" height="750" data-stage="5" hidden>
+          <img src="assets/stage-6.webp" alt="Customer tracking page at stage 6, delivered" width="1440" height="750" data-stage="6" hidden>
+          <figcaption class="caption"><span>Customer · track-your-order page</span><span>Shop's own logo and colours, not ours</span></figcaption>
+        </figure>
+        <div class="msg" id="laneMsg">
+          <div>
+            <p class="kicker" id="laneMsgKicker">Status · Fri 15 Aug, 10:42</p>
+            <p class="h3" id="laneMsgHead">Thanks, we have your order.</p>
+            <p class="body" id="laneMsgBody">Proof coming today. We'll message you when it's ready to approve.</p>
+          </div>
+          <p class="foot" id="laneMsgFoot"><strong>Sent by</strong> the order confirmation. Nobody typed it.</p>
+        </div>
+      </div>
+      <div class="tracker-controls">
+        <button type="button" id="lanePlay" aria-pressed="true">Pause</button>
+        <span>Advances on its own, or click a stage.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- MOCK-UP DEMO -->
+  <section class="section surface" id="mockup">
+    <div class="wrap">
+      <div class="feature">
+        <div class="copy">
+          <h2 class="h1">Customers see their logo on the product before they order.</h2>
+          <p class="body">They upload a logo, pick a hoodie, polo, cap or business card, and see it placed and sized on the real product. That picture becomes the proof they approve, and the placement picture the bench works from.</p>
+          <ul class="points">
+            <li><strong>Fewer artwork rounds.</strong> The customer approves what they have already seen.</li>
+            <li><strong>Goes on the runsheet.</strong> The same picture prints on the sheet at the bench.</li>
+            <li><strong>Priced as they go.</strong> Quantity breaks and decoration cost update with every change.</li>
+          </ul>
+        </div>
+
+        <div class="mockup" id="mockupDemo">
+          <div class="mockup-canvas" id="mockupCanvas">
+            <svg viewBox="0 0 800 600" id="mockupSvg" role="img" aria-label="Product mock-up preview"></svg>
+            <span class="drag-hint">Drag the logo to move it</span>
+          </div>
+          <div class="controls">
+            <div class="control">
+              <div class="lbl">Product</div>
+              <div class="chips" id="productChips">
+                <button class="chip" aria-pressed="true" data-product="hoodie">Hoodie</button>
+                <button class="chip" aria-pressed="false" data-product="polo">Polo</button>
+                <button class="chip" aria-pressed="false" data-product="cap">Cap</button>
+                <button class="chip" aria-pressed="false" data-product="card">Business card</button>
+              </div>
+            </div>
+            <div class="control">
+              <div class="lbl">Colour <span class="mono" id="colourName">Airforce blue</span></div>
+              <div class="swatches" id="swatches">
+                <button class="chip as-shot" id="asShot" aria-pressed="true" type="button">As photographed</button>
+                <button class="swatch" aria-pressed="false" data-colour="#1F2A44" data-name="Navy" aria-label="Navy" style="background:#1F2A44"></button>
+                <button class="swatch" aria-pressed="false" data-colour="#232323" data-name="Black" aria-label="Black" style="background:#232323"></button>
+                <button class="swatch" aria-pressed="false" data-colour="#8E8E8E" data-name="Heather grey" aria-label="Heather grey" style="background:#8E8E8E"></button>
+                <button class="swatch" aria-pressed="false" data-colour="#F4F2EC" data-name="White" aria-label="White" style="background:#F4F2EC"></button>
+                <button class="swatch" aria-pressed="false" data-colour="#1E4D3B" data-name="Bottle green" aria-label="Bottle green" style="background:#1E4D3B"></button>
+                <button class="swatch" aria-pressed="false" data-colour="#9A1F1F" data-name="Red" aria-label="Red" style="background:#9A1F1F"></button>
+              </div>
+            </div>
+            <div class="control">
+              <div class="lbl">Logo</div>
+              <div class="logos" id="logoPicks">
+                <button class="logo-pick" aria-pressed="true" data-logo="logo-okafor" aria-label="Okafor Roofing logo"><svg><use href="#logo-okafor"/></svg></button>
+                <button class="logo-pick" aria-pressed="false" data-logo="logo-hartley" aria-label="Hartley Plumbing logo"><svg><use href="#logo-hartley"/></svg></button>
+                <button class="logo-pick" aria-pressed="false" data-logo="logo-willink" aria-label="School crest logo"><svg><use href="#logo-willink"/></svg></button>
+                <label class="upload">Upload your own<input type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp" id="logoUpload"></label>
+              </div>
+            </div>
+            <div class="control">
+              <div class="lbl">Position <span class="mono" id="sizeReadout">90 × 60 mm</span></div>
+              <div class="chips" id="positionChips"></div>
+              <label class="sr-only" for="logoSize">Logo size</label>
+              <input type="range" id="logoSize" min="50" max="130" value="100" step="1">
+            </div>
+          </div>
+          <div class="proof-line" id="proofLine">
+            <span class="mono" id="proofText">Proof · PL-04821 · Hoodie, Airforce blue · Left chest · 90 × 41 mm · 48 pcs · £1,142.40 inc. VAT</span>
+            <button class="btn" type="button" id="approveBtn">Approve this proof</button>
+            <span class="approved"><i class="sq ink"></i>Proof approved 14:32 · Runsheet printed</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUOTE CHASE -->
+  <section class="section" id="quotes">
+    <div class="wrap">
+      <div class="head">
+        <h2 class="h1">No quote goes cold.</h2>
+        <p class="lead">Every quote is followed up by email, SMS or WhatsApp, on the schedule you set, until the customer buys or tells us they have gone elsewhere. Each message is shorter than the last, signed by a person at your shop, and always tells them how to say no.</p>
+      </div>
+      <div class="quote-wrap">
+        <div class="quote-card">
+          <div>
+            <p class="kicker">Quote · PL-04821</p>
+            <p class="h3">48 embroidered hoodies, left chest logo</p>
+            <p class="small muted">Navy AWDis heavyweight, sizes S to XXL. Single-colour thread, 8,000 stitches. Artwork as supplied. Delivery to Leeds.</p>
+          </div>
+          <div>
+            <div class="total"><span>Total inc. VAT</span><span class="mono">£1,142.40</span></div>
+            <button class="btn" type="button" id="quoteAccept">Accept quote</button>
+          </div>
+        </div>
+        <div class="chase" id="chase">
+          <div class="chase-rows">
+            <div class="chase-row" data-step="1">
+              <span class="t">+24 h</span><span class="ch">EMAIL</span>
+              <div><strong>Your quote for 48 hoodies, PL-04821</strong><p>Hi Sam, the quote we sent yesterday is attached. It holds for 14 days. If you'd like to go ahead, accept it here and we'll send the artwork proof the same day. Dan, Northside Print</p></div>
+            </div>
+            <div class="chase-row" data-step="2">
+              <span class="t">+3 d</span><span class="ch">WHATSAPP</span>
+              <div><strong>Any questions on the hoodie quote?</strong><p>Hi Sam, Dan at Northside. Happy to adjust quantities or sizes. Quote: northside.link/PL-04821</p></div>
+            </div>
+            <div class="chase-row" data-step="3">
+              <span class="t">+7 d</span><span class="ch">SMS</span>
+              <div><strong>Open until the 26th</strong><p>Northside Print: your hoodie quote PL-04821 is open until the 26th. Accept or ask a question: northside.link/PL-04821</p></div>
+            </div>
+            <div class="chase-row" data-step="4">
+              <span class="t">+13 d</span><span class="ch">EMAIL</span>
+              <div><strong>Last day on your quote</strong><p>Hi Sam, PL-04821 expires tomorrow. If you've gone another way, no problem, reply “no thanks” and we'll stop. Otherwise it's one click to go ahead.</p></div>
+            </div>
+            <div class="chase-row result" data-step="5">
+              <span class="t" id="chaseResultTime">+3 d</span><span class="ch">RESULT</span>
+              <div><strong id="chaseResultHead">Quote accepted after the 2nd follow-up.</strong><p id="chaseResultBody">Sam accepted on WhatsApp. Chasing stopped. Artwork proof sent the same afternoon.</p></div>
+            </div>
+          </div>
+          <div class="chase-foot">
+            <span>Stops on yes, no, “no thanks”, STOP, or 14 days of silence.</span>
+            <button type="button" id="chaseReplay">Replay</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PHONE -->
+  <section class="section dark" id="phone">
+    <div class="wrap">
+      <div class="feature swap">
+        <div class="copy">
+          <h2 class="h1">Customers stop ringing to ask. When they do ring, the phone knows.</h2>
+          <p class="body">The phone is answered in your shop's name by an assistant that knows every order, every proof and every stock line. It reads numbers in groups of two, offers a text when the job ships, and hands to a person the moment someone asks.</p>
+          <ul class="points">
+            <li><strong>Answers stock and status.</strong> Order number or surname is enough to find the job.</li>
+            <li><strong>Logs the call to the order.</strong> Notes and follow-ups land on the job, not in a voicemail.</li>
+            <li><strong>Never denies what it is.</strong> It does not say it is automated unless asked, and never pretends otherwise.</li>
+          </ul>
+        </div>
+        <div class="call" id="call">
+          <div class="call-head">
+            <span>Incoming · 07700 900123 · Sam Okafor</span>
+            <span class="live"><span class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span id="callTimer">00:00</span></span>
+          </div>
+          <div class="lines" id="callLines"></div>
+          <div class="call-foot">
+            <span id="callFoot">Ringing</span>
+            <button type="button" id="callReplay">Replay call</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- THE FLOOR -->
+  <section class="section surface" id="floor">
+    <div class="wrap">
+      <div class="floor-wrap">
+        <div class="runsheet" id="runsheet" aria-label="Runsheet for order PL-04821">
+          <div class="rs-top">
+            <div><div class="rs-k">Runsheet</div><div class="rs-no">PL-04821</div></div>
+            <div class="rs-shop"><strong>Northside Print</strong><span>Due Thu 18 Sep · Courier</span></div>
+          </div>
+          <div class="rs-grid">
+            <div><div class="rs-k">Customer</div>Sam Okafor<br>Okafor Roofing Ltd<br>14 Kirkgate, Leeds LS1 6BY<br><span class="mono">07700 900123</span></div>
+            <div><div class="rs-k">Job</div><span id="rsJobLine">48 × AWDis JH001 hoodie, Airforce blue</span><br><span id="rsDecoLine">Embroidery, left chest, 1 colour (white)</span><br><span class="mono">8,000 st · <span id="rsSize">90 × 60 mm</span></span><br><span class="mono">S6 M12 L18 XL8 XXL4</span></div>
+          </div>
+          <div class="rs-pics">
+            <div class="rs-pic" id="rsLogo">Logo proof</div>
+            <div class="rs-pic" id="rsPlacement">Placement picture</div>
+          </div>
+          <div class="rs-bottom">
+            <div class="barcode">
+              <div class="rs-k">Scan at each bench</div>
+              <svg viewBox="0 0 240 64" preserveAspectRatio="none" class="bars" data-code="PL04821"></svg>
+              <div class="code">PL04821</div>
+              <span class="beam"></span>
+            </div>
+            <div class="ticks" id="rsTicks">
+              <div class="tick" data-step="1">Artwork</div>
+              <div class="tick" data-step="2">Production</div>
+              <div class="tick" data-step="3">Packed</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="copy">
+          <h2 class="h1">The floor updates the system.</h2>
+          <p class="body">Every order prints a runsheet with a barcode the moment it is confirmed. Scan it at each bench and the status changes and the customer is messaged. No PC, no typing, no walking to the office. Mono laser, any barcode scanner, and a pen if the scanner is down.</p>
+          <div class="floor-actions">
+            <button class="btn" type="button" id="scanBtn">Scan at Artwork</button>
+            <span class="mono" id="scanHint">Each scan moves the job one stage.</span>
+          </div>
+          <div class="floor-log">
+            <ul id="floorLog">
+              <li><span class="t">09:10</span><span>Runsheet printed. Quote accepted after 2nd follow-up (WhatsApp).</span></li>
+            </ul>
+          </div>
+          <div class="floor-sms" id="floorSms" hidden>
+            <p class="from">Northside Print · SMS</p>
+            <p id="floorSmsText"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ALSO INCLUDED -->
+  <section class="section" id="included">
+    <div class="wrap">
+      <div class="head">
+        <h2 class="h1">A storefront that sells, on data that connects to anything.</h2>
+        <p class="lead">The storefront is table stakes, so it is done properly and then left alone. The back office is the point.</p>
+      </div>
+      <div class="cols">
+        <div>
+          <h3 class="h3">Every product, listed once</h3>
+          <p class="small">Hoodies, caps and bags to brand. Business cards, posters and safety signs to print. Set up once, sold everywhere, with quantity breaks and decoration pricing that customers can actually buy.</p>
+        </div>
+        <div>
+          <h3 class="h3">Found by search and answer engines</h3>
+          <p class="small">Listings are written and structured for Google and for the assistants people now ask instead, automatically, without extra work. Product schema, real descriptions, category pages that render.</p>
+        </div>
+        <div>
+          <h3 class="h3">Open to any other tool</h3>
+          <p class="small">Accounts, couriers, suppliers, your own spreadsheets. The data is yours and any third-party app can read it. Nothing is locked in a PC in the office.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHO -->
+  <section class="section dark" id="who">
+    <div class="wrap">
+      <div class="head">
+        <h2 class="h1">Built for the whole print and decoration trade.</h2>
+        <p class="lead">UK first. Then every English-speaking market.</p>
+      </div>
+      <div class="who-grid">
+        <div><i class="sq"></i><div><strong>Independent print shops</strong><span>1 to 10 staff</span></div></div>
+        <div><i class="sq"></i><div><strong>Embroidery and garment decorators</strong><span>Workwear, teams, merch</span></div></div>
+        <div><i class="sq"></i><div><strong>Trade printers</strong><span>Mid-size, high volume</span></div></div>
+        <div><i class="sq"></i><div><strong>Sign and display makers</strong><span>Safety signs, banners, boards</span></div></div>
+        <div><i class="sq"></i><div><strong>Franchise and multi-site groups</strong><span>Every site, one way of working</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CLOSING POSTER: teal as a full field, display type only. -->
+  <section class="section teal poster" id="close">
+    <div class="wrap">
+      <h2 class="display">Runs the shop while you print.</h2>
+      <div class="poster-row">
+        <p class="lead">Quotes chased, customers told, the floor scanned. The only thing left to do is make the job.</p>
+        <div class="btn-row">
+          <a class="btn ink" href="#film">Watch the film</a>
+          <a class="btn outline on-teal-outline" href="#lane">See it work</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div>
+      <a class="lockup" href="#top" aria-label="Presslane, home">
+        <svg viewBox="0 0 18 8" aria-hidden="true"><use href="#mark"/></svg>
+        <span>Presslane</span>
+      </a>
+      <p class="tag">Runs the shop while you print.</p>
+    </div>
+    <div>
+      <ul>
+        <li><a href="#lane">What it does</a></li>
+        <li><a href="#mockup">Logo mock-ups</a></li>
+        <li><a href="#quotes">Quote follow-up</a></li>
+        <li><a href="#phone">The phone</a></li>
+        <li><a href="#floor">Runsheets</a></li>
+      </ul>
+    </div>
+    <div>
+      <ul>
+        <li><a href="#who">Who it is for</a></li>
+        <li><a href="#included">Also included</a></li>
+        <li><a href="#film">Watch the film</a></li>
+        <li><a href="assets/presslane-presentation.pdf" target="_blank" rel="noopener">Presentation (PDF)</a></li>
+      </ul>
+    </div>
+    <div class="legal">
+      <span>Customer messages are sent in the shop's name. Presslane is never mentioned to a customer unless they ask.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="app.js" defer></script>
+</body>
+</html>
