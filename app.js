@@ -18,6 +18,15 @@
     io.observe(el);
   }
 
+  /* ---------- Mobile menu ---------- */
+  (function menu() {
+    const nav = $('.nav'), btn = $('#navToggle'); if (!btn) return;
+    const set = (open) => { nav.classList.toggle('open', open); btn.setAttribute('aria-expanded', String(open)); btn.textContent = open ? 'Close' : 'Menu'; };
+    btn.addEventListener('click', () => set(!nav.classList.contains('open')));
+    $$('#navLinks a').forEach((a) => a.addEventListener('click', () => set(false)));
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && nav.classList.contains('open')) { set(false); btn.focus(); } });
+  })();
+
   /* ---------- Barcodes: Code 128-style bars from a string (visual, deterministic) ---------- */
   function drawBars(svg) {
     const code = svg.dataset.code || 'PL04821';
@@ -57,13 +66,17 @@
       widgets.forEach((w) => w.classList.toggle('in', Number(w.dataset.stage) <= n));
     }
     if (reduce) { setStage(4); return; }
-    let n = 1; setStage(1);
+    let n = 1, visible = true, timer = null; setStage(1);
     function step() {
+      if (!visible || document.hidden) { timer = null; return; }
       n = n >= 6 ? 1 : n + 1;
       setStage(n);
-      setTimeout(step, n === 6 ? 5200 : n === 1 ? 900 : 1300);
+      timer = setTimeout(step, n === 6 ? 5200 : n === 1 ? 900 : 1300);
     }
-    setTimeout(step, 900);
+    const resume = () => { if (!timer && visible && !document.hidden) timer = setTimeout(step, 600); };
+    timer = setTimeout(step, 900);
+    if ('IntersectionObserver' in window) new IntersectionObserver((en) => { visible = en[0].isIntersecting; resume(); }, { threshold: 0.2 }).observe(rail);
+    document.addEventListener('visibilitychange', resume);
     window.addEventListener('resize', () => setStage(n));
   })();
 
@@ -96,9 +109,21 @@
       imgs.forEach((im) => { im.hidden = Number(im.dataset.stage) !== n; });
       const m = msgs[n]; k.textContent = m.k; h.textContent = m.h; b.textContent = m.b; f.innerHTML = m.f;
     }
-    function schedule() { clearTimeout(timer); if (playing && !reduce) timer = setTimeout(() => { show(cur >= 6 ? 1 : cur + 1); schedule(); }, 3800); }
-    tiles.forEach((t) => t.addEventListener('click', () => { show(Number(t.dataset.stage)); playing = false; playBtn.setAttribute('aria-pressed', 'false'); playBtn.textContent = 'Play'; clearTimeout(timer); }));
-    playBtn.addEventListener('click', () => { playing = !playing; playBtn.setAttribute('aria-pressed', String(playing)); playBtn.textContent = playing ? 'Pause' : 'Play'; if (playing) { show(cur >= 6 ? 1 : cur + 1); schedule(); } else clearTimeout(timer); });
+    let hover = false, loops = 0;
+    function stop() { playing = false; playBtn.setAttribute('aria-pressed', 'false'); playBtn.textContent = 'Play'; clearTimeout(timer); }
+    function schedule() {
+      clearTimeout(timer); if (!playing || reduce) return;
+      timer = setTimeout(() => {
+        if (hover) { schedule(); return; }
+        if (cur >= 6) { loops++; if (loops >= 1) { stop(); return; } }
+        show(cur >= 6 ? 1 : cur + 1); schedule();
+      }, 3800);
+    }
+    const area = $('#lane');
+    area.addEventListener('mouseenter', () => { hover = true; }); area.addEventListener('mouseleave', () => { hover = false; });
+    area.addEventListener('focusin', () => { hover = true; }); area.addEventListener('focusout', () => { hover = false; });
+    tiles.forEach((t) => t.addEventListener('click', () => { show(Number(t.dataset.stage)); stop(); }));
+    playBtn.addEventListener('click', () => { playing = !playing; loops = 0; playBtn.setAttribute('aria-pressed', String(playing)); playBtn.textContent = playing ? 'Pause' : 'Play'; if (playing) { hover = false; show(cur >= 6 ? 1 : cur + 1); schedule(); } else clearTimeout(timer); });
     show(1);
     if (reduce) { playing = false; playBtn.setAttribute('aria-pressed', 'false'); playBtn.textContent = 'Play'; }
     onVisible($('#lane'), () => { if (!started) { started = true; schedule(); } }, 0.3);
@@ -199,13 +224,23 @@
     function logoWidth() { return pos().w * state.size / 100; }
     function mm() { const w = pos().mm * state.size / 100; return `${Math.round(w)} × ${Math.round(w / state.logo.aspect)} mm`; }
 
+    let hadFocus = false;
     function render() {
+      hadFocus = document.activeElement && document.activeElement.id === 'logoG';
       while (svg.firstChild) svg.removeChild(svg.firstChild);
       const g = svgEl('g', {}); garment(g); svg.appendChild(g);
       const P = pos(); const w = logoWidth();
-      const lg = svgEl('g', { transform: `translate(${P.cx + state.dx} ${P.cy + state.dy})`, id: 'logoG', style: 'cursor:grab' });
+      const logoName = state.logo.type === 'symbol' ? { 'logo-okafor': 'Okafor Roofing', 'logo-hartley': 'Hartley Plumbing', 'logo-willink': 'school crest' }[state.logo.id] : 'uploaded';
+      const desc = `${logoName} logo, ${state.colourName.toLowerCase()} ${products[state.product].label.toLowerCase()}, ${state.position.toLowerCase()}, ${mm()}`;
+      const lg = svgEl('g', { transform: `translate(${P.cx + state.dx} ${P.cy + state.dy})`, id: 'logoG', style: 'cursor:grab', tabindex: '0', role: 'img', 'aria-label': desc + '. Use the arrow keys to move it.' });
+      const hh = w / state.logo.aspect;
+      lg.appendChild(svgEl('rect', { class: 'logo-focus', x: -w / 2 - 6, y: -hh / 2 - 6, width: w + 12, height: hh + 12, fill: 'none', stroke: 'none', 'stroke-width': 2 }));
       lg.appendChild(logoNode(w, state.colour));
       svg.appendChild(lg);
+      if (hadFocus) lg.focus({ preventScroll: true });
+      svg.setAttribute('aria-label', desc);
+      const st = $('#mockStatus'); if (st) st.textContent = desc;
+      const rng = $('#logoSize'); if (rng) rng.setAttribute('aria-valuetext', mm());
       // proof line + readouts
       $('#sizeReadout').textContent = mm();
       $('#colourName').textContent = state.colourName;
@@ -260,10 +295,14 @@
     }));
     $('#logoUpload').addEventListener('change', (e) => {
       const file = e.target.files && e.target.files[0]; if (!file) return;
+      const status = $('#uploadStatus');
+      if (!/^image\/(png|jpeg|svg\+xml|webp)$/.test(file.type)) { status.textContent = `${file.name} is not a PNG, JPG, SVG or WebP. Choose an image file.`; return; }
+      if (file.size > 8 * 1024 * 1024) { status.textContent = `${file.name} is over 8 MB. Choose a smaller file.`; return; }
       const reader = new FileReader();
       reader.onload = () => {
         const img = new Image();
-        img.onload = () => { state.logo = { type: 'image', src: reader.result, aspect: img.naturalWidth / img.naturalHeight || 1 }; $$('#logoPicks .logo-pick').forEach((c) => c.setAttribute('aria-pressed', 'false')); render(); };
+        img.onload = () => { state.logo = { type: 'image', src: reader.result, aspect: img.naturalWidth / img.naturalHeight || 1 }; $$('#logoPicks .logo-pick').forEach((c) => c.setAttribute('aria-pressed', 'false')); status.textContent = `${file.name} is on the product. It stays in your browser and is not uploaded anywhere.`; render(); };
+        img.onerror = () => { status.textContent = `${file.name} could not be read. Try another image.`; };
         img.src = reader.result;
       };
       reader.readAsDataURL(file);
@@ -287,6 +326,17 @@
     });
     const end = () => { drag = null; };
     canvas.addEventListener('pointerup', end); canvas.addEventListener('pointercancel', end);
+    // Keyboard: arrow keys nudge the logo inside the print area (Shift for bigger steps).
+    canvas.addEventListener('keydown', (ev) => {
+      if (!ev.target.closest || !ev.target.closest('#logoG')) return;
+      const stepPx = ev.shiftKey ? 20 : 4; let dx = state.dx, dy = state.dy;
+      if (ev.key === 'ArrowLeft') dx -= stepPx; else if (ev.key === 'ArrowRight') dx += stepPx; else if (ev.key === 'ArrowUp') dy -= stepPx; else if (ev.key === 'ArrowDown') dy += stepPx; else return;
+      ev.preventDefault();
+      const P = pos(); const w = logoWidth(), h = w / state.logo.aspect; const [x0, y0, x1, y1] = P.bounds;
+      state.dx = Math.max(x0 + w / 2 - P.cx, Math.min(x1 - w / 2 - P.cx, dx));
+      state.dy = Math.max(y0 + h / 2 - P.cy, Math.min(y1 - h / 2 - P.cy, dy));
+      render();
+    });
 
     const proofLine = $('#proofLine');
     $('#approveBtn').addEventListener('click', () => { proofLine.classList.add('done'); });

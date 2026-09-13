@@ -15,6 +15,7 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+<a class="skip" href="#top">Skip to content</a>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
@@ -50,12 +51,14 @@
       <svg viewBox="0 0 18 8" aria-hidden="true"><use href="#mark"/></svg>
       <span>Presslane</span>
     </a>
-    <nav aria-label="Page sections">
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navLinks" id="navToggle">Menu</button>
+    <nav aria-label="Page sections" id="navLinks">
       <ul class="nav-links">
         <li><a href="#lane">What it does</a></li>
         <li><a href="#mockup">See it work</a></li>
         <li><a href="#who">Who it is for</a></li>
         <li><a href="#included">Also included</a></li>
+        <li class="nav-only-mobile"><a href="#film">Watch the film</a></li>
       </ul>
     </nav>
     <a class="btn outline nav-watch" href="#film">Watch the film</a>
@@ -107,7 +110,7 @@
 
       <div class="hero-copy">
         <div>
-          <p class="lead">Presslane is the storefront and back office for print and embroidery shops. Customers see their logo on the product before they order. Every quote is chased, every stage is messaged, the phone is answered and the floor updates the system by scanning a sheet. The chasing, answering and tracking are done by AI in your shop's name, so the only thing left to do is make the job.</p>
+          <p class="lead">Presslane is the storefront and back office for print and embroidery shops. Customers see their logo on the product before they order. Every quote is chased, every stage is messaged, the phone is answered, and the floor updates the system by scanning a sheet. The chasing, answering and tracking are done by AI in your shop's name.</p>
           <p class="hero-meta small muted">Independent shops of 1 to 10 people, garment decorators, trade printers, sign makers and multi-site groups. UK first.</p>
         </div>
         <div class="btn-row">
@@ -152,7 +155,7 @@
       <div class="film-wrap">
         <div class="copy">
           <h2 class="h1">Sixty seconds on the shop floor.</h2>
-          <p class="body">The film shows the gaps a print shop loses money in and what Presslane does about each one: the quote that gets chased, the customer who is told at every stage, the sheet that updates the system. Sound on.</p>
+          <p class="body">The film shows the gaps a print shop loses money in and what Presslane does about each one: the quote that gets chased, the customer who is told at every stage, the sheet that updates the system. It has sound, and every point is also written on screen.</p>
           <div class="deck">
             <a class="deck-cover" href="assets/presslane-presentation.pdf" target="_blank" rel="noopener" aria-label="Open the Presslane presentation (PDF)">
               <span class="deck-kicker">Presentation · 2026</span>
@@ -162,12 +165,12 @@
             <div class="deck-copy">
               <h3 class="h3">The presentation</h3>
               <p class="small">14 slides for the printer who wants the argument on paper: the problem, the three promises, the lane, the runsheet, the platform and who it is for.</p>
-              <a class="btn outline" href="assets/presslane-presentation.pdf" target="_blank" rel="noopener">Open the presentation (PDF, 1.4 MB)</a>
+              <a class="btn outline" href="assets/presslane-presentation.pdf" target="_blank" rel="noopener">Open the presentation (PDF, 1.4 MB, new tab)</a>
             </div>
           </div>
         </div>
         <figure class="promo" id="promo">
-          <video id="promoVideo" playsinline preload="metadata" poster="assets/presslane-promo-poster.webp" width="720" height="1280">
+          <video id="promoVideo" aria-label="Presslane promotional film, 60 seconds" playsinline preload="metadata" poster="assets/presslane-promo-poster.webp" width="720" height="1280">
             <source src="assets/presslane-promo.mp4" type="video/mp4">
             Your browser cannot play this video. <a href="assets/presslane-promo.mp4">Download it</a> instead.
           </video>
@@ -208,7 +211,7 @@
           <img src="assets/stage-6.webp" alt="Customer tracking page at stage 6, delivered" width="1440" height="750" data-stage="6" hidden>
           <figcaption class="caption"><span>Customer · track-your-order page</span><span>Shop's own logo and colours, not ours</span></figcaption>
         </figure>
-        <div class="msg" id="laneMsg">
+        <div class="msg" id="laneMsg" role="region" aria-label="What the customer is told at this stage">
           <div>
             <p class="kicker" id="laneMsgKicker">Status · Fri 15 Aug, 10:42</p>
             <p class="h3" id="laneMsgHead">Thanks, we have your order.</p>
@@ -241,7 +244,8 @@
         <div class="mockup" id="mockupDemo">
           <div class="mockup-canvas" id="mockupCanvas">
             <svg viewBox="0 0 800 600" id="mockupSvg" role="img" aria-label="Product mock-up preview"></svg>
-            <span class="drag-hint">Drag the logo to move it</span>
+            <span class="drag-hint">Drag the logo, or focus it and use the arrow keys</span>
+            <p class="sr-only" id="mockStatus" aria-live="polite"></p>
           </div>
           <div class="controls">
             <div class="control">
@@ -257,12 +261,12 @@
               <div class="lbl">Colour <span class="mono" id="colourName">Airforce blue</span></div>
               <div class="swatches" id="swatches">
                 <button class="chip as-shot" id="asShot" aria-pressed="true" type="button">As photographed</button>
-                <button class="swatch" aria-pressed="false" data-colour="#1F2A44" data-name="Navy" aria-label="Navy" style="background:#1F2A44"></button>
-                <button class="swatch" aria-pressed="false" data-colour="#232323" data-name="Black" aria-label="Black" style="background:#232323"></button>
-                <button class="swatch" aria-pressed="false" data-colour="#8E8E8E" data-name="Heather grey" aria-label="Heather grey" style="background:#8E8E8E"></button>
-                <button class="swatch" aria-pressed="false" data-colour="#F4F2EC" data-name="White" aria-label="White" style="background:#F4F2EC"></button>
-                <button class="swatch" aria-pressed="false" data-colour="#1E4D3B" data-name="Bottle green" aria-label="Bottle green" style="background:#1E4D3B"></button>
-                <button class="swatch" aria-pressed="false" data-colour="#9A1F1F" data-name="Red" aria-label="Red" style="background:#9A1F1F"></button>
+                <button class="swatch" aria-pressed="false" data-colour="#1F2A44" data-name="Navy" aria-label="Navy" title="Navy" style="background:#1F2A44"></button>
+                <button class="swatch" aria-pressed="false" data-colour="#232323" data-name="Black" aria-label="Black" title="Black" style="background:#232323"></button>
+                <button class="swatch" aria-pressed="false" data-colour="#8E8E8E" data-name="Heather grey" aria-label="Heather grey" title="Heather grey" style="background:#8E8E8E"></button>
+                <button class="swatch" aria-pressed="false" data-colour="#F4F2EC" data-name="White" aria-label="White" title="White" style="background:#F4F2EC"></button>
+                <button class="swatch" aria-pressed="false" data-colour="#1E4D3B" data-name="Bottle green" aria-label="Bottle green" title="Bottle green" style="background:#1E4D3B"></button>
+                <button class="swatch" aria-pressed="false" data-colour="#9A1F1F" data-name="Red" aria-label="Red" title="Red" style="background:#9A1F1F"></button>
               </div>
             </div>
             <div class="control">
@@ -271,7 +275,9 @@
                 <button class="logo-pick" aria-pressed="true" data-logo="logo-okafor" aria-label="Okafor Roofing logo"><svg><use href="#logo-okafor"/></svg></button>
                 <button class="logo-pick" aria-pressed="false" data-logo="logo-hartley" aria-label="Hartley Plumbing logo"><svg><use href="#logo-hartley"/></svg></button>
                 <button class="logo-pick" aria-pressed="false" data-logo="logo-willink" aria-label="School crest logo"><svg><use href="#logo-willink"/></svg></button>
-                <label class="upload">Upload your own<input type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp" id="logoUpload"></label>
+                <label class="upload">Upload your own<input type="file" aria-describedby="uploadStatus" accept="image/png,image/jpeg,image/svg+xml,image/webp" id="logoUpload"></label>
+              </div>
+            <p class="small muted upload-status" id="uploadStatus" aria-live="polite"></p>
               </div>
             </div>
             <div class="control">
@@ -360,7 +366,8 @@
             <span>Incoming · 07700 900123 · Sam Okafor</span>
             <span class="live"><span class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span id="callTimer">00:00</span></span>
           </div>
-          <div class="lines" id="callLines"></div>
+          <div class="lines" id="callLines" aria-hidden="true"></div>
+          <p class="sr-only">Transcript. Northside Print: Northside Print. I can check an order or stock for you. What's your order number, or what are you looking for? Sam: Hi, it's Sam Okafor. Ringing about my hoodies, I don't have the number on me. Northside Print: Found it. PL-04821, 48 navy hoodies, left chest. They're being embroidered now and should be packed tomorrow. Want me to text you when they ship? Sam: Yes please. Could I get the same again in bottle green? Northside Print: Bottle green JH001 is in stock in all your sizes. I'll note it on your order and Dan will send a quote today. Anything else? Sam: No, that's everything. Thanks.</p>
           <div class="call-foot">
             <span id="callFoot">Ringing</span>
             <button type="button" id="callReplay">Replay call</button>
@@ -503,7 +510,7 @@
         <li><a href="#who">Who it is for</a></li>
         <li><a href="#included">Also included</a></li>
         <li><a href="#film">Watch the film</a></li>
-        <li><a href="assets/presslane-presentation.pdf" target="_blank" rel="noopener">Presentation (PDF)</a></li>
+        <li><a href="assets/presslane-presentation.pdf" target="_blank" rel="noopener">Presentation (PDF, new tab)</a></li>
       </ul>
     </div>
     <div class="legal">
