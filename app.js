@@ -112,6 +112,43 @@
     if (start === 'promo' || start === 'print') set(start);
   })();
 
+  /* ---------- Enquiry film: muted + captioned, plays in view, follows the audience buttons ---------- */
+  (function enquiryFilm() {
+    const v = $('#enquiryVideo'); if (!v) return;
+    const playBtn = $('#enquiryPlay'), soundBtn = $('#enquirySound');
+    let inView = false, userPaused = reduce; // reduced motion: never autoplay
+    function source() {
+      const a = isPromo() ? 'promo' : 'print';
+      const src = v.dataset['src' + (a === 'promo' ? 'Promo' : 'Print')];
+      if (v.getAttribute('data-current') === src) return false;
+      v.setAttribute('data-current', src);
+      v.poster = v.dataset['poster' + (a === 'promo' ? 'Promo' : 'Print')];
+      v.src = src; v.load();
+      return true;
+    }
+    function sync() {
+      const shouldPlay = inView && !userPaused && !document.hidden;
+      if (shouldPlay && v.paused) v.play().catch(() => {});
+      if (!shouldPlay && !v.paused) v.pause();
+      playBtn.textContent = v.paused ? 'Play' : 'Pause';
+      playBtn.setAttribute('aria-pressed', String(!v.paused));
+    }
+    v.addEventListener('play', sync); v.addEventListener('pause', () => { playBtn.textContent = 'Play'; playBtn.setAttribute('aria-pressed', 'false'); });
+    playBtn.addEventListener('click', () => { userPaused = !v.paused; if (userPaused) v.pause(); else v.play().catch(() => {}); });
+    soundBtn.addEventListener('click', () => {
+      v.muted = !v.muted;
+      soundBtn.textContent = v.muted ? 'Sound on' : 'Sound off';
+      soundBtn.setAttribute('aria-pressed', String(!v.muted));
+      if (!v.muted) { v.currentTime = 0; userPaused = false; v.play().catch(() => {}); }
+    });
+    source();
+    onAudience(() => { if (source()) { userPaused = reduce; sync(); } });
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver((en) => { inView = en[0].isIntersecting; sync(); }, { threshold: 0.4 }).observe(v);
+    }
+    document.addEventListener('visibilitychange', sync);
+  })();
+
   /* ---------- Film: poster and a single play control, native controls once playing ---------- */
   (function film() {
     const v = $('#promoVideo'), btn = $('#promoPlay'), fig = $('#promo'); if (!v || !btn) return;

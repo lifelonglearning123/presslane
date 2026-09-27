@@ -600,3 +600,13 @@ html:not([data-audience="promo"]) [data-only="promo"] { display: none !important
   .crm-timeline .k { grid-column: 2; grid-row: 1; }
   .crm-timeline p { grid-column: 1 / -1; }
 }
+
+/* Enquiry film: muted, captioned, plays when in view; source follows the audience buttons. */
+.enquiry-film { position: relative; margin: clamp(32px, 4vw, 56px) 0 0; background: var(--ink); border: 1px solid var(--ink); border-radius: var(--radius); overflow: hidden; }
+.enquiry-film video { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; background: #1f1a17; }
+.enquiry-film .caption { background: #fff; color: var(--muted); border-top: 1px solid var(--ink); }
+.film-controls { position: absolute; right: 12px; bottom: 52px; display: flex; gap: 8px; }
+.film-btn { min-height: 44px; padding: 8px 16px; border: 1px solid rgba(255,255,255,.55); border-radius: 2px; background: rgba(21,21,21,.72); color: #fff; font: 600 14px/1 var(--font-sans); cursor: pointer; }
+.film-btn:hover { background: var(--mint); border-color: var(--mint); color: var(--ink); }
+.film-btn[aria-pressed="true"] { background: #fff; border-color: #fff; color: var(--ink); }
+@media (max-width: 560px) { .film-controls { right: 8px; bottom: 48px; } .film-btn { padding: 8px 12px; } }
