@@ -117,15 +117,22 @@
     const v = $('#enquiryVideo'); if (!v) return;
     const playBtn = $('#enquiryPlay'), soundBtn = $('#enquirySound');
     let inView = false, userPaused = reduce; // reduced motion: never autoplay
+    const phone = window.matchMedia('(max-width: 640px)');
+    const fig = $('#enquiryFilm');
     function source() {
-      const a = isPromo() ? 'promo' : 'print';
-      const src = v.dataset['src' + (a === 'promo' ? 'Promo' : 'Print')];
+      // Audience picks the cut; phones get the vertical version so the captions stay readable.
+      const key = (isPromo() ? 'Promo' : 'Print') + (phone.matches ? 'Tall' : '');
+      const src = v.dataset['src' + key];
+      fig.classList.toggle('is-tall', phone.matches);
       if (v.getAttribute('data-current') === src) return false;
+      const wasPlaying = !v.paused;
       v.setAttribute('data-current', src);
-      v.poster = v.dataset['poster' + (a === 'promo' ? 'Promo' : 'Print')];
+      v.poster = v.dataset['poster' + key];
       v.src = src; v.load();
+      if (wasPlaying) v.play().catch(() => {});
       return true;
     }
+    phone.addEventListener('change', source);
     function sync() {
       const shouldPlay = inView && !userPaused && !document.hidden;
       if (shouldPlay && v.paused) v.play().catch(() => {});

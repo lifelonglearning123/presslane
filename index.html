@@ -263,7 +263,7 @@
         <div class="mockup" id="mockupDemo">
           <div class="mockup-canvas" id="mockupCanvas">
             <svg viewBox="0 0 800 600" id="mockupSvg" role="img" aria-label="Product mock-up preview"></svg>
-            <span class="drag-hint">Drag the logo, or focus it and use the arrow keys</span>
+            <span class="drag-hint"><span class="hint-pointer">Drag the logo, or focus it and use the arrow keys</span><span class="hint-touch">Drag the logo to move it</span></span>
             <p class="sr-only" id="mockStatus" aria-live="polite"></p>
           </div>
           <div class="controls">
@@ -300,8 +300,7 @@
                 <button class="logo-pick" aria-pressed="false" data-logo="logo-willink" aria-label="School crest logo"><svg><use href="#logo-willink"/></svg></button>
                 <label class="upload">Upload your own<input type="file" aria-describedby="uploadStatus" accept="image/png,image/jpeg,image/svg+xml,image/webp" id="logoUpload"></label>
               </div>
-            <p class="small muted upload-status" id="uploadStatus" aria-live="polite"></p>
-              </div>
+              <p class="small muted upload-status" id="uploadStatus" aria-live="polite"></p>
             </div>
             <div class="control">
               <div class="lbl">Position <span class="mono" id="sizeReadout">90 × 60 mm</span></div>
@@ -332,15 +331,19 @@
           poster="assets/enquiry-print-poster.webp"
           data-src-print="assets/enquiry-print.mp4" data-poster-print="assets/enquiry-print-poster.webp"
           data-src-promo="assets/enquiry-promo.mp4" data-poster-promo="assets/enquiry-promo-poster.webp"
+          data-src-print-tall="assets/enquiry-print-tall.mp4" data-poster-print-tall="assets/enquiry-print-tall-poster.webp"
+          data-src-promo-tall="assets/enquiry-promo-tall.mp4" data-poster-promo-tall="assets/enquiry-promo-tall-poster.webp"
           aria-label="30-second film: every enquiry answered within the hour and followed up until the customer says yes or no. Captions are part of the picture.">
           <source src="assets/enquiry-print.mp4" type="video/mp4">
           Your browser cannot play this video. <a href="assets/enquiry-print.mp4">Download it</a> instead.
         </video>
-        <div class="film-controls">
-          <button class="film-btn" type="button" id="enquiryPlay" aria-pressed="false">Play</button>
-          <button class="film-btn" type="button" id="enquirySound" aria-pressed="false">Sound on</button>
-        </div>
-        <figcaption class="caption"><span>Presslane · No enquiry goes quiet</span><span class="mono">30 s · captions in picture</span></figcaption>
+        <figcaption class="film-bar">
+          <span class="film-title">No enquiry goes quiet <span class="muted">30 seconds, with captions</span></span>
+          <span class="film-controls">
+            <button class="film-btn" type="button" id="enquiryPlay" aria-pressed="false">Play</button>
+            <button class="film-btn" type="button" id="enquirySound" aria-pressed="false">Sound on</button>
+          </span>
+        </figcaption>
       </figure>
       <div class="quote-wrap">
         <div class="quote-card">
