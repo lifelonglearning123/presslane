@@ -54,6 +54,7 @@
     <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navLinks" id="navToggle">Menu</button>
     <nav aria-label="Page sections" id="navLinks">
       <ul class="nav-links">
+        <li><a href="#system">The system</a></li>
         <li><a href="#lane">What it does</a></li>
         <li><a href="#mockup">See it work</a></li>
         <li><a href="#who">Who it is for</a></li>
@@ -168,6 +169,98 @@
     </div>
   </section>
 
+  <!-- THE SYSTEM: a map of the £199 package, one recorded film per part. app.js loads a film only when its part is picked. -->
+  <section class="section surface" id="system" aria-labelledby="systemTitle">
+    <div class="wrap">
+      <div class="sys-head">
+        <h2 class="h1" id="systemTitle">The real system, one film per part.</h2>
+        <p class="lead">Five short films recorded in Presslane itself. Together they are the £199 package. Pick a part to watch it.</p>
+      </div>
+
+      <div class="sys-map" role="group" aria-label="Parts of the £199 package">
+        <div class="sys-stage">
+          <p class="sys-stage-k">Work comes in</p>
+          <button class="sys-part" type="button" data-film="storefront" aria-pressed="true" aria-controls="sysPlayer">
+            <span class="sys-part-name">Storefront</span>
+            <span class="sys-part-s">Your website and shop, from a template.</span>
+            <span class="sys-part-t mono">0:48</span>
+            <span class="sys-part-bar" aria-hidden="true"></span>
+          </button>
+          <button class="sys-part" type="button" data-film="clubshops" aria-pressed="false" aria-controls="sysPlayer">
+            <span class="sys-part-name">Club shops</span>
+            <span class="sys-part-s">A shop for every school, club or company.</span>
+            <span class="sys-part-t mono">1:14</span>
+            <span class="sys-part-bar" aria-hidden="true"></span>
+          </button>
+        </div>
+        <div class="sys-stage">
+          <p class="sys-stage-k">You sell</p>
+          <button class="sys-part" type="button" data-film="quotes" aria-pressed="false" aria-controls="sysPlayer">
+            <span class="sys-part-name">Quotes</span>
+            <span class="sys-part-s">Priced from your supplier list, accepted online.</span>
+            <span class="sys-part-t mono">1:42</span>
+            <span class="sys-part-bar" aria-hidden="true"></span>
+          </button>
+          <button class="sys-part" type="button" data-film="customers" aria-pressed="false" aria-controls="sysPlayer">
+            <span class="sys-part-name">Customer accounts</span>
+            <span class="sys-part-s">Trade terms, credit limits, one record each.</span>
+            <span class="sys-part-t mono">0:46</span>
+            <span class="sys-part-bar" aria-hidden="true"></span>
+          </button>
+        </div>
+        <div class="sys-stage">
+          <p class="sys-stage-k">You make and ship</p>
+          <button class="sys-part sys-part-tall" type="button" data-film="pipeline" aria-pressed="false" aria-controls="sysPlayer">
+            <span class="sys-part-name">Order pipeline</span>
+            <span class="sys-part-s">Every order on one board, moving on its own.</span>
+            <span class="sys-flow" aria-hidden="true"><span>Artwork</span><span>Production</span><span>Pick &amp; pack</span><span>Dispatch</span><span>Delivered</span></span>
+            <span class="sys-part-t mono">1:07</span>
+            <span class="sys-part-bar" aria-hidden="true"></span>
+          </button>
+        </div>
+      </div>
+
+      <div class="sys-player" id="sysPlayer">
+        <div class="sys-main">
+        <figure class="sys-screen">
+          <video id="sysVideo" playsinline preload="none" width="1920" height="1080" poster="assets/system/storefront-setup-poster.webp" aria-label="Storefront film">
+            Your browser cannot play this video.
+          </video>
+          <button class="sys-play" type="button" id="sysPlay">
+            <span class="promo-play-square" aria-hidden="true"></span>
+            <span id="sysPlayLabel">Play with sound · 0:48</span>
+          </button>
+        </figure>
+        <ol class="sys-chapters" id="sysChapters" aria-label="Chapters"></ol>
+        </div>
+        <div class="sys-side">
+          <div>
+            <h3 class="h3" id="sysTitle">Storefront</h3>
+            <p class="small" id="sysDesc"></p>
+          </div>
+          <div class="sys-side-foot">
+            <button class="btn outline" type="button" id="sysNext">Next: Club shops</button>
+            <button class="film-btn" type="button" id="sysSubs" aria-pressed="false">Subtitles</button>
+          </div>
+          <details class="sys-transcript">
+            <summary>Read the voiceover</summary>
+            <div id="sysTranscript" class="small"></div>
+          </details>
+        </div>
+      </div>
+
+      <div class="sys-beyond">
+        <p class="small"><strong>Beyond the £199 package</strong></p>
+        <ul>
+          <li><a href="#mockup">Logo mock-ups and proofs</a></li>
+          <li><a href="#phone">The AI phone</a></li>
+          <li>Quote retargeting</li>
+          <li>Supplier list</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
   <!-- FILM + PRESENTATION -->
   <section class="section" id="film" data-only="print">
     <div class="wrap">
@@ -243,6 +336,7 @@
         <button type="button" id="lanePlay" aria-pressed="true">Pause</button>
         <span>Advances on its own, or click a stage.</span>
       </div>
+      <p class="sys-link"><a href="#system" data-film="pipeline">Watch the order pipeline in Presslane</a> <span class="mono">1:07</span></p>
     </div>
   </section>
 
@@ -386,6 +480,7 @@
           </div>
         </div>
       </div>
+      <p class="sys-link"><a href="#system" data-film="quotes">Watch a quote built and accepted in Presslane</a> <span class="mono">1:42</span></p>
     </div>
   </section>
 
@@ -408,6 +503,7 @@
         </div>
         <div class="crm-record" id="crmRecord" aria-live="polite"></div>
       </div>
+      <p class="sys-link"><a href="#system" data-film="customers">Watch a trade account set up in Presslane</a> <span class="mono">0:46</span></p>
 
       <div class="cols">
         <div>
@@ -529,6 +625,7 @@
           <p class="small" data-promo="Accounts, suppliers, your CRM, your own spreadsheets. The data is yours and any third-party app can read it. Nothing is locked in a PC in the office.">Accounts, couriers, suppliers, your own spreadsheets. The data is yours and any third-party app can read it. Nothing is locked in a PC in the office.</p>
         </div>
       </div>
+      <p class="sys-link"><a href="#system" data-film="storefront">Watch a storefront built in Presslane</a> <span class="mono">0:48</span> <a href="#system" data-film="clubshops">Watch a club shop set up</a> <span class="mono">1:14</span></p>
     </div>
   </section>
 
@@ -577,6 +674,7 @@
     </div>
     <div>
       <ul>
+        <li><a href="#system">The system, on film</a></li>
         <li><a href="#lane">What it does</a></li>
         <li><a href="#mockup" data-promo="Visuals">Logo mock-ups</a></li>
         <li><a href="#quotes" data-promo="Enquiry follow-up">Quote follow-up</a></li>

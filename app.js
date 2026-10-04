@@ -156,6 +156,120 @@
     document.addEventListener('visibilitychange', sync);
   })();
 
+  /* ---------- The system: pick a part on the map, its recorded film plays in one player ---------- */
+  (function system() {
+    const v = $('#sysVideo'); if (!v) return;
+    const FILMS = {
+      storefront: { title: 'Storefront', file: 'storefront-setup', len: '0:48',
+        desc: 'A shop front built from a template. Move sections, set the words, menu and colours, check it on a phone, then publish.',
+        chapters: [[0, 'The shop front'], [15.1, 'The back office behind it'], [18, 'Start from a template'], [26.7, 'Sections, menu and footer'], [35.9, 'Colours'], [37.8, 'Check on a phone, then publish']] },
+      clubshops: { title: 'Club shops', file: 'club-shop-setup', len: '1:14',
+        desc: 'A shop inside your shop for a school, club or company uniform, with its own products, prices, logo and web address.',
+        chapters: [[0, 'A shop inside your shop'], [12.8, 'Name, logo and banner'], [20.8, 'Who gets in'], [29.6, 'Add the uniform'], [46.2, 'Its own web address'], [61, 'The finished shop']] },
+      quotes: { title: 'Quotes', file: 'client-quotes', len: '1:42',
+        desc: 'Build a quote from your own price list with the quantity breaks worked out. The customer accepts online and it becomes an order.',
+        chapters: [[0, 'An enquiry comes in'], [12.9, 'Start a quote'], [20.9, 'Lines and quantity breaks'], [46.7, 'Notes, layout and payment'], [66.6, 'Send it'], [72.1, 'The customer accepts'], [83.8, 'Into an order'], [91.6, 'Follow-ups on their own']] },
+      customers: { title: 'Customer accounts', file: 'customer-trading', len: '0:46',
+        desc: 'Every customer ranked by spend. Trade customers go on account with a credit limit and terms, and every order sits on one record.',
+        chapters: [[0, 'Every customer, ranked'], [8.2, 'Add a trade customer'], [15.8, 'On account'], [23.5, 'The credit limit'], [35, 'Notes and history']] },
+      pipeline: { title: 'Order pipeline', file: 'order-pipeline', len: '1:07',
+        desc: 'Accepted quotes land as orders. Most stages move on their own, the floor scans barcodes, and the customer is told at every step.',
+        chapters: [[0, 'Every order, newest first'], [21, 'The pipeline board'], [24.5, 'Stages that move on their own'], [43.6, 'Scanned on the floor'], [52.4, 'Customer told, tracking sent']] }
+    };
+    const ORDER = Object.keys(FILMS);
+    const parts = $$('#system .sys-part'), screen = $('.sys-screen'), playBtn = $('#sysPlay'), playLabel = $('#sysPlayLabel');
+    const title = $('#sysTitle'), desc = $('#sysDesc'), list = $('#sysChapters'), next = $('#sysNext'), subsBtn = $('#sysSubs'), tx = $('#sysTranscript');
+    const fmt = (s) => Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0');
+    const transcripts = {};
+    let cur = null, subs = false;
+
+    function setSubs() {
+      Array.from(v.textTracks).forEach((t) => { t.mode = subs ? 'showing' : 'hidden'; });
+      subsBtn.setAttribute('aria-pressed', String(subs));
+    }
+    function showTranscript(id) {
+      if (transcripts[id]) { tx.innerHTML = transcripts[id]; return; }
+      tx.textContent = '';
+      fetch('assets/system/' + FILMS[id].file + '.vtt').then((r) => r.text()).then((t) => {
+        const text = t.split(/\r?\n\r?\n/).slice(1).map((c) => c.split(/\r?\n/).filter((l) => l && !/-->/.test(l) && !/^\d+$/.test(l)).join(' ')).join(' ');
+        const p = document.createElement('div');
+        text.split(/(?<=[.?])\s+(?=[A-Z])/).reduce((acc, s, i) => { if (i % 3 === 0) acc.push([]); acc[acc.length - 1].push(s); return acc; }, [])
+          .forEach((g) => { const el = document.createElement('p'); el.textContent = g.join(' '); p.appendChild(el); });
+        transcripts[id] = p.innerHTML;
+        if (cur === id) tx.innerHTML = transcripts[id];
+      }).catch(() => { tx.textContent = 'The voiceover text could not be loaded.'; });
+    }
+    function setPlayLabel(word) { playLabel.textContent = word + ' · ' + FILMS[cur].len; }
+
+    function select(id, autoplay) {
+      const F = FILMS[id]; if (!F) return;
+      if (cur !== id) {
+        cur = id;
+        parts.forEach((p) => { p.setAttribute('aria-pressed', String(p.dataset.film === id)); p.style.setProperty('--p', 0); });
+        v.pause(); v.controls = false; screen.classList.remove('playing');
+        $$('track', v).forEach((t) => t.remove());
+        v.poster = 'assets/system/' + F.file + '-poster.webp';
+        v.src = 'assets/system/' + F.file + '.mp4';
+        const tr = document.createElement('track');
+        tr.kind = 'subtitles'; tr.srclang = 'en'; tr.label = 'English'; tr.src = 'assets/system/' + F.file + '.vtt';
+        v.appendChild(tr); setSubs();
+        v.setAttribute('aria-label', F.title + ' film, ' + F.len + ', with voiceover');
+        title.textContent = F.title; desc.textContent = F.desc;
+        list.textContent = '';
+        F.chapters.forEach(([t, label]) => {
+          const li = document.createElement('li'), b = document.createElement('button');
+          b.type = 'button'; b.dataset.t = t; b.setAttribute('aria-current', 'false');
+          b.innerHTML = '<span class="mono"></span><span></span>';
+          b.firstChild.textContent = fmt(t); b.lastChild.textContent = label;
+          b.addEventListener('click', () => seek(t));
+          li.appendChild(b); list.appendChild(li);
+        });
+        const n = ORDER[(ORDER.indexOf(id) + 1) % ORDER.length];
+        next.textContent = 'Next: ' + FILMS[n].title; next.dataset.film = n; next.classList.remove('cue');
+        setPlayLabel('Play with sound');
+        showTranscript(id);
+      }
+      if (autoplay) play();
+    }
+    function play() { v.controls = true; screen.classList.add('playing'); v.play().catch(() => { screen.classList.remove('playing'); v.controls = false; }); }
+    function seek(t) {
+      const go = () => { v.currentTime = t; play(); };
+      if (v.readyState >= 1) go(); else { v.addEventListener('loadedmetadata', go, { once: true }); v.load(); }
+    }
+
+    v.addEventListener('timeupdate', () => {
+      const t = v.currentTime, F = FILMS[cur];
+      const p = parts.find((el) => el.dataset.film === cur); if (p && v.duration) p.style.setProperty('--p', (t / v.duration).toFixed(3));
+      let on = 0; F.chapters.forEach(([ct], i) => { if (t >= ct - 0.2) on = i; });
+      $$('button', list).forEach((b, i) => {
+        if (b.getAttribute('aria-current') === String(i === on)) return;
+        b.setAttribute('aria-current', String(i === on));
+        // Keep the current chapter visible in the swipeable row on phones.
+        if (i === on && list.scrollWidth > list.clientWidth) list.scrollTo({ left: b.parentNode.offsetLeft - 16, behavior: reduce ? 'auto' : 'smooth' });
+      });
+    });
+    v.addEventListener('loadedmetadata', setSubs);
+    v.addEventListener('pause', () => { if (!v.ended && v.currentTime > 0 && v.currentSrc.includes(FILMS[cur].file)) { screen.classList.remove('playing'); v.controls = false; setPlayLabel('Resume'); } });
+    v.addEventListener('ended', () => { screen.classList.remove('playing'); v.controls = false; setPlayLabel('Play again'); next.classList.add('cue'); });
+    playBtn.addEventListener('click', play);
+    subsBtn.addEventListener('click', () => { subs = !subs; setSubs(); });
+    next.addEventListener('click', () => select(next.dataset.film, true));
+
+    // On a phone the player sits under the map, so bring it into view when a part is picked.
+    const player = $('#sysPlayer');
+    function reveal() {
+      const r = player.getBoundingClientRect();
+      if (r.top < 64 || r.top > window.innerHeight * 0.5) player.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+    }
+    parts.forEach((p) => p.addEventListener('click', () => { select(p.dataset.film, true); reveal(); }));
+    // "Watch it in Presslane" links elsewhere on the page open the map on their film.
+    $$('a[data-film]').forEach((a) => a.addEventListener('click', (e) => { e.preventDefault(); select(a.dataset.film, true); reveal(); }));
+
+    // Stop the voiceover when the player scrolls out of view.
+    if ('IntersectionObserver' in window) new IntersectionObserver((en) => { if (!en[0].isIntersecting && !v.paused) v.pause(); }, { threshold: 0.2 }).observe(v);
+    select('storefront', false);
+  })();
+
   /* ---------- Film: poster and a single play control, native controls once playing ---------- */
   (function film() {
     const v = $('#promoVideo'), btn = $('#promoPlay'), fig = $('#promo'); if (!v || !btn) return;
