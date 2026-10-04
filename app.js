@@ -53,45 +53,53 @@
   }
   $$('svg.bars').forEach(drawBars);
 
-  /* ---------- Hero: the network. A ring travels bubble to bubble and the caption names each part. ---------- */
+  /* ---------- Hero: the lane. The job square travels the six stages left to right; the window shows each stage. ---------- */
   (function hero() {
-    const net = $('#net'); if (!net) return;
-    const nodes = $$('#netNodes .node'), ring = $('#netRing'), cap = $('#netTip'), video = $('#netVideo');
-    let cur = -1, timer = null, held = false, visible = true;
-    function show(i) {
-      cur = i;
-      const n = nodes[i];
-      nodes.forEach((el, j) => el.classList.toggle('on', j === i));
-      ['--x', '--y', '--r'].forEach((v) => ring.style.setProperty(v, n.style.getPropertyValue(v)));
-      ring.classList.add('on');
-      cap.classList.add('fade');
-      setTimeout(() => {
-        cap.innerHTML = '<strong>' + $('button', n).lastChild.textContent + '.</strong> ' + $('.tip', n).textContent;
-        cap.classList.remove('fade');
-      }, reduce ? 0 : 220);
+    const root = $('#hero'); if (!root) return;
+    const stages = $('#heroStages'), track = $('#heroTrack'), job = $('#heroJob'), btns = $$('button', stages), objs = $$('.hero-obj', root);
+    const capK = $('#heroCapK'), capT = $('#heroCapT'), pause = $('#heroPause');
+    const MOMENTS = {
+      print: [['09:10 · WhatsApp', 'Quote accepted after the 2nd follow-up.'], ['11:02 · Proof', 'Sam approved the proof in one click.'], ['14:32 · Embroidery 2', 'Scanned at the bench. Sam is told his hoodies are being embroidered.'], ['16:40 · Packing', '2 boxes packed. Courier booked for tomorrow.'], ['09:05 · Courier', 'Tracking number sent to Sam on its own.'], ['12:20 · Delivered', 'Delivered. Same again is one click.']],
+      promo: [['09:10 · WhatsApp', 'Quote accepted after the 2nd follow-up.'], ['11:02 · Visual', 'Sam approved the visual in one click.'], ['14:32 · Supplier', 'Order placed with the supplier. Sam is told it is in production.'], ['16:40 · Supplier', 'Packed at the supplier. Courier booked for tomorrow.'], ['09:05 · Courier', 'Supplier tracking passed to Sam on its own.'], ['12:20 · Delivered', 'Delivered. Same again is one click.']]
+    };
+    const STEP = 3400;
+    let cur = -1, timer = null, paused = reduce, visible = true;
+    // The square lines up with the start of its stage's label, under the rail.
+    const x = (n) => track.clientWidth / 6 * n;
+    function place(n, instant) { job.classList.toggle('jump', !!instant); job.style.transform = 'translateX(' + x(n) + 'px)'; }
+    function show(n) {
+      cur = n;
+      btns.forEach((b, i) => { b.setAttribute('aria-pressed', String(i === n)); b.classList.toggle('done', i < n); });
+      objs.forEach((o) => o.classList.toggle('on', Number(o.dataset.stage) === n));
+      const m = MOMENTS[isPromo() ? 'promo' : 'print'][n]; capK.textContent = m[0]; capT.textContent = m[1];
+    }
+    // Forward is a slide. Going back means this job leaves on the right and a new one enters from the left.
+    function go(n) {
+      clearTimeout(timer);
+      if (n > cur) { place(n); show(n); schedule(); return; }
+      job.classList.remove('jump'); job.style.transform = 'translateX(' + (track.clientWidth + 200) + 'px)';
+      timer = setTimeout(() => {
+        job.classList.add('jump'); job.style.transform = 'translateX(-120px)'; void job.offsetWidth;
+        place(n); show(n); schedule();
+      }, reduce ? 0 : 900);
     }
     function schedule() {
-      clearTimeout(timer); timer = null;
-      if (reduce || held || !visible || document.hidden) return;
-      timer = setTimeout(() => { show((cur + 1) % nodes.length); schedule(); }, 3400);
+      clearTimeout(timer);
+      if (paused || !visible || document.hidden) return;
+      timer = setTimeout(() => go(cur >= 5 ? 0 : cur + 1), STEP);
     }
-    nodes.forEach((n, i) => {
-      const b = $('button', n);
-      b.addEventListener('mouseenter', () => { held = true; show(i); schedule(); });
-      b.addEventListener('focus', () => { held = true; show(i); schedule(); });
-      b.addEventListener('click', () => { held = true; show(i); schedule(); });
-    });
-    $('#netNodes').addEventListener('mouseleave', () => { held = false; schedule(); });
-    $('#netNodes').addEventListener('focusout', (e) => { if (!net.contains(e.relatedTarget)) { held = false; schedule(); } });
-    if (reduce && video) { video.removeAttribute('autoplay'); video.pause(); }
-    show(0);
-    if ('IntersectionObserver' in window) new IntersectionObserver((en) => {
-      visible = en[0].isIntersecting;
-      if (video && !reduce) { if (visible) video.play().catch(() => {}); else video.pause(); }
-      schedule();
-    }, { threshold: 0.15 }).observe(net);
+    function setPaused(p) { paused = p; pause.textContent = p ? 'Play' : 'Pause'; pause.setAttribute('aria-pressed', String(p)); schedule(); }
+    btns.forEach((b, i) => b.addEventListener('click', () => { setPaused(true); go(i); }));
+    pause.addEventListener('click', () => { setPaused(!paused); if (!paused) go(cur >= 5 ? 0 : cur + 1); });
+    window.addEventListener('resize', () => place(cur, true));
+    onAudience(() => show(cur));
+    if ('IntersectionObserver' in window) new IntersectionObserver((en) => { visible = en[0].isIntersecting; schedule(); }, { threshold: 0.2 }).observe(root);
     document.addEventListener('visibilitychange', schedule);
-    schedule();
+    show(reduce ? 2 : 0);
+    if (reduce) { place(cur, true); setPaused(true); return; }
+    // First job enters from the left.
+    job.classList.add('jump'); job.style.transform = 'translateX(-120px)'; void job.offsetWidth;
+    requestAnimationFrame(() => { place(0); setPaused(false); });
   })();
 
   /* ---------- Audience: printers or promotional merchandise. Swaps copy marked data-promo. ---------- */

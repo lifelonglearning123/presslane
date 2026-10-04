@@ -47,10 +47,7 @@
 
 <header class="nav">
   <div class="wrap">
-    <a class="lockup" href="#top" aria-label="Presslane, home">
-      <svg viewBox="0 0 18 8" aria-hidden="true"><use href="#mark"/></svg>
-      <span>Presslane</span>
-    </a>
+    <a class="lockup" href="#top"><img src="assets/presslane-lockup.svg" alt="Presslane, home" width="150" height="19"></a>
     <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navLinks" id="navToggle">Menu</button>
     <nav aria-label="Page sections" id="navLinks">
       <ul class="nav-links">
@@ -69,74 +66,56 @@
 
 <main id="top">
 
-  <!-- HERO: the platform as a living network. The bubbles are a generated video loop; labels are live HTML placed over each bubble. -->
-  <section class="hero-net" aria-labelledby="heroTitle">
-    <div class="wrap">
-      <p class="kicker">For printers, embroiderers and promotional merchandise companies</p>
-      <h1 class="display" id="heroTitle">One AI platform.<br><span class="accent">Everything your business runs on.</span></h1>
-      <p class="lead">Your storefront, quotes, artwork, CRM and back office, suppliers, school and club shops, and the marketing that brings quotes back. Seven parts, one system, all connected and run by AI in your name.</p>
-    </div>
-
-    <div class="net" id="net">
-      <div class="net-stage">
-        <div class="net-canvas">
-        <video class="net-video" id="netVideo" autoplay muted loop playsinline preload="auto" poster="assets/hero-network.webp" aria-hidden="true">
-          <source src="assets/hero-network.mp4" type="video/mp4">
-        </video>
-        <span class="net-ring" id="netRing" aria-hidden="true"></span>
+  <!-- HERO: the lane from the mark. The job square travels the six stages left to right; a window shows the real thing at each stage. app.js drives it. -->
+  <section class="hero" id="hero" aria-labelledby="heroTitle">
+    <div class="wrap hero-top">
+      <div class="hero-copy">
+        <h1 class="hero-h" id="heroTitle">Runs the shop<br>while you print.</h1>
+        <p class="hero-sub" data-promo="The storefront and back office for promotional merchandise companies. Visuals made, quotes chased, every order followed to the door.">The storefront and back office for printers, embroiderers and promotional merchandise companies. Quotes chased, customers told, the floor scanned.</p>
+        <div class="hero-ctas">
+          <a class="hbtn teal" href="#film" data-only="print">Watch the film</a>
+          <a class="hbtn teal" href="#mockup" data-only="promo">Make a visual</a>
+          <a class="hbtn ghost" href="#system">See the system</a>
         </div>
-
-        <ul class="net-nodes" id="netNodes" aria-label="What the platform does">
-          <li class="node core" style="--x:50%;--y:50%;--r:8.1%">
-            <button type="button"><span class="n">AI</span>Presslane AI</button>
-            <p class="tip">Joins every part together. Chases quotes, answers the phone and messages customers in your name.</p>
-          </li>
-          <li class="node" style="--x:26.9%;--y:31.7%;--r:5.3%">
-            <button type="button"><span class="n">01</span>Front page &amp; storefront</button>
-            <p class="tip">Your website and shop. Every product listed once, found on Google and on AI answer engines.</p>
-          </li>
-          <li class="node top" style="--x:50%;--y:25.3%;--r:5%">
-            <button type="button"><span class="n">02</span>Quotations</button>
-            <p class="tip">Priced as they go with quantity breaks, then chased by email, SMS and WhatsApp until they answer.</p>
-          </li>
-          <li class="node" style="--x:73.1%;--y:32.2%;--r:5.3%">
-            <button type="button"><span class="n">03</span>Artwork &amp; proofs</button>
-            <p class="tip">Customers place their logo on the product. That picture becomes the proof they approve.</p>
-          </li>
-          <li class="node" style="--x:86.3%;--y:50.9%;--r:5.9%">
-            <button type="button"><span class="n">04</span>CRM &amp; back office</button>
-            <p class="tip">Every client, enquiry, quote and order on one record, and every job on one lane from proof to delivery.</p>
-          </li>
-          <li class="node" style="--x:68.75%;--y:72.2%;--r:7.2%">
-            <button type="button"><span class="n">05</span>Supplier list</button>
-            <p class="tip">Suppliers and catalogues in one place. Outsourced lines ordered and tracked like your own.</p>
-          </li>
-          <li class="node" style="--x:31.25%;--y:72.2%;--r:7.2%">
-            <button type="button"><span class="n">06</span>School &amp; club shops</button>
-            <p class="tip">A dedicated subdomain for every school, club and team, with their own kit, prices and deadlines.</p>
-          </li>
-          <li class="node" style="--x:13.6%;--y:50.9%;--r:5.9%">
-            <button type="button"><span class="n">07</span>Quote retargeting</button>
-            <p class="tip">Everyone who asked for a quote is followed with ads and messages until they come back.</p>
-          </li>
-        </ul>
       </div>
-      <p class="net-caption" id="netTip" aria-live="polite"></p>
+      <figure class="hero-window" id="heroWindow">
+        <div class="hero-obj" data-stage="0"><img src="assets/system/client-quotes-poster.webp" alt="A quote in Presslane: 100 hoodies drop from £16.36 to £13.09 each on the volume break" width="1280" height="720"></div>
+        <div class="hero-obj" data-stage="1">
+          <svg viewBox="0 0 800 620" role="img" aria-label="Proof: the customer's logo on the left chest of an Airforce blue hoodie" data-only="print"><image href="assets/hoodie.webp" x="157.5" y="30" width="485" height="560"/><use href="#logo-okafor" x="420" y="261" width="80" height="36" color="#F3F2F2" fill="#F3F2F2"/></svg>
+          <svg viewBox="0 0 800 620" role="img" aria-label="Visual: the customer's logo printed on a natural cotton tote bag" data-only="promo"><image href="assets/tote.webp" x="157.5" y="30" width="485" height="560"/><use href="#logo-okafor" x="325" y="391" width="150" height="68" color="#201E1D" fill="#201E1D"/></svg>
+        </div>
+        <div class="hero-obj" data-stage="2">
+          <div class="paper" data-only="print"><p class="paper-k">Runsheet</p><p class="paper-no">PL-04821</p><p class="paper-row">48 × AWDis JH001 hoodie, Airforce blue<br>Embroidery, left chest, 1 colour</p><svg class="paper-bars bars" viewBox="0 0 240 64" preserveAspectRatio="none" data-code="PL04821" aria-hidden="true"></svg></div>
+          <div class="paper" data-only="promo"><p class="paper-k">Purchase order · Supplier</p><p class="paper-no">PO-1187</p><p class="paper-row">250 × natural 5oz cotton tote<br>Screen print, front, 1 colour</p><svg class="paper-bars bars" viewBox="0 0 240 64" preserveAspectRatio="none" data-code="PO1187" aria-hidden="true"></svg></div>
+          <span class="hero-scan" aria-hidden="true"></span>
+        </div>
+        <div class="hero-obj" data-stage="3"><div class="paper tilt"><p class="paper-k">Courier · 2 of 2</p><p class="paper-no small-no">JD0002234567GB</p><p class="paper-row">Sam Okafor, Okafor Roofing Ltd<br>14 Kirkgate, Leeds LS1 6BY</p><svg class="paper-bars bars" viewBox="0 0 240 64" preserveAspectRatio="none" data-code="JD0002234567GB" aria-hidden="true"></svg></div></div>
+        <div class="hero-obj" data-stage="4"><div class="sms"><p class="sms-from" data-promo="Northside Promotions · SMS">Northside Print · SMS</p><p class="sms-b" data-promo="Your tote bags are on their way. Track them: JD0002234567GB">Your hoodies are on their way. Track them: JD0002234567GB</p></div></div>
+        <div class="hero-obj" data-stage="5"><div class="sms"><p class="sms-from" data-promo="Northside Promotions · SMS">Northside Print · SMS</p><p class="sms-b">Delivered. Same again next time is one click: northside.link/PL-04821</p></div></div>
+        <figcaption class="hero-cap" aria-live="polite"><span class="hero-cap-k" id="heroCapK"></span><span id="heroCapT"></span></figcaption>
+      </figure>
     </div>
 
+    <div class="hero-lane" aria-hidden="true">
+      <div class="wrap"><div class="hero-track" id="heroTrack"><span class="hero-job" id="heroJob"></span></div></div>
+    </div>
     <div class="wrap">
+      <div class="hero-stages" role="group" aria-label="Stages of a job" id="heroStages">
+        <button type="button" data-stage="0"><span class="n">01</span> <span class="l">Quote</span></button>
+        <button type="button" data-stage="1"><span class="n">02</span> <span class="l">Artwork</span></button>
+        <button type="button" data-stage="2"><span class="n">03</span> <span class="l">Production</span></button>
+        <button type="button" data-stage="3"><span class="n">04</span> <span class="l">Pick &amp; pack</span></button>
+        <button type="button" data-stage="4"><span class="n">05</span> <span class="l">Dispatch</span></button>
+        <button type="button" data-stage="5"><span class="n">06</span> <span class="l">Delivered</span></button>
+      </div>
+    </div>
+
+    <div class="wrap hero-foot">
+      <button type="button" class="hero-pause" id="heroPause" aria-pressed="false">Pause</button>
       <div class="hero-choose">
-        <p class="kicker">Start with your business</p>
-        <div class="choose-row">
-          <a class="choose" href="#problem" data-audience="print">
-            <span class="choose-k">I'm a printer or embroiderer</span>
-            <span class="choose-s">Garments, print and signs made in-house</span>
-          </a>
-          <a class="choose" href="#problem" data-audience="promo">
-            <span class="choose-k">I sell promotional merchandise</span>
-            <span class="choose-s">Branded products, made in-house or by suppliers</span>
-          </a>
-        </div>
+        <span class="hero-choose-k">Start with your business</span>
+        <a class="choose" href="#problem" data-audience="print">I'm a printer or embroiderer</a>
+        <a class="choose" href="#problem" data-audience="promo">I sell promotional merchandise</a>
       </div>
     </div>
   </section>
