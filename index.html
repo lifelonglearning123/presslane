@@ -55,12 +55,11 @@
         <li><a href="#lane">What it does</a></li>
         <li><a href="#mockup">See it work</a></li>
         <li><a href="#who">Who it is for</a></li>
-        <li><a href="#included">Also included</a></li>
+        <li><a href="#pricing">Pricing</a></li>
         <li class="nav-only-mobile" data-only="print"><a href="#film">Watch the film</a></li>
       </ul>
     </nav>
-    <a class="btn outline nav-watch" href="#film" data-only="print">Watch the film</a>
-    <a class="btn outline nav-watch" href="#mockup" data-only="promo">Make a visual</a>
+    <a class="btn nav-watch js-demo" href="#pricing" hidden>Book a demo</a>
   </div>
 </header>
 
@@ -229,13 +228,52 @@
       </div>
 
       <div class="sys-beyond">
-        <p class="small"><strong>Beyond the £199 package</strong></p>
+        <p class="small"><strong>Add-ons</strong></p>
         <ul>
           <li><a href="#mockup">Logo mock-ups and proofs</a></li>
-          <li><a href="#phone">The AI phone</a></li>
+          <li><a href="#phone">Phone answering</a></li>
           <li>Quote retargeting</li>
-          <li>Supplier list</li>
+          <li>Local SEO and AEO</li>
+          <li>AI marketing</li>
+          <li><a href="#pricing">See pricing</a></li>
         </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING: one plan, exactly what it includes, add-ons priced separately. Demo buttons (.js-demo) take the visiting agency's calendar link from agencies.js, and stay hidden without one. -->
+  <section class="section pricing" id="pricing" aria-labelledby="pricingTitle">
+    <div class="wrap">
+      <h2 class="pr-h" id="pricingTitle">One price for the whole shop.</h2>
+      <p class="pr-sub">Everything in the films above, for one monthly price. No setup fee and no contract.</p>
+      <div class="pr-grid">
+        <div class="pr-plan">
+          <p class="pr-k">The Presslane package</p>
+          <p class="pr-price"><span class="pr-amt">£199</span><span class="pr-per">a month<br>+ VAT</span></p>
+          <p class="pr-terms">Cancel any time. No setup fee.</p>
+          <a class="hbtn teal pr-cta js-demo" href="#pricing" hidden>Book a demo</a>
+          <p class="pr-with" id="prWith" hidden></p>
+          <p class="pr-k pr-inc-k">Included</p>
+          <ul class="pr-inc">
+            <li><span>Storefront</span><a href="#system" data-film="storefront">Watch it <span class="mono">0:48</span></a></li>
+            <li><span>Club shops, on their own web address</span><a href="#system" data-film="clubshops">Watch it <span class="mono">1:14</span></a></li>
+            <li><span>Quotes, with follow-ups on their own</span><a href="#system" data-film="quotes">Watch it <span class="mono">1:42</span></a></li>
+            <li><span>Customer accounts and trade credit</span><a href="#system" data-film="customers">Watch it <span class="mono">0:46</span></a></li>
+            <li><span>Order pipeline and barcode scanning</span><a href="#system" data-film="pipeline">Watch it <span class="mono">1:07</span></a></li>
+            <li><span>Supplier list, with your products priced from it</span></li>
+          </ul>
+        </div>
+        <div class="pr-addons">
+          <p class="pr-k">Add when you need them</p>
+          <ul>
+            <li><div><strong>Phone answering</strong><span>Calls answered in your shop's name, with every order to hand.</span></div><span class="pr-add-price">£100 a month</span></li>
+            <li><div><strong>Logo mock-ups and proofs</strong><span>Customers place their logo on the product. That picture becomes the proof.</span></div><span class="pr-add-price">£100 a month</span></li>
+            <li><div><strong>Quote retargeting</strong><span>Everyone who asked for a quote is followed up until they come back.</span></div><span class="pr-add-price">£100 a month</span></li>
+            <li><div><strong>Local SEO and AEO</strong><span>Found on Google and on AI answer engines when people nearby search for what you make.</span></div><span class="pr-add-price">£100 a month</span></li>
+            <li><div><strong>AI marketing</strong><span>Social media posts for your shop, created with AI.</span></div><span class="pr-add-price">£500 a month</span></li>
+          </ul>
+          <p class="pr-note">All prices exclude VAT.</p>
+        </div>
       </div>
     </div>
   </section>
@@ -596,8 +634,8 @@
           <p class="small" data-promo="Bags, pens, drinkware, notebooks and apparel. Your margins, quantity breaks and print prices, set once and used on every visual and quote.">Hoodies, caps and bags to brand. Business cards, posters and safety signs to print. Set up once, sold everywhere, with quantity breaks and decoration pricing that customers can actually buy.</p>
         </div>
         <div>
-          <h3 class="h3">Found by search and answer engines</h3>
-          <p class="small">Listings are written and structured for Google and for the assistants people now ask instead, automatically, without extra work. Product schema, real descriptions, category pages that render.</p>
+          <h3 class="h3">Pages search engines can read</h3>
+          <p class="small">Every product and category page is built so Google and answer engines can read it: product schema, real descriptions, pages that render. To be found by people nearby, add Local SEO and AEO.</p>
         </div>
         <div>
           <h3 class="h3">Open to any other tool</h3>
@@ -632,15 +670,21 @@
       <div class="poster-row">
         <p class="lead" data-promo="Visuals made, quotes priced, every enquiry chased. The only thing left to do is sell.">Quotes chased, customers told, the floor scanned. The only thing left to do is make the job.</p>
         <div class="btn-row">
-          <a class="btn ink" href="#film" data-only="print">Watch the film</a>
-          <a class="btn ink" href="#mockup" data-only="promo">Make a visual</a>
-          <a class="btn outline on-teal-outline" href="#lane">See it work</a>
+          <a class="btn ink js-demo" href="#pricing" hidden>Book a demo</a>
+          <a class="btn outline on-teal-outline" href="#pricing">See pricing</a>
         </div>
       </div>
     </div>
   </section>
 
 </main>
+
+<!-- Phones: the price and the one action stay a thumb away. Hidden over the hero, pricing and closing sections. -->
+<div class="mbar" id="mbar" aria-hidden="true">
+  <p><strong>£199</strong> a month + VAT</p>
+  <a class="hbtn teal js-demo" href="#pricing" tabindex="-1" hidden>Book a demo</a>
+  <a class="mbar-link" href="#pricing" tabindex="-1" id="mbarPricing">What's included</a>
+</div>
 
 <footer class="footer">
   <div class="wrap">
@@ -666,6 +710,7 @@
       <ul>
         <li><a href="#who">Who it is for</a></li>
         <li><a href="#included">Also included</a></li>
+        <li><a href="#pricing">Pricing</a></li>
         <li data-only="print"><a href="#film">Watch the film</a></li>
         <li data-only="print"><a href="assets/presslane-presentation.pdf" target="_blank" rel="noopener">Presentation (PDF, new tab)</a></li>
       </ul>
@@ -676,6 +721,7 @@
   </div>
 </footer>
 
+<script src="agencies.js" defer></script>
 <script src="app.js" defer></script>
 </body>
 </html>

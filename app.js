@@ -29,6 +29,41 @@
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && nav.classList.contains('open')) { set(false); btn.focus(); } });
   })();
 
+  /* ---------- Agency: picked by the address the site is on (agencies.js "domain"), or ?agency=<key> for testing ---------- */
+  (function agency() {
+    const list = window.PRESSLANE_AGENCIES || {};
+    const valid = (k) => typeof k === 'string' && /^[a-z0-9-]{1,40}$/.test(k) && Object.prototype.hasOwnProperty.call(list, k) && /^https:\/\//.test(list[k].book || '');
+    const host = location.hostname.toLowerCase().replace(/^www\./, '');
+    let key = Object.keys(list).find((k) => valid(k) && String(list[k].domain || '').toLowerCase().replace(/^www\./, '') === host);
+    if (!key) {
+      key = (new URLSearchParams(location.search).get('agency') || '').toLowerCase();
+      if (valid(key)) { try { localStorage.setItem('presslane-agency', key); } catch (e) {} }
+      else { try { key = localStorage.getItem('presslane-agency'); } catch (e) { key = null; } }
+    }
+    if (!valid(key)) return; // No agency: demo buttons stay hidden.
+    const A = list[key];
+    $$('.js-demo').forEach((a) => { a.href = A.book; a.target = '_blank'; a.rel = 'noopener'; a.hidden = false; a.setAttribute('aria-label', 'Book a demo with ' + A.name + ' (opens in a new tab)'); });
+    const w = $('#prWith'); if (w && A.name) { w.textContent = 'With ' + A.name + '. Opens their calendar.'; w.hidden = false; }
+    const mp = $('#mbarPricing'); if (mp) mp.hidden = true;
+  })();
+
+  /* ---------- Phone price bar: shown once the hero has gone, hidden over pricing and the close ---------- */
+  (function priceBar() {
+    const bar = $('#mbar'); if (!bar || !('IntersectionObserver' in window)) return;
+    const watch = ['#hero', '#pricing', '#close'].map((s) => $(s)).filter(Boolean);
+    const inView = new Set();
+    const nav = $('.nav');
+    function sync() {
+      const show = inView.size === 0 && !nav.classList.contains('open');
+      bar.classList.toggle('show', show);
+      bar.setAttribute('aria-hidden', String(!show));
+      $$('a', bar).forEach((l) => { l.tabIndex = show && !l.hidden ? 0 : -1; });
+    }
+    const io = new IntersectionObserver((en) => { en.forEach((e) => { if (e.isIntersecting) inView.add(e.target); else inView.delete(e.target); }); sync(); }, { threshold: 0 });
+    watch.forEach((el) => io.observe(el));
+    new MutationObserver(sync).observe(nav, { attributes: true, attributeFilter: ['class'] });
+  })();
+
   /* ---------- Barcodes: Code 128-style bars from a string (visual, deterministic) ---------- */
   function drawBars(svg) {
     const code = svg.dataset.code || 'PL04821';

@@ -12,3 +12,19 @@ Deploy on Vercel: import this folder as the project root (framework preset "Othe
 
 Brand rules come from `../Presslane brand book.pdf`. Garment photos come from `../images` (background removed, plus a greyscale base for recolouring). Product screenshots in `assets/` are taken from the
 customer tracking page in `C:\python\oliver embrodery website solution\tracking-app`.
+
+## Agencies and their calendar links
+
+Each agency has its own address (for example `presslane.northside.com`) pointing at this same site. The site recognises the address and uses that agency's calendar link on every "Book a demo" button. On any other address the buttons are hidden, and the phone price bar links to the pricing section instead.
+
+To add an agency:
+
+1. Add a line to `agencies.js`:
+   ```js
+   "northside": { name: "Northside Print", domain: "presslane.northside.com", book: "https://calendly.com/northside/presslane-demo" },
+   ```
+   The key is lowercase letters, numbers and hyphens; `domain` has no `https://` or trailing slash; `book` must start with `https://`.
+2. In Vercel, add the domain to this project (Settings, Domains).
+3. The agency adds the DNS record Vercel shows them at their domain host (usually a CNAME for `presslane` pointing to `cname.vercel-dns.com`).
+
+Before the address is live, `?agency=northside` on any address tests the same setup.
