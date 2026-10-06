@@ -11,8 +11,11 @@ const VERSION = '2021-07-28';
 
 const clean = (v, max) => String(v == null ? '' : v).replace(/\s+/g, ' ').trim().slice(0, max);
 
+// Pasting a .env file into Vercel can keep the quotes around the value, so strip them before parsing.
 function config() {
-  try { return JSON.parse(process.env.PRESSLANE_CRM || '{}'); } catch (e) { return {}; }
+  const raw = String(process.env.PRESSLANE_CRM || '').trim().replace(/^'([\s\S]*)'$/, '$1').replace(/^"(\{[\s\S]*\})"$/, '$1');
+  if (!raw) { console.error('[contact] PRESSLANE_CRM is not set on this deployment'); return {}; }
+  try { return JSON.parse(raw); } catch (e) { console.error('[contact] PRESSLANE_CRM is not valid JSON (' + raw.length + ' chars, starts ' + JSON.stringify(raw.slice(0, 2)) + ')'); return {}; }
 }
 
 async function crm(path, token, body) {
@@ -34,8 +37,12 @@ module.exports = async function handler(req, res) {
   if (b.website) return res.status(200).json({ ok: true });
 
   const key = clean(b.agency, 40).toLowerCase();
-  const A = /^[a-z0-9-]{1,40}$/.test(key) ? config()[key] : null;
-  if (!A || !A.locationId || !A.token) return res.status(400).json({ error: 'This address is not set up for enquiries.' });
+  const all = config();
+  const A = /^[a-z0-9-]{1,40}$/.test(key) ? all[key] : null;
+  if (!A || !A.locationId || !A.token) {
+    console.error('[contact] no locationId and token for "' + key + '"; PRESSLANE_CRM has: ' + (Object.keys(all).join(', ') || 'nothing'));
+    return res.status(400).json({ error: 'This address is not set up for enquiries.' });
+  }
 
   const name = clean(b.name, 100), email = clean(b.email, 200), phone = clean(b.phone, 40), company = clean(b.company, 120);
   const message = String(b.message == null ? '' : b.message).trim().slice(0, 4000);
