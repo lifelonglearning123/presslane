@@ -1,3 +1,7 @@
 .DS_Store
 Thumbs.db
 explainer_video/
+
+# Secrets: contact form tokens (see README, Contact form)
+.env
+.env.*

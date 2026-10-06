@@ -45,7 +45,38 @@
     $$('.js-demo').forEach((a) => { a.href = A.book; a.target = '_blank'; a.rel = 'noopener'; a.hidden = false; a.setAttribute('aria-label', 'Book a demo with ' + A.name + ' (opens in a new tab)'); });
     const w = $('#prWith'); if (w && A.name) { w.textContent = 'With ' + A.name + '. Opens their calendar.'; w.hidden = false; }
     const mp = $('#mbarPricing'); if (mp) mp.hidden = true;
+    contactForm(key, A);
   })();
+
+  /* ---------- Contact form: only on an agency's address; api/contact.js sends it to that agency's CRM ---------- */
+  function contactForm(key, A) {
+    const sec = $('#contact'), form = $('#contactForm'), status = $('#ctStatus');
+    if (!sec || !form) return;
+    sec.hidden = false;
+    const w = $('#ctWith'); if (w && A.name) w.textContent = 'Leave your details and ' + A.name + ' will get back to you.';
+    const btn = $('button[type="submit"]', form);
+    const say = (msg, cls) => { status.textContent = msg; status.className = 'ct-status' + (cls ? ' ' + cls : ''); };
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const f = form.elements;
+      const bad = [];
+      if (!f.name.value.trim()) bad.push(f.name);
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email.value.trim())) bad.push(f.email);
+      [f.name, f.email].forEach((el) => el.setAttribute('aria-invalid', String(bad.includes(el))));
+      if (bad.length) { say(bad[0] === f.name ? 'Please add your name.' : 'Please check your email address.', 'err'); bad[0].focus(); return; }
+      btn.disabled = true; say('Sending...');
+      const body = { agency: key };
+      ['name', 'company', 'email', 'phone', 'message', 'website'].forEach((n) => { body[n] = f[n].value; });
+      try {
+        const r = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+        const d = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(d.error || 'Sorry, that did not send. Please try again in a minute.');
+        form.reset(); say('Thanks. ' + (A.name || 'We') + ' will be in touch soon.', 'ok');
+      } catch (err) {
+        say(err.message && !/fetch/i.test(err.message) ? err.message : 'Sorry, that did not send. Please try again in a minute.', 'err');
+      } finally { btn.disabled = false; }
+    });
+  }
 
   /* ---------- Phone price bar: shown once the hero has gone, hidden over pricing and the close ---------- */
   (function priceBar() {

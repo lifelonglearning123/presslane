@@ -28,3 +28,17 @@ To add an agency:
 3. The agency adds the DNS record Vercel shows them at their domain host (usually a CNAME for `presslane` pointing to `cname.vercel-dns.com`).
 
 Before the address is live, `?agency=northside` on any address tests the same setup.
+
+## Contact form
+
+On an agency's address (or with `?agency=<key>`) a contact form appears above the closing section. Enquiries go to `api/contact.js`, a Vercel function, which adds the person to that agency's LeadConnector (HighLevel) location as a contact, tagged `presslane-website`, with their message as a note. On any other address the form is hidden.
+
+Each agency's location id and token stay out of the site. They live in one Vercel environment variable, `PRESSLANE_CRM` (Settings, Environment Variables, Production), holding JSON keyed like `agencies.js`:
+
+```json
+{"leonardopower": {"locationId": "abc123", "token": "pit-..."}, "octopusup": {"locationId": "def456", "token": "pit-..."}}
+```
+
+The token is a Private Integration token from the agency's sub-account (Settings, Private Integrations) with the `contacts.write` scope. Redeploy after changing the variable. Never put a token in `agencies.js` or any other file in this folder: everything here is public.
+
+The form needs Vercel to run; `python -m http.server` shows it but cannot send it.
