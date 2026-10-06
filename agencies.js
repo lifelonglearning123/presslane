@@ -14,4 +14,5 @@
    On any address not listed here, the "Book a demo" buttons are hidden.
 */
 window.PRESSLANE_AGENCIES = {
+  "leonardopower": { name: "Leonardo Power", domain: "presslane.leonardopower.com", book: "https://api.leadconnectorhq.com/widget/booking/c6jqHKI3Ymq2b5DJ5HzP" },
 };
