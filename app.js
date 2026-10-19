@@ -248,7 +248,10 @@
         chapters: [[0, 'Every customer, ranked'], [8.2, 'Add a trade customer'], [15.8, 'On account'], [23.5, 'The credit limit'], [35, 'Notes and history']] },
       pipeline: { title: 'Order pipeline', file: 'order-pipeline', len: '1:07',
         desc: 'Accepted quotes land as orders. Most stages move on their own, the floor scans barcodes, and the customer is told at every step.',
-        chapters: [[0, 'Every order, newest first'], [21, 'The pipeline board'], [24.5, 'Stages that move on their own'], [43.6, 'Scanned on the floor'], [52.4, 'Customer told, tracking sent']] }
+        chapters: [[0, 'Every order, newest first'], [21, 'The pipeline board'], [24.5, 'Stages that move on their own'], [43.6, 'Scanned on the floor'], [52.4, 'Customer told, tracking sent']] },
+      voice: { title: 'Phone answering', file: 'voice-ai', len: '1:27',
+        desc: 'An add-on to the package. A customer rings for an update, the assistant finds their orders and reads back where each one is, and the answer changes live as the floor moves the job on.',
+        chapters: [[0, 'Why the phone matters'], [19.2, 'Be the customer'], [27.9, 'The call is answered'], [39.9, 'Order 7: proof awaiting approval'], [51.5, 'Approved, mid-call'], [62.4, 'Scheduled for production'], [71.7, 'Live, 24 hours a day']] }
     };
     const ORDER = Object.keys(FILMS);
     const parts = $$('#system .sys-part'), screen = $('.sys-screen'), playBtn = $('#sysPlay'), playLabel = $('#sysPlayLabel');
