@@ -347,12 +347,17 @@
     select('storefront', false);
   })();
 
-  /* ---------- Film: poster and a single play control, native controls once playing ---------- */
-  (function film() {
-    const v = $('#promoVideo'), btn = $('#promoPlay'), fig = $('#promo'); if (!v || !btn) return;
-    btn.addEventListener('click', () => { v.controls = true; fig.classList.add('playing'); v.play().catch(() => { fig.classList.remove('playing'); }); });
-    v.addEventListener('ended', () => { fig.classList.remove('playing'); v.controls = false; btn.querySelector('span:last-child').textContent = 'Play again'; });
-    v.addEventListener('pause', () => { if (!v.ended && v.currentTime > 0) { fig.classList.remove('playing'); btn.querySelector('span:last-child').textContent = 'Resume'; } });
+  /* ---------- Films (the promo, the phone call): poster and a single play control, native controls once playing ---------- */
+  (function films() {
+    $$('figure[data-player]').forEach((fig) => {
+      const v = $('video', fig), btn = $('.promo-play', fig); if (!v || !btn) return;
+      const label = btn.querySelector('span:last-child');
+      btn.addEventListener('click', () => { v.controls = true; fig.classList.add('playing'); v.play().catch(() => { fig.classList.remove('playing'); }); });
+      v.addEventListener('ended', () => { fig.classList.remove('playing'); v.controls = false; label.textContent = 'Play again'; });
+      v.addEventListener('pause', () => { if (!v.ended && v.currentTime > 0) { fig.classList.remove('playing'); label.textContent = 'Resume'; } });
+      // Stop the sound when the film scrolls out of view.
+      if ('IntersectionObserver' in window) new IntersectionObserver((en) => { if (!en[0].isIntersecting && !v.paused) v.pause(); }, { threshold: 0.2 }).observe(v);
+    });
   })();
 
   /* ---------- The lane: pick a stage, see the customer page and the message ---------- */

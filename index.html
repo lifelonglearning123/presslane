@@ -298,7 +298,7 @@
             </div>
           </div>
         </div>
-        <figure class="promo" id="promo">
+        <figure class="promo" id="promo" data-player>
           <video id="promoVideo" aria-label="Presslane promotional film, 60 seconds" playsinline preload="metadata" poster="assets/presslane-promo-poster.webp" width="720" height="1280">
             <source src="assets/presslane-promo.mp4" type="video/mp4">
             Your browser cannot play this video. <a href="assets/presslane-promo.mp4">Download it</a> instead.
@@ -565,7 +565,18 @@
           </div>
         </div>
       </div>
-      <p class="sys-link"><a href="#system" data-film="voice">Watch a customer ring for an order update</a> <span class="mono">1:27</span></p>
+      <figure class="promo promo-wide" id="phoneFilm" data-player>
+        <video id="phoneVideo" aria-label="Phone answering film, 1 minute 27 seconds, with sound" playsinline preload="none" poster="assets/system/voice-ai-poster.webp" width="1920" height="1080">
+          <source src="assets/system/voice-ai.mp4" type="video/mp4">
+          <track kind="subtitles" srclang="en" label="English" src="assets/system/voice-ai.vtt">
+          Your browser cannot play this video. <a href="assets/system/voice-ai.mp4">Download it</a> instead.
+        </video>
+        <button class="promo-play" type="button" aria-label="Play the phone answering film">
+          <span class="promo-play-square" aria-hidden="true"></span>
+          <span>Play with sound · 1:27</span>
+        </button>
+        <figcaption class="caption"><span>A customer rings for an update, recorded in Presslane. The answer changes as the order moves.</span><span class="mono">1:27</span></figcaption>
+      </figure>
     </div>
   </section>
 

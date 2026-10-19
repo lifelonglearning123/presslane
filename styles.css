@@ -297,6 +297,9 @@ h1, h2, h3, .h1, .h2, .h3, .display { font-family: var(--font-display); font-fea
   .film-wrap { grid-template-columns: 1fr; }
   .promo { max-width: 380px; }
 }
+/* The phone film: the same player, landscape and full width, under the call in the phone section. */
+.promo.promo-wide { max-width: none; margin-top: clamp(32px, 5vw, 56px); }
+.promo-wide video { aspect-ratio: 16 / 9; }
 @media (max-width: 520px) { .deck { grid-template-columns: 1fr; } .deck-cover { max-width: 260px; } }
 
 /* Section heads */
