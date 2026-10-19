@@ -16,4 +16,5 @@
 */
 window.PRESSLANE_AGENCIES = {
   "leonardopower": { name: "Leonardo Power", domain: "presslane.leonardopower.com", book: "https://api.leadconnectorhq.com/widget/booking/c6jqHKI3Ymq2b5DJ5HzP" },
+  "octopusup": { name: "Octopus Up", domain: "presslane.octopusup.com", book: "https://api.leadconnectorhq.com/widget/booking/2WHz5s2nH4i0zdSLeIDe" },
 };
