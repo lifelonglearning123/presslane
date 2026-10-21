@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Presslane presentation</title>
+<style>
+  /* The Presslane deck. Same words, pictures and colours as the website; 16:9 slides printed to
+     assets/presslane-presentation.pdf. Open this file in Chrome and print it (landscape, no margins,
+     background graphics on), or run tools/render-presentation.mjs. */
+  @font-face { font-family: "Manrope"; src: url("../assets/fonts/manrope-latin.woff2") format("woff2"); font-weight: 400 800; font-display: block; }
+  :root {
+    --paper: #ffffff; --field: #e4efe8; --ink: #151515; --muted: #58615a; --accent: #29735c; --accent-ink: #ffffff;
+    --dark: #0c221d; --dark-ink: #f1f5f2; --dark-muted: #b4c9bd; --ui-line: #d8ddd8;
+    --font: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  @page { size: 1920px 1080px; margin: 0; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: #d9ded9; font-family: var(--font); color: var(--ink); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  h1, h2, h3, p, figure, ul, ol, dl, dd { margin: 0; }
+  img, svg { display: block; max-width: 100%; }
+  .slide {
+    width: 1920px; height: 1080px; position: relative; overflow: hidden; background: var(--paper);
+    break-after: page; page-break-after: always; display: grid;
+  }
+  .slide:last-child { break-after: auto; page-break-after: auto; }
+  @media screen { .slide { margin: 24px auto; } }
+  @media print { html, body { background: #fff; } .slide { margin: 0; } }
+
+  h1 { font-size: 112px; line-height: 1; letter-spacing: -0.03em; font-weight: 600; text-wrap: balance; }
+  h2 { font-size: 84px; line-height: 1.02; letter-spacing: -0.03em; font-weight: 600; text-wrap: balance; }
+  h3 { font-size: 40px; line-height: 1.15; letter-spacing: -0.01em; font-weight: 700; }
+  .lead { font-size: 44px; line-height: 1.3; }
+  p, li, dd, dt { font-size: 34px; line-height: 1.4; }
+  .small { font-size: 26px; line-height: 1.4; color: var(--muted); }
+  b { font-weight: 700; }
+  .pad { padding: 96px 112px; }
+  .two { grid-template-columns: 1fr 1fr; }
+  .two-wide { grid-template-columns: 5fr 7fr; }
+  .foot { position: absolute; left: 112px; right: 112px; bottom: 44px; display: flex; justify-content: space-between; font-size: 24px; color: var(--muted); }
+  .foot.on-dark { color: var(--dark-muted); }
+  .field { background: var(--field); }
+  .cover-stage { display: grid; place-items: center; padding: 60px; position: relative; }
+  .cover-stage svg { width: 100%; height: 100%; }
+  .stack { display: grid; gap: 28px; align-content: start; }
+  .button { display: inline-flex; align-items: center; justify-content: center; min-height: 84px; padding: 0 40px; background: var(--accent); color: var(--accent-ink); font-weight: 700; font-size: 34px; width: max-content; }
+  .lockup { width: 420px; margin-bottom: 72px; }
+  .photo { width: 100%; height: 100%; object-fit: cover; }
+  .three { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; align-content: start; }
+  .three figure img { width: 100%; height: 520px; object-fit: cover; }
+  .three figcaption { margin-top: 24px; font-size: 30px; line-height: 1.35; }
+  .three figcaption b { display: block; font-size: 34px; }
+  .four figure img { height: 500px; }
+
+  /* interface fragments, enlarged for the room */
+  [data-ui] { background: #fff; color: #1a1d1b; font-size: 28px; line-height: 1.35; border: 2px solid var(--ui-line); }
+  .ui-quote { padding: 28px 32px; display: grid; gap: 22px; width: 100%; }
+  .ui-row { display: flex; gap: 24px; align-items: center; justify-content: space-between; }
+  .ui-row .grow { flex: 1; min-width: 0; }
+  .ui-thumb { width: 104px; height: 104px; background: var(--field); flex: none; display: grid; place-items: center; overflow: hidden; }
+  .ui-thumb svg, .ui-thumb img { width: 100%; height: 100%; }
+  .ui-name { font-weight: 700; }
+  .ui-sub { color: #58615a; font-size: 26px; }
+  .ui-money { font-variant-numeric: tabular-nums; font-weight: 700; white-space: nowrap; }
+  .ui-total { border-top: 2px solid var(--ui-line); padding-top: 20px; }
+  .ui-btn { display: inline-flex; align-items: center; min-height: 72px; padding: 0 26px; background: var(--accent); color: #fff; font-weight: 700; border-radius: 10px; font-size: 28px; }
+  .ui-ok { color: var(--accent); font-weight: 700; }
+  .ui-head { display: flex; justify-content: space-between; gap: 24px; font-size: 24px; color: #58615a; padding: 22px 32px; border-bottom: 2px solid var(--ui-line); }
+  .ui-body { padding: 28px 32px; display: grid; gap: 22px; }
+  .ui-frames { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; border: 0; background: transparent; }
+  .ui-card { height: 176px; border: 2px solid var(--ui-line); background: #fff; padding: 20px 24px; font-size: 26px; display: grid; align-content: space-between; }
+  .ui-card .ui-stage { font-size: 22px; color: #58615a; }
+  .ui-card.live { border-color: var(--accent); background: #eef6f2; }
+  .ui-mail { padding: 28px 32px; display: grid; gap: 12px; }
+  .ui-mail .ui-from { font-size: 24px; color: #58615a; }
+  .ui-mail .ui-subject { font-weight: 700; font-size: 30px; }
+  .ui-track { padding: 32px; }
+  .ui-track ol { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; padding: 0; list-style: none; }
+  .ui-track li { font-size: 22px; text-align: center; color: #58615a; display: grid; gap: 14px; justify-items: center; }
+  .ui-track li i { display: block; width: 26px; height: 26px; border-radius: 50%; background: #fff; border: 3px solid var(--ui-line); }
+  .ui-track li.done i { background: var(--accent); border-color: var(--accent); }
+  .ui-track li.done { color: #1a1d1b; }
+  .ui-track li.now i { border-color: var(--accent); background: var(--accent); box-shadow: inset 0 0 0 6px #fff; }
+  .ui-track .ui-note { margin-top: 24px; font-size: 26px; }
+  .swatch { display: inline-block; width: 22px; height: 22px; border-radius: 50%; vertical-align: -2px; margin-right: 8px; border: 1px solid rgba(0,0,0,.15); }
+
+  /* the sheet with the parts on it */
+  .sheet { background: var(--paper); padding: 72px 64px 80px; clip-path: polygon(0 14px, 2.5% 0, 5% 14px, 7.5% 0, 10% 14px, 12.5% 0, 15% 14px, 17.5% 0, 20% 14px, 22.5% 0, 25% 14px, 27.5% 0, 30% 14px, 32.5% 0, 35% 14px, 37.5% 0, 40% 14px, 42.5% 0, 45% 14px, 47.5% 0, 50% 14px, 52.5% 0, 55% 14px, 57.5% 0, 60% 14px, 62.5% 0, 65% 14px, 67.5% 0, 70% 14px, 72.5% 0, 75% 14px, 77.5% 0, 80% 14px, 82.5% 0, 85% 14px, 87.5% 0, 90% 14px, 92.5% 0, 95% 14px, 97.5% 0, 100% 14px, 100% calc(100% - 14px), 97.5% 100%, 95% calc(100% - 14px), 92.5% 100%, 90% calc(100% - 14px), 87.5% 100%, 85% calc(100% - 14px), 82.5% 100%, 80% calc(100% - 14px), 77.5% 100%, 75% calc(100% - 14px), 72.5% 100%, 70% calc(100% - 14px), 67.5% 100%, 65% calc(100% - 14px), 62.5% 100%, 60% calc(100% - 14px), 57.5% 100%, 55% calc(100% - 14px), 52.5% 100%, 50% calc(100% - 14px), 47.5% 100%, 45% calc(100% - 14px), 42.5% 100%, 40% calc(100% - 14px), 37.5% 100%, 35% calc(100% - 14px), 32.5% 100%, 30% calc(100% - 14px), 27.5% 100%, 25% calc(100% - 14px), 22.5% 100%, 20% calc(100% - 14px), 17.5% 100%, 15% calc(100% - 14px), 12.5% 100%, 10% calc(100% - 14px), 7.5% 100%, 5% calc(100% - 14px), 2.5% 100%, 0 calc(100% - 14px)); }
+  .sheet h2 { text-align: center; margin-bottom: 44px; font-size: 72px; }
+  .cols { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 48px; }
+  .group h3 { margin-bottom: 18px; font-size: 30px; }
+  .item + .item { margin-top: 18px; }
+  .item .name { font-size: 30px; font-weight: 600; display: block; }
+  .item .desc { font-size: 24px; color: var(--muted); line-height: 1.35; }
+
+  /* prices */
+  .prow { display: flex; justify-content: space-between; align-items: baseline; gap: 24px; font-size: 40px; font-weight: 600; }
+  .prow .money { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .pitem + .pitem { margin-top: 30px; }
+  .pdesc { font-size: 28px; color: var(--muted); line-height: 1.4; margin-top: 6px; max-width: 30ch; }
+  .pdesc.ink { color: var(--ink); }
+  .big { font-size: 200px; line-height: 0.95; letter-spacing: -0.04em; font-weight: 700; }
+
+  /* films */
+  .films { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px 32px; }
+  .films figure img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; background: var(--dark); }
+  .films figcaption { display: flex; justify-content: space-between; font-size: 28px; margin-top: 14px; }
+  .films figcaption b { font-weight: 700; }
+
+  /* the ask / quote split */
+  .ask-in { background: var(--dark); color: var(--dark-ink); padding: 180px 112px 200px; position: relative; }
+  .ask-in .msg { font-size: 56px; line-height: 1.25; max-width: 18ch; }
+  .ask-out { background: var(--field); padding: 180px 112px 200px; position: relative; display: grid; align-content: start; }
+  .ask-title { position: absolute; left: 112px; right: 112px; bottom: 80px; font-size: 96px; font-weight: 600; letter-spacing: -0.03em; line-height: 1; }
+  .ask-out .ask-title { text-align: right; }
+
+  .weeks dt { font-weight: 700; font-size: 32px; }
+  .weeks dd { font-size: 30px; margin-bottom: 20px; color: var(--ink); line-height: 1.35; }
+  .stamp { transform-box: fill-box; transform-origin: center; }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="logo-okafor" viewBox="0 0 132 60">
+      <path d="M10 30 L34 10 L58 30 H48 L34 18 L20 30 Z" fill="currentColor"/>
+      <rect x="28" y="30" width="12" height="14" fill="currentColor"/>
+      <text x="66" y="28" font-family="Manrope, sans-serif" font-weight="800" font-size="15" fill="currentColor" letter-spacing="-0.5">OKAFOR</text>
+      <text x="66" y="44" font-family="Manrope, sans-serif" font-weight="500" font-size="11" fill="currentColor" letter-spacing="1.2">ROOFING</text>
+    </symbol>
+    <symbol id="hoodie" viewBox="0 0 800 900">
+      <image href="img/hoodie.jpg" x="100" y="104" width="600" height="693" preserveAspectRatio="xMidYMid meet"/>
+      <use href="#logo-okafor" x="424.5" y="389.5" width="99" height="45" color="#F3F2F2"/>
+    </symbol>
+  </defs>
+</svg>
+
+<!-- 1. Cover -->
+<section class="slide two">
+  <div class="pad" style="display:grid; align-content:center;">
+    <img class="lockup" src="../assets/presslane-lockup.svg" alt="Presslane" width="420" height="53">
+    <div class="stack">
+      <h1>Runs the shop<br>while you print.</h1>
+      <p class="lead">Presslane sends your quotes, keeps customers in the loop, answers the phone and tracks every job. You print.</p>
+      <p class="small">For printers, embroiderers, sign makers and promo gift companies. £199 a month.</p>
+    </div>
+  </div>
+  <div class="field cover-stage">
+    <svg viewBox="0 0 800 900" role="img" aria-label="A slate blue hoodie with a customer's logo on the left chest"><use href="#hoodie"/></svg>
+  </div>
+</section>
+
+<!-- 2. Where the money goes -->
+<section class="slide">
+  <div class="pad" style="display:grid; grid-template-rows:auto 1fr; gap:64px;">
+    <h2>A print shop loses money between jobs, not on them.</h2>
+    <div class="three">
+      <figure><img src="img/gap-quote.jpg" alt="A paper quote half pushed into a desk drawer" width="1000" height="1250"><figcaption><b>The quote nobody chased.</b> Most lost quotes were never followed up.</figcaption></figure>
+      <figure><img src="img/gap-phone.jpg" alt="A desk phone ringing on a print shop counter" width="1000" height="1250"><figcaption><b>The customer who rang three times.</b> “Where is my order?” is the call you get most.</figcaption></figure>
+      <figure><img src="img/gap-bench.jpg" alt="A finished box with a hoodie on top, on a workbench" width="1000" height="1250"><figcaption><b>The job that sat on the bench.</b> It was finished. The computer said it was not.</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<!-- 3. One job, start to finish -->
+<section class="slide">
+  <div class="pad" style="display:grid; grid-template-rows:auto 1fr auto; gap:48px; align-items:center;">
+    <h2>One job, start to finish</h2>
+    <svg viewBox="0 0 760 200" role="img" aria-label="Six steps: quote, yes, check, make, send, done" style="width:100%;height:auto;">
+      <line x1="60" y1="90" x2="700" y2="90" stroke="#151515" stroke-width="2"/>
+      <g font-family="Manrope, sans-serif" font-size="15" fill="#151515" text-anchor="middle">
+        <circle cx="60" cy="90" r="24" fill="#ffffff" stroke="#151515" stroke-width="2"/><path d="M49 84 h22 v12 h-13 l-5 5 v-5 h-4z" fill="none" stroke="#151515" stroke-width="2"/><text x="60" y="138">Quote</text>
+        <circle cx="188" cy="90" r="24" fill="#ffffff" stroke="#151515" stroke-width="2"/><path d="M177 90 l8 8 l14 -15" fill="none" stroke="#151515" stroke-width="2.5"/><text x="188" y="138">Yes</text>
+        <circle cx="316" cy="90" r="24" fill="#ffffff" stroke="#151515" stroke-width="2"/><ellipse cx="316" cy="90" rx="13" ry="7.5" fill="none" stroke="#151515" stroke-width="2"/><circle cx="316" cy="90" r="3.2" fill="#151515"/><text x="316" y="138">Check</text>
+        <circle cx="444" cy="90" r="24" fill="#29735c"/><path d="M433 101 l22 -22 M448 78 l7 7" fill="none" stroke="#ffffff" stroke-width="2.5"/><text x="444" y="138" font-weight="700">Make</text>
+        <circle cx="572" cy="90" r="24" fill="#ffffff" stroke="#151515" stroke-width="2"/><rect x="561" y="83" width="22" height="15" fill="none" stroke="#151515" stroke-width="2"/><path d="M561 83 l11 8 l11 -8" fill="none" stroke="#151515" stroke-width="2"/><text x="572" y="138">Send</text>
+        <circle cx="700" cy="90" r="24" fill="#ffffff" stroke="#151515" stroke-width="2"/><path d="M692 79 v22 M692 79 h15 l-4 5.5 l4 5.5 h-15" fill="none" stroke="#151515" stroke-width="2"/><text x="700" y="138">Done</text>
+      </g>
+      <rect x="402" y="26" width="84" height="28" rx="4" fill="#29735c"/><text x="444" y="45" font-family="Manrope, sans-serif" font-size="13" font-weight="700" text-anchor="middle" fill="#ffffff">48 hoodies</text>
+      <g fill="none" stroke="#58615a" stroke-width="1.5">
+        <rect x="52" y="156" width="16" height="11"/><path d="M52 156 l8 6 l8 -6"/><rect x="180" y="156" width="16" height="11"/><path d="M180 156 l8 6 l8 -6"/><rect x="308" y="156" width="16" height="11"/><path d="M308 156 l8 6 l8 -6"/><rect x="436" y="156" width="16" height="11"/><path d="M436 156 l8 6 l8 -6"/><rect x="564" y="156" width="16" height="11"/><path d="M564 156 l8 6 l8 -6"/><rect x="692" y="156" width="16" height="11"/><path d="M692 156 l8 6 l8 -6"/>
+      </g>
+      <text x="380" y="192" font-family="Manrope, sans-serif" font-size="12" text-anchor="middle" fill="#58615a">The customer gets an email at each step, in your name.</text>
+    </svg>
+    <p class="lead">Sam wants 48 hoodies with his logo on the chest. Here is what happens.</p>
+  </div>
+  <div class="foot"><span>Presslane</span><span>One job</span></div>
+</section>
+
+<!-- 4. A customer asks -->
+<section class="slide two">
+  <div class="pad stack" style="align-content:center;">
+    <h2>A customer asks.</h2>
+    <p class="lead">Presslane sends him a price in minutes, with his logo on the hoodie. He says yes and pays online.</p>
+    <div class="ui-quote" data-ui>
+      <div class="ui-row">
+        <div class="ui-thumb"><svg viewBox="0 0 800 900"><use href="#hoodie"/></svg></div>
+        <div class="grow"><div class="ui-name">48 × AWDis JH001 hoodie, airforce blue</div><div class="ui-sub">Left chest logo, embroidered</div></div>
+        <div class="ui-money">£23.76 each</div>
+      </div>
+      <div class="ui-row ui-total"><span>Total</span><span class="ui-money">£1,140.48 + VAT</span></div>
+      <div class="ui-row"><span class="ui-sub">Holds for 14 days</span><span class="ui-btn">Accept and pay</span></div>
+    </div>
+  </div>
+  <div class="field cover-stage">
+    <svg viewBox="0 0 800 900" role="img" aria-label="The hoodie with the logo, stamped Quote sent">
+      <use href="#hoodie"/>
+      <g class="stamp" transform="translate(150 120) rotate(-6)"><rect width="236" height="64" fill="#ffffff" stroke="#29735c" stroke-width="4"/><text x="118" y="42" text-anchor="middle" font-family="Manrope, sans-serif" font-weight="800" font-size="26" fill="#29735c">Quote sent</text></g>
+    </svg>
+  </div>
+</section>
+
+<!-- 5. He checks the picture -->
+<section class="slide two">
+  <div class="pad stack" style="align-content:center;">
+    <h2>He checks the picture.</h2>
+    <p class="lead">Sam sees his logo on the hoodie and approves it with one tap. The job sheet prints at the bench.</p>
+    <div class="ui-quote" data-ui>
+      <div class="ui-row">
+        <div class="ui-thumb"><svg viewBox="0 0 800 900"><use href="#hoodie"/></svg></div>
+        <div class="grow"><div class="ui-name">Proof for job PL-04821</div><div class="ui-sub">Left chest · 90 × 41 mm · 8,000 stitches</div></div>
+      </div>
+      <div class="ui-row"><span class="ui-ok">Approved by Sam, 14:32</span><span class="ui-sub">Job sheet printed</span></div>
+    </div>
+  </div>
+  <div class="field cover-stage">
+    <svg viewBox="0 0 800 900" role="img" aria-label="The hoodie with the logo, stamped Approved">
+      <use href="#hoodie"/>
+      <g class="stamp" transform="translate(150 120) rotate(-6)"><rect width="214" height="64" fill="#29735c"/><text x="107" y="42" text-anchor="middle" font-family="Manrope, sans-serif" font-weight="800" font-size="26" fill="#ffffff">Approved</text></g>
+    </svg>
+  </div>
+</section>
+
+<!-- 6. You make it -->
+<section class="slide two">
+  <div class="pad stack" style="align-content:center;">
+    <h2>You make it.</h2>
+    <p class="lead">Print or stitch, as you always have. Scan the job sheet at the bench and the job moves on the board. Sam gets an email.</p>
+    <div class="ui-frames" data-ui>
+      <div class="ui-card"><span class="ui-stage">Artwork</span><span>Approved</span></div>
+      <div class="ui-card live"><span class="ui-stage">Making</span><span><b>PL-04821</b> · 48 hoodies</span></div>
+      <div class="ui-card"><span class="ui-stage">Packed</span><span>Waiting</span></div>
+    </div>
+  </div>
+  <img class="photo" src="img/make-poster.jpg" alt="An embroidery machine stitching a logo onto a hoodie" width="960" height="960">
+</section>
+
+<!-- 7. You send it -->
+<section class="slide two">
+  <div class="pad stack" style="align-content:center;">
+    <h2>You send it.</h2>
+    <p class="lead">Pack it, scan it, post it. Sam gets the tracking number the moment it leaves.</p>
+    <div class="ui-mail" data-ui>
+      <div class="ui-from">From Northside Print to Sam</div>
+      <div class="ui-subject">Your hoodies are on their way</div>
+      <div>DPD · 1534 2345 6789 · arriving Thursday</div>
+    </div>
+  </div>
+  <img class="photo" src="img/send-poster.jpg" alt="Hands boxing a hoodie beside a job sheet with a barcode" width="960" height="960">
+</section>
+
+<!-- 8. Every step, Sam is told -->
+<section class="slide two">
+  <div class="pad stack" style="align-content:center;">
+    <h2>Every step, Sam is told.</h2>
+    <p class="lead">Each email comes from your shop, in your name. He can check the job any time on your website, so he does not need to ring.</p>
+    <div class="ui-track" data-ui>
+      <ol>
+        <li class="done"><i></i>Quote</li><li class="done"><i></i>Paid</li><li class="done"><i></i>Approved</li>
+        <li class="done"><i></i>Made</li><li class="done"><i></i>Sent</li><li class="now"><i></i>Delivered</li>
+      </ol>
+      <div class="ui-note">Six emails sent, in your name. No calls needed.</div>
+    </div>
+  </div>
+  <img class="photo" src="img/delivered.jpg" alt="An open parcel of hoodies on an office desk" width="1200" height="1800">
+</section>
+
+<!-- 9. What's in the box -->
+<section class="slide field">
+  <div class="pad" style="display:grid; align-content:center;">
+    <div class="sheet">
+      <h2>What’s in the box</h2>
+      <div class="cols">
+        <div class="group">
+          <h3>Selling</h3>
+          <div class="item"><span class="name">Online shop</span><span class="desc">Your products, your prices, your logo. Customers order and pay.</span></div>
+          <div class="item"><span class="name">Quotes</span><span class="desc">Build a quote in minutes. Customers accept and pay online.</span></div>
+          <div class="item"><span class="name">Club and school shops</span><span class="desc">A shop for each team or school, on its own web address.</span></div>
+        </div>
+        <div class="group">
+          <h3>Making</h3>
+          <div class="item"><span class="name">Job board</span><span class="desc">Every job on one board. Scan at the bench to move it on.</span></div>
+          <div class="item"><span class="name">Customer updates</span><span class="desc">An email at every step, in your name.</span></div>
+        </div>
+        <div class="group">
+          <h3>Money</h3>
+          <div class="item"><span class="name">Customer accounts</span><span class="desc">Trade customers order now and pay later, up to a limit you set.</span></div>
+          <div class="item"><span class="name">Invoices</span><span class="desc">Sent when the job goes out. Paid online.</span></div>
+        </div>
+      </div>
+      <p class="small" style="text-align:center; margin-top:48px;">All of it for £199 a month.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 10. Their words. Your quote. -->
+<section class="slide two">
+  <div class="ask-in">
+    <p class="small" style="color:var(--dark-muted); margin-bottom:28px;">A customer writes to you.</p>
+    <p class="msg">Hi, can I get 48 hoodies with our logo on the chest? Navy if you have it. Need them by the 18th.</p>
+    <div class="ask-title">Their words.</div>
+  </div>
+  <div class="ask-out">
+    <div data-ui>
+      <div class="ui-head"><span>Quote Q-0422 · Northside Print</span><span>Holds for 14 days</span></div>
+      <div class="ui-body">
+        <div class="ui-row">
+          <div class="ui-thumb"><svg viewBox="0 0 800 900"><use href="#hoodie"/></svg></div>
+          <div class="grow"><div class="ui-name">48 × AWDis JH001 hoodie</div><div class="ui-sub"><i class="swatch" style="background:#1F2A44"></i>Navy · left chest logo, embroidered</div></div>
+          <div class="ui-money">£23.76 each</div>
+        </div>
+        <div class="ui-row"><span class="ui-sub">48 is in the 25+ price band. 10% off.</span></div>
+        <div class="ui-row ui-total"><span>Total</span><span class="ui-money">£1,140.48 + VAT</span></div>
+        <div class="ui-row"><span class="ui-sub">Delivery by the 18th</span><span class="ui-btn">Accept and pay</span></div>
+      </div>
+    </div>
+    <div class="ask-title">Your quote.</div>
+  </div>
+</section>
+
+<!-- 11. One price -->
+<section class="slide two-wide">
+  <div class="pad" style="display:grid; align-content:center; gap:40px;">
+    <h2>One price</h2>
+    <div class="big">£199</div>
+    <p class="lead">a month, plus VAT.<br>No set-up fee. Cancel any time.</p>
+  </div>
+  <div class="pad" style="display:grid; align-content:center; gap:56px;">
+    <div>
+      <h3 style="margin-bottom:24px; font-weight:500;">The package</h3>
+      <p class="pdesc ink" style="max-width:none;">Online shop, quotes, job board, customer updates, club shops, customer accounts and invoices.</p>
+    </div>
+    <div>
+      <h3 style="margin-bottom:24px; font-weight:500;">Add if you want them</h3>
+      <div class="pitem"><div class="prow"><span>Phone answering</span><span class="money">£250</span></div><p class="pdesc">Answered in your name, day and night. It knows your prices, sizes and every order.</p></div>
+      <div class="pitem"><div class="prow"><span>Logo pictures</span><span class="money">£100</span></div><p class="pdesc">Customers see their logo on the product before they buy. That picture becomes the proof.</p></div>
+      <div class="pitem"><div class="prow"><span>Found on Google</span><span class="money">£250</span></div><p class="pdesc">We help people near you find your shop.</p></div>
+      <div class="pitem"><div class="prow"><span>Social posts</span><span class="money">£500</span></div><p class="pdesc">We make and post your social media for you. Each add-on is a month, plus VAT.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 12. The real system, on film -->
+<section class="slide">
+  <div class="pad" style="display:grid; grid-template-rows:auto 1fr; gap:48px;">
+    <div style="display:flex; justify-content:space-between; align-items:baseline; gap:48px;">
+      <h2>The real system, on film</h2>
+      <p class="small">Six short films, recorded in Presslane, on your Presslane page.</p>
+    </div>
+    <div class="films">
+      <figure><img src="img/storefront-setup.jpg" alt="The storefront film"><figcaption><b>Storefront</b><span>0:48</span></figcaption></figure>
+      <figure><img src="img/club-shop-setup.jpg" alt="The club shops film"><figcaption><b>Club shops</b><span>1:14</span></figcaption></figure>
+      <figure><img src="img/client-quotes.jpg" alt="The quotes film"><figcaption><b>Quotes</b><span>1:42</span></figcaption></figure>
+      <figure><img src="img/customer-trading.jpg" alt="The customer accounts film"><figcaption><b>Customer accounts</b><span>0:46</span></figcaption></figure>
+      <figure><img src="img/order-pipeline.jpg" alt="The order pipeline film"><figcaption><b>Order pipeline</b><span>1:07</span></figcaption></figure>
+      <figure><img src="img/voice-ai.jpg" alt="The phone answering film"><figcaption><b>Phone answering</b><span>1:27</span></figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<!-- 13. For people who print and stitch -->
+<section class="slide">
+  <div class="pad" style="display:grid; grid-template-rows:auto 1fr; gap:56px;">
+    <div style="display:flex; justify-content:space-between; align-items:baseline; gap:48px;">
+      <h2>For people who print and stitch</h2>
+      <p class="lead">One person in a unit, or a team of twenty.</p>
+    </div>
+    <div class="three four" style="grid-template-columns:repeat(4,1fr);">
+      <figure><img src="img/shop-print.jpg" alt="Screen printing a t-shirt" width="1000" height="1250"><figcaption><b>Garment printers</b></figcaption></figure>
+      <figure><img src="img/shop-embroidery.jpg" alt="Embroidering a polo shirt" width="1000" height="1250"><figcaption><b>Embroiderers</b></figcaption></figure>
+      <figure><img src="img/shop-signs.jpg" alt="Applying vinyl to a van door" width="1000" height="1250"><figcaption><b>Sign makers</b></figcaption></figure>
+      <figure><img src="img/shop-promo.jpg" alt="Boxing mugs, pens and tote bags" width="1000" height="1250"><figcaption><b>Promo gift companies</b></figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<!-- 14. How we get you going -->
+<section class="slide two">
+  <img class="photo" src="img/workshop.jpg" alt="A small embroidery and print workshop in the morning" width="1600" height="900">
+  <div class="pad" style="display:grid; align-content:center; gap:40px;">
+    <h2 style="font-size:72px;">Three weeks from now, your shop could be live.</h2>
+    <dl class="weeks" style="font-size:30px;">
+      <dt>Week one</dt><dd>We build your shop from your product list and your logo.</dd>
+      <dt>Week two</dt><dd>You check it on your phone. We change what you want changed.</dd>
+      <dt>Week three</dt><dd>You go live. Your old website stays on until you are happy.</dd>
+    </dl>
+    <div>
+      <p class="lead" style="margin-bottom:20px;">Tell us what you print.</p>
+      <p class="small">Book a call on your agency’s Presslane page. We show you Presslane on your own products.</p>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

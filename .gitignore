@@ -8,3 +8,6 @@ explainer_video/
 
 # design skill working files
 .taste-skill/
+
+# a local playwright-core install for tools/render-presentation.mjs
+node_modules/
