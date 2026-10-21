@@ -1,909 +1,346 @@
-/* Presslane site: the demos. Plain JS, no dependencies. */
+/* Presslane site. Plain JavaScript plus GSAP for the stage and the entrances.
+   Everything here is optional: the page reads in full without it. */
 (function () {
   'use strict';
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const $ = (s, r) => (r || document).querySelector(s);
   const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const SVGNS = 'http://www.w3.org/2000/svg';
   const XLINK = 'http://www.w3.org/1999/xlink';
-  const isPromo = () => document.documentElement.dataset.audience === 'promo';
-  const onAudience = (cb) => document.addEventListener('pl:audience', cb);
   const svgEl = (tag, attrs) => { const e = document.createElementNS(SVGNS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); return e; };
+  const hasGsap = typeof window.gsap !== 'undefined' && typeof window.ScrollTrigger !== 'undefined';
+  if (hasGsap) gsap.registerPlugin(ScrollTrigger);
 
-  /* Play a demo once when it scrolls into view. */
-  function onVisible(el, cb, threshold) {
-    if (!el) return;
-    if (!('IntersectionObserver' in window)) { cb(); return; }
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach((en) => { if (en.isIntersecting) { io.disconnect(); cb(); } });
-    }, { threshold: threshold || 0.35 });
-    io.observe(el);
-  }
-
-  /* ---------- Mobile menu ---------- */
-  (function menu() {
-    const nav = $('.nav'), btn = $('#navToggle'); if (!btn) return;
-    const set = (open) => { nav.classList.toggle('open', open); btn.setAttribute('aria-expanded', String(open)); btn.textContent = open ? 'Close' : 'Menu'; };
-    btn.addEventListener('click', () => set(!nav.classList.contains('open')));
-    $$('#navLinks a').forEach((a) => a.addEventListener('click', () => set(false)));
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && nav.classList.contains('open')) { set(false); btn.focus(); } });
-  })();
-
-  /* ---------- Agency: picked by the address the site is on (agencies.js "domain"), or ?agency=<key> for testing ---------- */
-  (function agency() {
+  /* ---------- Agency: picked by the address the site is on, or ?agency=<key> for testing (kept for this tab only) ---------- */
+  const agency = (function () {
     const list = window.PRESSLANE_AGENCIES || {};
-    const valid = (k) => typeof k === 'string' && /^[a-z0-9-]{1,40}$/.test(k) && Object.prototype.hasOwnProperty.call(list, k) && /^https:\/\//.test(list[k].book || '');
-    const host = location.hostname.toLowerCase().replace(/^www\./, '');
-    let key = Object.keys(list).find((k) => valid(k) && String(list[k].domain || '').toLowerCase().replace(/^www\./, '') === host);
+    const valid = (k) => typeof k === 'string' && /^[a-z0-9-]{1,40}$/.test(k) && Object.prototype.hasOwnProperty.call(list, k);
+    const host = location.hostname.toLowerCase();
+    let key = null;
+    for (const k in list) { if (list[k] && String(list[k].domain || '').toLowerCase() === host) key = k; }
     if (!key) {
-      key = (new URLSearchParams(location.search).get('agency') || '').toLowerCase();
-      if (valid(key)) { try { localStorage.setItem('presslane-agency', key); } catch (e) {} }
-      else { try { key = localStorage.getItem('presslane-agency'); } catch (e) { key = null; } }
+      const q = new URLSearchParams(location.search).get('agency');
+      if (valid(q)) { key = q; try { sessionStorage.setItem('presslane-agency', key); } catch (e) { /* storage off */ } }
+      else { try { const s = sessionStorage.getItem('presslane-agency'); if (valid(s)) key = s; } catch (e) { key = null; } }
     }
-    if (!valid(key)) return; // No agency: demo buttons stay hidden.
-    const A = list[key];
-    $$('.js-demo').forEach((a) => { a.href = A.book; a.target = '_blank'; a.rel = 'noopener'; a.hidden = false; a.setAttribute('aria-label', 'Book a demo with ' + A.name + ' (opens in a new tab)'); });
-    const w = $('#prWith'); if (w && A.name) { w.textContent = 'With ' + A.name + '. Opens their calendar.'; w.hidden = false; }
-    const mp = $('#mbarPricing'); if (mp) mp.hidden = true;
-    contactForm(key, A);
+    const a = key ? list[key] : null;
+    const book = a && /^https:\/\//.test(a.book) ? a.book : null;
+    $$('.js-book').forEach((el) => { if (book) { el.href = book; el.target = '_blank'; el.rel = 'noopener'; el.hidden = false; } else { el.hidden = true; } });
+    $$('.js-agency').forEach((el) => { el.hidden = !a; });
+    $$('.js-noagency').forEach((el) => { el.hidden = !!a; });
+    document.documentElement.dataset.agency = a ? key : '';
+    return { key, data: a };
   })();
 
-  /* ---------- Contact form: only on an agency's address; api/contact.js sends it to that agency's CRM ---------- */
-  function contactForm(key, A) {
-    const sec = $('#contact'), form = $('#contactForm'), status = $('#ctStatus');
-    if (!sec || !form) return;
-    sec.hidden = false;
-    const w = $('#ctWith'); if (w && A.name) w.textContent = 'Leave your details and ' + A.name + ' will get back to you.';
-    const btn = $('button[type="submit"]', form);
-    const say = (msg, cls) => { status.textContent = msg; status.className = 'ct-status' + (cls ? ' ' + cls : ''); };
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const f = form.elements;
-      const bad = [];
-      if (!f.name.value.trim()) bad.push(f.name);
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email.value.trim())) bad.push(f.email);
-      [f.name, f.email].forEach((el) => el.setAttribute('aria-invalid', String(bad.includes(el))));
-      if (bad.length) { say(bad[0] === f.name ? 'Please add your name.' : 'Please check your email address.', 'err'); bad[0].focus(); return; }
-      btn.disabled = true; say('Sending...');
-      const body = { agency: key };
-      ['name', 'company', 'email', 'phone', 'message', 'website'].forEach((n) => { body[n] = f[n].value; });
-      try {
-        const r = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-        const d = await r.json().catch(() => ({}));
-        if (!r.ok) throw new Error(d.error || 'Sorry, that did not send. Please try again in a minute.');
-        form.reset(); say('Thanks. ' + (A.name || 'We') + ' will be in touch soon.', 'ok');
-      } catch (err) {
-        say(err.message && !/fetch/i.test(err.message) ? err.message : 'Sorry, that did not send. Please try again in a minute.', 'err');
-      } finally { btn.disabled = false; }
-    });
-  }
-
-  /* ---------- Phone price bar: shown once the hero has gone, hidden over pricing and the close ---------- */
-  (function priceBar() {
-    const bar = $('#mbar'); if (!bar || !('IntersectionObserver' in window)) return;
-    const watch = ['#hero', '#pricing', '#close'].map((s) => $(s)).filter(Boolean);
-    const inView = new Set();
-    const nav = $('.nav');
-    function sync() {
-      const show = inView.size === 0 && !nav.classList.contains('open');
-      bar.classList.toggle('show', show);
-      bar.setAttribute('aria-hidden', String(!show));
-      $$('a', bar).forEach((l) => { l.tabIndex = show && !l.hidden ? 0 : -1; });
-    }
-    const io = new IntersectionObserver((en) => { en.forEach((e) => { if (e.isIntersecting) inView.add(e.target); else inView.delete(e.target); }); sync(); }, { threshold: 0 });
-    watch.forEach((el) => io.observe(el));
-    new MutationObserver(sync).observe(nav, { attributes: true, attributeFilter: ['class'] });
-  })();
-
-  /* ---------- Barcodes: Code 128-style bars from a string (visual, deterministic) ---------- */
-  function drawBars(svg) {
-    const code = svg.dataset.code || 'PL04821';
-    const vb = svg.getAttribute('viewBox').split(' ').map(Number);
-    const W = vb[2], H = vb[3];
-    const widths = [];
-    // start pattern
-    widths.push(2, 1, 1, 2, 3, 2);
-    for (let i = 0; i < code.length; i++) {
-      let c = code.charCodeAt(i) * (i + 7);
-      for (let k = 0; k < 6; k++) { widths.push((c % 3) + 1); c = Math.floor(c / 3) + 5; }
-    }
-    widths.push(2, 3, 3, 1, 1, 1, 2); // stop
-    const units = widths.reduce((a, b) => a + b, 0);
-    const quiet = W * 0.04;
-    const u = (W - quiet * 2) / units;
-    let x = quiet;
-    widths.forEach((w, i) => {
-      if (i % 2 === 0) svg.appendChild(svgEl('rect', { x: x.toFixed(2), y: 0, width: (w * u).toFixed(2), height: H, fill: '#000' }));
-      x += w * u;
-    });
-  }
-  $$('svg.bars').forEach(drawBars);
-
-  /* ---------- Hero: the lane. The job square travels the six stages left to right; the window shows each stage. ---------- */
-  (function hero() {
-    const root = $('#hero'); if (!root) return;
-    const stages = $('#heroStages'), track = $('#heroTrack'), job = $('#heroJob'), btns = $$('button', stages), objs = $$('.hero-obj', root);
-    const capK = $('#heroCapK'), capT = $('#heroCapT'), pause = $('#heroPause');
-    const MOMENTS = {
-      print: [['09:10 · WhatsApp', 'Quote accepted after the 2nd follow-up.'], ['11:02 · Proof', 'Sam approved the proof in one click.'], ['14:32 · Embroidery 2', 'Scanned at the bench. Sam is told his hoodies are being embroidered.'], ['16:40 · Packing', '2 boxes packed. Courier booked for tomorrow.'], ['09:05 · Courier', 'Tracking number sent to Sam on its own.'], ['12:20 · Delivered', 'Delivered. Same again is one click.']],
-      promo: [['09:10 · WhatsApp', 'Quote accepted after the 2nd follow-up.'], ['11:02 · Visual', 'Sam approved the visual in one click.'], ['14:32 · Supplier', 'Order placed with the supplier. Sam is told it is in production.'], ['16:40 · Supplier', 'Packed at the supplier. Courier booked for tomorrow.'], ['09:05 · Courier', 'Supplier tracking passed to Sam on its own.'], ['12:20 · Delivered', 'Delivered. Same again is one click.']]
-    };
-    const STEP = 3400;
-    let cur = -1, timer = null, paused = reduce, visible = true;
-    // The square lines up with the start of its stage's label, under the rail.
-    const x = (n) => track.clientWidth / 6 * n;
-    function place(n, instant) { job.classList.toggle('jump', !!instant); job.style.transform = 'translateX(' + x(n) + 'px)'; }
-    function show(n) {
-      cur = n;
-      btns.forEach((b, i) => { b.setAttribute('aria-pressed', String(i === n)); b.classList.toggle('done', i < n); });
-      objs.forEach((o) => o.classList.toggle('on', Number(o.dataset.stage) === n));
-      const m = MOMENTS[isPromo() ? 'promo' : 'print'][n]; capK.textContent = m[0]; capT.textContent = m[1];
-    }
-    // Forward is a slide. Going back means this job leaves on the right and a new one enters from the left.
-    function go(n) {
-      clearTimeout(timer);
-      if (n > cur) { place(n); show(n); schedule(); return; }
-      job.classList.remove('jump'); job.style.transform = 'translateX(' + (track.clientWidth + 200) + 'px)';
-      timer = setTimeout(() => {
-        job.classList.add('jump'); job.style.transform = 'translateX(-120px)'; void job.offsetWidth;
-        place(n); show(n); schedule();
-      }, reduce ? 0 : 900);
-    }
-    function schedule() {
-      clearTimeout(timer);
-      if (paused || !visible || document.hidden) return;
-      timer = setTimeout(() => go(cur >= 5 ? 0 : cur + 1), STEP);
-    }
-    function setPaused(p) { paused = p; pause.textContent = p ? 'Play' : 'Pause'; pause.setAttribute('aria-pressed', String(p)); schedule(); }
-    btns.forEach((b, i) => b.addEventListener('click', () => { setPaused(true); go(i); }));
-    pause.addEventListener('click', () => { setPaused(!paused); if (!paused) go(cur >= 5 ? 0 : cur + 1); });
-    window.addEventListener('resize', () => place(cur, true));
-    onAudience(() => show(cur));
-    if ('IntersectionObserver' in window) new IntersectionObserver((en) => { visible = en[0].isIntersecting; schedule(); }, { threshold: 0.2 }).observe(root);
-    document.addEventListener('visibilitychange', schedule);
-    show(reduce ? 2 : 0);
-    if (reduce) { place(cur, true); setPaused(true); return; }
-    // First job enters from the left.
-    job.classList.add('jump'); job.style.transform = 'translateX(-120px)'; void job.offsetWidth;
-    requestAnimationFrame(() => { place(0); setPaused(false); });
-  })();
-
-  /* ---------- Audience: printers or promotional merchandise. Swaps copy marked data-promo. ---------- */
-  (function audience() {
-    const swaps = $$('[data-promo]');
-    const printHTML = new Map(swaps.map((el) => [el, el.innerHTML]));
-    const choices = $$('.choose[data-audience]');
-    function set(a) {
-      document.documentElement.dataset.audience = a;
-      swaps.forEach((el) => { el.innerHTML = a === 'promo' ? el.dataset.promo : printHTML.get(el); });
-      choices.forEach((c) => c.setAttribute('aria-current', String(c.dataset.audience === a)));
-      try { localStorage.setItem('presslane-audience', a); } catch (e) {}
-      document.dispatchEvent(new CustomEvent('pl:audience', { detail: a }));
-    }
-    choices.forEach((c) => c.addEventListener('click', () => set(c.dataset.audience)));
-    let start = new URLSearchParams(location.search).get('for');
-    if (start !== 'promo' && start !== 'print') { try { start = localStorage.getItem('presslane-audience'); } catch (e) { start = null; } }
-    if (start === 'promo' || start === 'print') set(start);
-  })();
-
-  /* ---------- Enquiry film: muted + captioned, plays in view, follows the audience buttons ---------- */
-  (function enquiryFilm() {
-    const v = $('#enquiryVideo'); if (!v) return;
-    const playBtn = $('#enquiryPlay'), soundBtn = $('#enquirySound');
-    let inView = false, userPaused = reduce; // reduced motion: never autoplay
-    const phone = window.matchMedia('(max-width: 640px)');
-    const fig = $('#enquiryFilm');
-    function source() {
-      // Audience picks the cut; phones get the vertical version so the captions stay readable.
-      const key = (isPromo() ? 'Promo' : 'Print') + (phone.matches ? 'Tall' : '');
-      const src = v.dataset['src' + key];
-      fig.classList.toggle('is-tall', phone.matches);
-      if (v.getAttribute('data-current') === src) return false;
-      const wasPlaying = !v.paused;
-      v.setAttribute('data-current', src);
-      v.poster = v.dataset['poster' + key];
-      v.src = src; v.load();
-      if (wasPlaying) v.play().catch(() => {});
-      return true;
-    }
-    phone.addEventListener('change', source);
-    function sync() {
-      const shouldPlay = inView && !userPaused && !document.hidden;
-      if (shouldPlay && v.paused) v.play().catch(() => {});
-      if (!shouldPlay && !v.paused) v.pause();
-      playBtn.textContent = v.paused ? 'Play' : 'Pause';
-      playBtn.setAttribute('aria-pressed', String(!v.paused));
-    }
-    v.addEventListener('play', sync); v.addEventListener('pause', () => { playBtn.textContent = 'Play'; playBtn.setAttribute('aria-pressed', 'false'); });
-    playBtn.addEventListener('click', () => { userPaused = !v.paused; if (userPaused) v.pause(); else v.play().catch(() => {}); });
-    soundBtn.addEventListener('click', () => {
-      v.muted = !v.muted;
-      soundBtn.textContent = v.muted ? 'Sound on' : 'Sound off';
-      soundBtn.setAttribute('aria-pressed', String(!v.muted));
-      if (!v.muted) { v.currentTime = 0; userPaused = false; v.play().catch(() => {}); }
-    });
-    source();
-    onAudience(() => { if (source()) { userPaused = reduce; sync(); } });
-    if ('IntersectionObserver' in window) {
-      new IntersectionObserver((en) => { inView = en[0].isIntersecting; sync(); }, { threshold: 0.4 }).observe(v);
-    }
-    document.addEventListener('visibilitychange', sync);
-  })();
-
-  /* ---------- The system: pick a part on the map, its recorded film plays in one player ---------- */
-  (function system() {
-    const v = $('#sysVideo'); if (!v) return;
-    const FILMS = {
-      storefront: { title: 'Storefront', file: 'storefront-setup', len: '0:48',
-        desc: 'A shop front built from a template. Move sections, set the words, menu and colours, check it on a phone, then publish.',
-        chapters: [[0, 'The shop front'], [15.1, 'The back office behind it'], [18, 'Start from a template'], [26.7, 'Sections, menu and footer'], [35.9, 'Colours'], [37.8, 'Check on a phone, then publish']] },
-      clubshops: { title: 'Club shops', file: 'club-shop-setup', len: '1:14',
-        desc: 'A shop inside your shop for a school, club or company uniform, with its own products, prices, logo and web address.',
-        chapters: [[0, 'A shop inside your shop'], [12.8, 'Name, logo and banner'], [20.8, 'Who gets in'], [29.6, 'Add the uniform'], [46.2, 'Its own web address'], [61, 'The finished shop']] },
-      quotes: { title: 'Quotes', file: 'client-quotes', len: '1:42',
-        desc: 'Build a quote from your own price list with the quantity breaks worked out. The customer accepts online and it becomes an order.',
-        chapters: [[0, 'An enquiry comes in'], [12.9, 'Start a quote'], [20.9, 'Lines and quantity breaks'], [46.7, 'Notes, layout and payment'], [66.6, 'Send it'], [72.1, 'The customer accepts'], [83.8, 'Into an order'], [91.6, 'Follow-ups on their own']] },
-      customers: { title: 'Customer accounts', file: 'customer-trading', len: '0:46',
-        desc: 'Every customer ranked by spend. Trade customers go on account with a credit limit and terms, and every order sits on one record.',
-        chapters: [[0, 'Every customer, ranked'], [8.2, 'Add a trade customer'], [15.8, 'On account'], [23.5, 'The credit limit'], [35, 'Notes and history']] },
-      pipeline: { title: 'Order pipeline', file: 'order-pipeline', len: '1:07',
-        desc: 'Accepted quotes land as orders. Most stages move on their own, the floor scans barcodes, and the customer is told at every step.',
-        chapters: [[0, 'Every order, newest first'], [21, 'The pipeline board'], [24.5, 'Stages that move on their own'], [43.6, 'Scanned on the floor'], [52.4, 'Customer told, tracking sent']] },
-      voice: { title: 'Phone answering', file: 'voice-ai', len: '1:27',
-        desc: 'An add-on to the package. A customer rings for an update, the assistant finds their orders and reads back where each one is, and the answer changes live as the floor moves the job on.',
-        chapters: [[0, 'Why the phone matters'], [19.2, 'Be the customer'], [27.9, 'The call is answered'], [39.9, 'Order 7: proof awaiting approval'], [51.5, 'Approved, mid-call'], [62.4, 'Scheduled for production'], [71.7, 'Live, 24 hours a day']] }
-    };
-    const ORDER = Object.keys(FILMS);
-    const parts = $$('#system .sys-part'), screen = $('.sys-screen'), playBtn = $('#sysPlay'), playLabel = $('#sysPlayLabel');
-    const title = $('#sysTitle'), desc = $('#sysDesc'), list = $('#sysChapters'), next = $('#sysNext'), subsBtn = $('#sysSubs'), tx = $('#sysTranscript');
-    const fmt = (s) => Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0');
-    const transcripts = {};
-    let cur = null, subs = false;
-
-    function setSubs() {
-      Array.from(v.textTracks).forEach((t) => { t.mode = subs ? 'showing' : 'hidden'; });
-      subsBtn.setAttribute('aria-pressed', String(subs));
-    }
-    function showTranscript(id) {
-      if (transcripts[id]) { tx.innerHTML = transcripts[id]; return; }
-      tx.textContent = '';
-      fetch('assets/system/' + FILMS[id].file + '.vtt').then((r) => r.text()).then((t) => {
-        const text = t.split(/\r?\n\r?\n/).slice(1).map((c) => c.split(/\r?\n/).filter((l) => l && !/-->/.test(l) && !/^\d+$/.test(l)).join(' ')).join(' ');
-        const p = document.createElement('div');
-        text.split(/(?<=[.?])\s+(?=[A-Z])/).reduce((acc, s, i) => { if (i % 3 === 0) acc.push([]); acc[acc.length - 1].push(s); return acc; }, [])
-          .forEach((g) => { const el = document.createElement('p'); el.textContent = g.join(' '); p.appendChild(el); });
-        transcripts[id] = p.innerHTML;
-        if (cur === id) tx.innerHTML = transcripts[id];
-      }).catch(() => { tx.textContent = 'The voiceover text could not be loaded.'; });
-    }
-    function setPlayLabel(word) { playLabel.textContent = word + ' · ' + FILMS[cur].len; }
-
-    function select(id, autoplay) {
-      const F = FILMS[id]; if (!F) return;
-      if (cur !== id) {
-        cur = id;
-        parts.forEach((p) => { p.setAttribute('aria-pressed', String(p.dataset.film === id)); p.style.setProperty('--p', 0); });
-        v.pause(); v.controls = false; screen.classList.remove('playing');
-        $$('track', v).forEach((t) => t.remove());
-        v.poster = 'assets/system/' + F.file + '-poster.webp';
-        v.src = 'assets/system/' + F.file + '.mp4';
-        const tr = document.createElement('track');
-        tr.kind = 'subtitles'; tr.srclang = 'en'; tr.label = 'English'; tr.src = 'assets/system/' + F.file + '.vtt';
-        v.appendChild(tr); setSubs();
-        v.setAttribute('aria-label', F.title + ' film, ' + F.len + ', with voiceover');
-        title.textContent = F.title; desc.textContent = F.desc;
-        list.textContent = '';
-        F.chapters.forEach(([t, label]) => {
-          const li = document.createElement('li'), b = document.createElement('button');
-          b.type = 'button'; b.dataset.t = t; b.setAttribute('aria-current', 'false');
-          b.innerHTML = '<span class="mono"></span><span></span>';
-          b.firstChild.textContent = fmt(t); b.lastChild.textContent = label;
-          b.addEventListener('click', () => seek(t));
-          li.appendChild(b); list.appendChild(li);
-        });
-        const n = ORDER[(ORDER.indexOf(id) + 1) % ORDER.length];
-        next.textContent = 'Next: ' + FILMS[n].title; next.dataset.film = n; next.classList.remove('cue');
-        setPlayLabel('Play with sound');
-        showTranscript(id);
-      }
-      if (autoplay) play();
-    }
-    function play() { v.controls = true; screen.classList.add('playing'); v.play().catch(() => { screen.classList.remove('playing'); v.controls = false; }); }
-    function seek(t) {
-      const go = () => { v.currentTime = t; play(); };
-      if (v.readyState >= 1) go(); else { v.addEventListener('loadedmetadata', go, { once: true }); v.load(); }
-    }
-
-    v.addEventListener('timeupdate', () => {
-      const t = v.currentTime, F = FILMS[cur];
-      const p = parts.find((el) => el.dataset.film === cur); if (p && v.duration) p.style.setProperty('--p', (t / v.duration).toFixed(3));
-      let on = 0; F.chapters.forEach(([ct], i) => { if (t >= ct - 0.2) on = i; });
-      $$('button', list).forEach((b, i) => {
-        if (b.getAttribute('aria-current') === String(i === on)) return;
-        b.setAttribute('aria-current', String(i === on));
-        // Keep the current chapter visible in the swipeable row on phones.
-        if (i === on && list.scrollWidth > list.clientWidth) list.scrollTo({ left: b.parentNode.offsetLeft - 16, behavior: reduce ? 'auto' : 'smooth' });
-      });
-    });
-    v.addEventListener('loadedmetadata', setSubs);
-    v.addEventListener('pause', () => { if (!v.ended && v.currentTime > 0 && v.currentSrc.includes(FILMS[cur].file)) { screen.classList.remove('playing'); v.controls = false; setPlayLabel('Resume'); } });
-    v.addEventListener('ended', () => { screen.classList.remove('playing'); v.controls = false; setPlayLabel('Play again'); next.classList.add('cue'); });
-    playBtn.addEventListener('click', play);
-    subsBtn.addEventListener('click', () => { subs = !subs; setSubs(); });
-    next.addEventListener('click', () => select(next.dataset.film, true));
-
-    // On a phone the player sits under the map, so bring it into view when a part is picked.
-    const player = $('#sysPlayer');
-    function reveal() {
-      const r = player.getBoundingClientRect();
-      if (r.top < 64 || r.top > window.innerHeight * 0.5) player.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
-    }
-    parts.forEach((p) => p.addEventListener('click', () => { select(p.dataset.film, true); reveal(); }));
-    // "Watch it in Presslane" links elsewhere on the page open the map on their film.
-    $$('a[data-film]').forEach((a) => a.addEventListener('click', (e) => { e.preventDefault(); select(a.dataset.film, true); reveal(); }));
-
-    // Stop the voiceover when the player scrolls out of view.
-    if ('IntersectionObserver' in window) new IntersectionObserver((en) => { if (!en[0].isIntersecting && !v.paused) v.pause(); }, { threshold: 0.2 }).observe(v);
-    select('storefront', false);
-  })();
-
-  /* ---------- Films (the promo, the phone call): poster and a single play control, native controls once playing ---------- */
-  (function films() {
-    $$('figure[data-player]').forEach((fig) => {
-      const v = $('video', fig), btn = $('.promo-play', fig); if (!v || !btn) return;
-      const label = btn.querySelector('span:last-child');
-      btn.addEventListener('click', () => { v.controls = true; fig.classList.add('playing'); v.play().catch(() => { fig.classList.remove('playing'); }); });
-      v.addEventListener('ended', () => { fig.classList.remove('playing'); v.controls = false; label.textContent = 'Play again'; });
-      v.addEventListener('pause', () => { if (!v.ended && v.currentTime > 0) { fig.classList.remove('playing'); label.textContent = 'Resume'; } });
-      // Stop the sound when the film scrolls out of view.
-      if ('IntersectionObserver' in window) new IntersectionObserver((en) => { if (!en[0].isIntersecting && !v.paused) v.pause(); }, { threshold: 0.2 }).observe(v);
-    });
-  })();
-
-  /* ---------- The lane: pick a stage, see the customer page and the message ---------- */
-  (function lane() {
-    const tiles = $$('#laneTiles .tile'); if (!tiles.length) return;
-    const imgs = $$('.tracker .shot img');
-    const msgs = {
-      1: { k: 'Status · Fri 15 Aug, 10:42', h: 'Thanks, we have your order.', b: 'Proof coming today. We’ll message you when it’s ready to approve.', f: '<strong>Sent by</strong> the order confirmation. Nobody typed it.' },
-      2: { k: 'Status · Fri 15 Aug, 15:30', h: 'Your proof is ready.', b: 'Approve it and we start printing: shop.link/PSE-0211703', f: '<strong>Sent when</strong> the artwork bench scanned the runsheet. One ask, one button.' },
-      3: { k: 'Status · Sat 16 Aug, 10:42', h: 'Proof approved.', b: 'Your 400 bucket hats are booked on the machines for Monday. We’ll message when they start.', f: '<strong>Triggered by</strong> the customer’s click. Runsheet printed at the bench.' },
-      4: { k: 'Status · Mon 18 Aug, 14:32', h: 'Your bucket hats are being printed.', b: 'We’ll message when they’re packed, and again with the tracking number.', f: '<strong>Sent when</strong> the press scanned the sheet. The floor updated the system.' },
-      5: { k: 'Status · Thu 21 Aug, 16:05', h: 'On its way.', b: 'Track it: JD0002234567GB. Expected Friday.', f: '<strong>Tracking number</strong> came from the courier label. No copy and paste.' },
-      6: { k: 'Status · Fri 22 Aug, 11:20', h: 'Delivered.', b: 'Same again next time is one click: shop.link/PSE-0211703', f: '<strong>Reorder link</strong> carries the approved artwork, so the next job skips the proof round.' }
-    };
-    const promoMsgs = {
-      1: msgs[1],
-      2: { k: 'Status · Fri 15 Aug, 15:30', h: 'Your artwork proof is ready.', b: 'Approve it and we’ll book it into production: shop.link/PSE-0211703', f: '<strong>Sent when</strong> the visual was attached to the order. One ask, one button.' },
-      3: { k: 'Status · Sat 16 Aug, 10:42', h: 'Artwork approved.', b: 'Your 400 bucket hats are booked into production. We’ll message when they start.', f: '<strong>Triggered by</strong> the client’s click. The order goes to production, in-house or at your supplier.' },
-      4: { k: 'Status · Mon 18 Aug, 14:32', h: 'Your bucket hats are in production.', b: 'We’ll message again with the tracking number when they ship.', f: '<strong>Sent when</strong> production was marked as started, by your team or the supplier.' },
-      5: { k: 'Status · Thu 21 Aug, 16:05', h: 'On its way.', b: 'Track it: JD0002234567GB. Expected Friday.', f: '<strong>Tracking number</strong> from the supplier, passed straight to the client.' },
-      6: msgs[6]
-    };
-    const k = $('#laneMsgKicker'), h = $('#laneMsgHead'), b = $('#laneMsgBody'), f = $('#laneMsgFoot');
-    const playBtn = $('#lanePlay');
-    let cur = 1, timer = null, playing = true, started = false;
-    function show(n) {
-      cur = n;
-      tiles.forEach((t) => t.setAttribute('aria-pressed', String(Number(t.dataset.stage) === n)));
-      imgs.forEach((im) => { im.hidden = Number(im.dataset.stage) !== n; });
-      const m = (isPromo() ? promoMsgs : msgs)[n]; k.textContent = m.k; h.textContent = m.h; b.textContent = m.b; f.innerHTML = m.f;
-    }
-    let hover = false, loops = 0;
-    function stop() { playing = false; playBtn.setAttribute('aria-pressed', 'false'); playBtn.textContent = 'Play'; clearTimeout(timer); }
-    function schedule() {
-      clearTimeout(timer); if (!playing || reduce) return;
-      timer = setTimeout(() => {
-        if (hover) { schedule(); return; }
-        if (cur >= 6) { loops++; if (loops >= 1) { stop(); return; } }
-        show(cur >= 6 ? 1 : cur + 1); schedule();
-      }, 3800);
-    }
-    const area = $('#lane');
-    area.addEventListener('mouseenter', () => { hover = true; }); area.addEventListener('mouseleave', () => { hover = false; });
-    area.addEventListener('focusin', () => { hover = true; }); area.addEventListener('focusout', () => { hover = false; });
-    tiles.forEach((t) => t.addEventListener('click', () => { show(Number(t.dataset.stage)); stop(); }));
-    playBtn.addEventListener('click', () => { playing = !playing; loops = 0; playBtn.setAttribute('aria-pressed', String(playing)); playBtn.textContent = playing ? 'Pause' : 'Play'; if (playing) { hover = false; show(cur >= 6 ? 1 : cur + 1); schedule(); } else clearTimeout(timer); });
-    show(1);
-    onAudience(() => show(cur));
-    if (reduce) { playing = false; playBtn.setAttribute('aria-pressed', 'false'); playBtn.textContent = 'Play'; }
-    onVisible($('#lane'), () => { if (!started) { started = true; schedule(); } }, 0.3);
-  })();
-
-  /* ---------- Mock-up: logo on the product ---------- */
-  const mock = (function mockup() {
-    const svg = $('#mockupSvg'); if (!svg) return null; svg.setAttribute('viewBox', '0 0 800 620');
-    const canvas = $('#mockupCanvas');
-    // Positions: centre (cx, cy), base logo width in viewBox units, base width in mm, drag bounds.
-    // Photos sit at x 140, y 10, 519 × 600 in the 800 × 620 canvas (585 × 676 source, scale 0.8876).
-    const PH = { x: 157.5, y: 30, w: 485, h: 560 };
-    const products = {
-      hoodie: {
-        label: 'Hoodie', sku: 'AWDis JH001 hoodie', method: 'Embroidery',
-        photo: { src: 'assets/hoodie.webp', grey: 'assets/hoodie-grey.webp' }, natural: { hex: '#4F5D73', name: 'Airforce blue' },
-        positions: {
-          'Left chest': { cx: 460, cy: 279, w: 80, mm: 90, bounds: [417, 237, 534, 334] },
-          'Centre': { cx: 399, cy: 331, w: 177, mm: 240, bounds: [290, 255, 509, 390] },
-          'Sleeve': { cx: 576, cy: 265, w: 50, mm: 70, bounds: [542, 228, 611, 328] }
+  /* ---------- Your logo: one choice, drawn into every slot on the stage ---------- */
+  const logo = (function () {
+    const slots = $$('.logo-slot');
+    if (!slots.length) return null;
+    const state = { type: 'symbol', id: 'logo-okafor', aspect: 2.2, src: null };
+    const light = '#F3F2F2', dark = '#151515';
+    function draw() {
+      slots.forEach((g) => {
+        while (g.firstChild) g.removeChild(g.firstChild);
+        const w = Number(g.dataset.w), maxH = Number(g.dataset.h);
+        let h = w / state.aspect, ww = w;
+        if (h > maxH) { h = maxH; ww = h * state.aspect; }
+        const col = g.classList.contains('dark') ? dark : light;
+        if (state.type === 'symbol') {
+          const u = svgEl('use', { x: -ww / 2, y: -h / 2, width: ww, height: h, color: col, fill: col });
+          u.setAttribute('href', '#' + state.id); u.setAttributeNS(XLINK, 'xlink:href', '#' + state.id);
+          g.appendChild(u);
+        } else {
+          const im = svgEl('image', { x: -ww / 2, y: -h / 2, width: ww, height: h, preserveAspectRatio: 'xMidYMid meet' });
+          im.setAttribute('href', state.src); im.setAttributeNS(XLINK, 'xlink:href', state.src);
+          g.appendChild(im);
         }
-      },
-      polo: {
-        label: 'Polo', sku: 'Kustom Kit KK403 polo', method: 'Embroidery',
-        photo: { src: 'assets/polo.webp', grey: 'assets/polo-grey.webp' }, natural: { hex: '#A8C3E4', name: 'Sky blue' },
-        positions: {
-          'Left chest': { cx: 464, cy: 241, w: 77, mm: 90, bounds: [423, 204, 533, 303] },
-          'Centre': { cx: 399, cy: 338, w: 164, mm: 220, bounds: [297, 265, 501, 443] },
-          'Sleeve': { cx: 572, cy: 207, w: 47, mm: 60, bounds: [536, 181, 607, 254] }
-        }
-      },
-      cap: {
-        label: 'Cap', sku: 'Beechfield B653 cap', method: 'Embroidery',
-        photo: { src: 'assets/cap.webp', grey: 'assets/cap-grey.webp' }, natural: { hex: '#E9E1CC', name: 'Stone' },
-        positions: {
-          'Front': { cx: 431, cy: 279, w: 118, mm: 110, bounds: [336, 228, 521, 328] },
-          'Side': { cx: 283, cy: 304, w: 62, mm: 55, bounds: [244, 265, 335, 347] }
-        }
-      },
-      card: {
-        label: 'Business card', sku: '85 × 55 mm, 400gsm silk', method: 'Print', natural: { hex: '#F4F2EC', name: 'White' },
-        positions: {
-          'Top left': { cx: 300, cy: 255, w: 130, mm: 28, bounds: [220, 200, 420, 320] },
-          'Centre': { cx: 400, cy: 300, w: 170, mm: 36, bounds: [240, 210, 560, 400] }
-        }
-      },
-      // Promotional merchandise: studio shots cut out on the same 585 × 676 canvas as the garments.
-      tote: {
-        label: 'Tote bag', sku: 'Natural 5oz cotton tote', method: 'Screen print',
-        photo: { src: 'assets/tote.webp', grey: 'assets/tote-grey.webp' }, natural: { hex: '#E7DCC6', name: 'Natural' },
-        positions: { 'Front': { cx: 400, cy: 425, w: 150, mm: 230, bounds: [292, 300, 508, 540] } }
-      },
-      mug: {
-        label: 'Travel mug', sku: 'Stainless steel travel mug', method: 'Print',
-        photo: { src: 'assets/mug.webp', grey: 'assets/mug-grey.webp' }, natural: { hex: '#F4F4F2', name: 'White' },
-        positions: { 'Front': { cx: 384, cy: 330, w: 100, mm: 50, bounds: [305, 126, 462, 539] } }
-      },
-      pen: {
-        label: 'Pen', sku: 'Push-button ballpen', method: 'Pad print',
-        photo: { src: 'assets/pen.webp', grey: 'assets/pen-grey.webp' }, natural: { hex: '#F5F5F5', name: 'White' },
-        positions: { 'Barrel': { cx: 352, cy: 311, w: 62, mm: 40, bounds: [272, 298, 434, 326] } }
-      },
-      bottle: {
-        label: 'Bottle', sku: 'Aluminium sports bottle', method: 'Print',
-        photo: { src: 'assets/bottle.webp', grey: 'assets/bottle-grey.webp' }, natural: { hex: '#F2F2F2', name: 'White' },
-        positions: { 'Front': { cx: 400, cy: 380, w: 95, mm: 50, bounds: [325, 200, 475, 540] } }
-      }
-    };
-    const PROMO = ['tote', 'mug', 'pen', 'bottle'];
-    const state = { product: 'hoodie', position: 'Left chest', colour: '#4F5D73', colourName: 'Airforce blue', logo: { type: 'symbol', id: 'logo-okafor', aspect: 2.2 }, size: 100, dx: 0, dy: 0 };
-
-    const lum = (hex) => { const n = parseInt(hex.slice(1), 16); const r = n >> 16, g = (n >> 8) & 255, b = n & 255; return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255; };
-    const seam = 'rgba(32,30,29,0.28)';
-    const setHref = (el, v) => { el.setAttribute('href', v); el.setAttributeNS(XLINK, 'xlink:href', v); };
-
-    function garment(g) {
-      const c = state.colour, p = state.product, P = products[p];
-      const add = (tag, attrs) => g.appendChild(svgEl(tag, attrs));
-      if (P.photo) {
-        const asShot = c === P.natural.hex;
-        const im = svgEl('image', { x: PH.x, y: PH.y, width: PH.w, height: PH.h, preserveAspectRatio: 'xMidYMid meet' });
-        setHref(im, asShot ? P.photo.src : P.photo.grey); g.appendChild(im);
-        if (!asShot) {
-          // Tint: flood the chosen colour, clip it to the garment's own alpha, multiply over the light greyscale photo.
-          const defs = svgEl('defs', {});
-          const f = svgEl('filter', { id: 'garmentTint', x: '0', y: '0', width: '1', height: '1', 'color-interpolation-filters': 'sRGB' });
-          f.appendChild(svgEl('feFlood', { 'flood-color': c, result: 'col' }));
-          f.appendChild(svgEl('feComposite', { in: 'col', in2: 'SourceGraphic', operator: 'in', result: 'colClipped' }));
-          f.appendChild(svgEl('feBlend', { in: 'colClipped', in2: 'SourceGraphic', mode: 'multiply' }));
-          defs.appendChild(f); g.insertBefore(defs, im);
-          im.setAttribute('filter', 'url(#garmentTint)');
-        }
-        return;
-      }
-      // Business card: drawn, the paper takes the colour.
-      add('rect', { x: 100, y: 120, width: 600, height: 400, fill: 'rgba(32,30,29,0.06)' });
-      add('rect', { x: 200, y: 172, width: 400, height: 259, fill: c, stroke: seam, 'stroke-width': 1 });
-      const ink = lum(c) > 0.5 ? '#201E1D' : '#F3F2F2';
-      const t = (x, y, s, w, txt) => { const e = svgEl('text', { x, y, 'font-family': 'Archivo, sans-serif', 'font-size': s, 'font-weight': w, fill: ink }); e.textContent = txt; g.appendChild(e); };
-      t(232, 372, 14, 800, 'Sam Okafor');
-      t(232, 392, 11, 400, 'Director');
-      const m = svgEl('text', { x: 568, y: 392, 'font-family': 'IBM Plex Mono, monospace', 'font-size': 10, fill: ink, 'text-anchor': 'end' }); m.textContent = '07700 900123'; g.appendChild(m);
-    }
-
-    function logoNode(w, forColour) {
-      const h = w / state.logo.aspect;
-      const col = lum(forColour) > 0.5 ? '#201E1D' : '#F3F2F2';
-      if (state.logo.type === 'symbol') {
-        const u = svgEl('use', { x: -w / 2, y: -h / 2, width: w, height: h });
-        u.setAttribute('href', '#' + state.logo.id); u.setAttributeNS(XLINK, 'xlink:href', '#' + state.logo.id);
-        u.setAttribute('color', col); u.setAttribute('fill', col);
-        return u;
-      }
-      const im = svgEl('image', { x: -w / 2, y: -h / 2, width: w, height: h, preserveAspectRatio: 'xMidYMid meet' });
-      im.setAttribute('href', state.logo.src); im.setAttributeNS(XLINK, 'xlink:href', state.logo.src);
-      return im;
-    }
-
-    function pos() { return products[state.product].positions[state.position]; }
-    function logoWidth() { return pos().w * state.size / 100; }
-    function mm() { const w = pos().mm * state.size / 100; return `${Math.round(w)} × ${Math.round(w / state.logo.aspect)} mm`; }
-
-    let hadFocus = false;
-    function render() {
-      hadFocus = document.activeElement && document.activeElement.id === 'logoG';
-      while (svg.firstChild) svg.removeChild(svg.firstChild);
-      const g = svgEl('g', {}); garment(g); svg.appendChild(g);
-      const P = pos(); const w = logoWidth();
-      const logoName = state.logo.type === 'symbol' ? { 'logo-okafor': 'Okafor Roofing', 'logo-hartley': 'Hartley Plumbing', 'logo-willink': 'school crest' }[state.logo.id] : 'uploaded';
-      const desc = `${logoName} logo, ${state.colourName.toLowerCase()} ${products[state.product].label.toLowerCase()}, ${state.position.toLowerCase()}, ${mm()}`;
-      const lg = svgEl('g', { transform: `translate(${P.cx + state.dx} ${P.cy + state.dy})`, id: 'logoG', style: 'cursor:grab', tabindex: '0', role: 'img', 'aria-label': desc + '. Use the arrow keys to move it.' });
-      const hh = w / state.logo.aspect;
-      lg.appendChild(svgEl('rect', { class: 'logo-focus', x: -w / 2 - 6, y: -hh / 2 - 6, width: w + 12, height: hh + 12, fill: 'none', stroke: 'none', 'stroke-width': 2 }));
-      lg.appendChild(logoNode(w, state.colour));
-      svg.appendChild(lg);
-      if (hadFocus) lg.focus({ preventScroll: true });
-      svg.setAttribute('aria-label', desc);
-      const st = $('#mockStatus'); if (st) st.textContent = desc;
-      const rng = $('#logoSize'); if (rng) rng.setAttribute('aria-valuetext', mm());
-      // proof line + readouts
-      $('#sizeReadout').textContent = mm();
-      $('#colourName').textContent = state.colourName;
-      const price = { hoodie: '£1,142.40', polo: '£684.00', cap: '£486.00', card: '£58.80', tote: '£774.00', mug: '£1,038.00', pen: '£390.00', bottle: '£894.00' }[state.product];
-      const qty = ({ card: 500, tote: 250, pen: 500, mug: 100, bottle: 100 }[state.product] || 48) + ' pcs';
-      $('#proofText').textContent = `${isPromo() ? 'Visual' : 'Proof'} · PL-04821 · ${products[state.product].label}, ${state.colourName} · ${state.position} · ${mm()} · ${qty} · ${price} inc. VAT`;
-      // runsheet mirrors the proof
-      const rsJob = $('#rsJobLine'), rsDeco = $('#rsDecoLine'), rsSize = $('#rsSize');
-      if (rsJob) {
-        rsJob.textContent = `${qty.replace(' pcs', '')} × ${products[state.product].sku}, ${state.colourName}`;
-        rsDeco.textContent = `${products[state.product].method}, ${state.position.toLowerCase()}, 1 colour`;
-        rsSize.textContent = mm(); const st = rsSize.previousSibling; if (st && st.nodeType === 3) st.textContent = products[state.product].method === 'Embroidery' ? '8,000 st · ' : '1 colour · ';
-        const place = $('#rsPlacement'); place.textContent = '';
-        const clone = svg.cloneNode(true); clone.removeAttribute('id'); clone.setAttribute('aria-hidden', 'true'); place.appendChild(clone);
-        const lp = $('#rsLogo'); lp.textContent = '';
-        const ls = svgEl('svg', { viewBox: '-70 -40 140 80', 'aria-hidden': 'true' }); ls.appendChild(logoNode(124, '#FFFFFF')); lp.appendChild(ls);
-      }
-    }
-
-    function buildPositions() {
-      const wrap = $('#positionChips'); wrap.textContent = '';
-      Object.keys(products[state.product].positions).forEach((name) => {
-        const b = document.createElement('button'); b.className = 'chip'; b.type = 'button'; b.textContent = name; b.dataset.position = name;
-        b.setAttribute('aria-pressed', String(name === state.position));
-        b.addEventListener('click', () => { state.position = name; state.dx = 0; state.dy = 0; $$('#positionChips .chip').forEach((c) => c.setAttribute('aria-pressed', String(c === b))); render(); });
-        wrap.appendChild(b);
       });
     }
-
-    const asShotBtn = $('#asShot');
-    function pickNatural() {
-      const P = products[state.product];
-      state.colour = P.natural.hex; state.colourName = P.natural.name;
-      $$('#swatches .swatch').forEach((c) => c.setAttribute('aria-pressed', 'false'));
-      asShotBtn.setAttribute('aria-pressed', 'true');
-    }
-    $$('#productChips .chip').forEach((b) => b.addEventListener('click', () => {
-      state.product = b.dataset.product; state.position = Object.keys(products[state.product].positions)[0]; state.dx = 0; state.dy = 0;
-      $$('#productChips .chip').forEach((c) => c.setAttribute('aria-pressed', String(c === b)));
-      asShotBtn.hidden = !products[state.product].photo;
-      pickNatural(); buildPositions(); render();
+    const picks = $$('.logo-pick');
+    picks.forEach((b) => b.addEventListener('click', () => {
+      state.type = 'symbol'; state.id = b.dataset.logo; state.aspect = 2.2; state.src = null;
+      picks.forEach((c) => c.setAttribute('aria-pressed', String(c === b)));
+      $('#logoStatus').textContent = 'It stays in your browser.';
+      draw();
     }));
-    asShotBtn.addEventListener('click', () => { pickNatural(); render(); });
-    $$('#swatches .swatch').forEach((b) => b.addEventListener('click', () => {
-      state.colour = b.dataset.colour; state.colourName = b.dataset.name;
-      $$('#swatches .swatch').forEach((c) => c.setAttribute('aria-pressed', String(c === b)));
-      asShotBtn.setAttribute('aria-pressed', 'false'); render();
-    }));
-    $$('#logoPicks .logo-pick').forEach((b) => b.addEventListener('click', () => {
-      state.logo = { type: 'symbol', id: b.dataset.logo, aspect: 2.2 };
-      $$('#logoPicks .logo-pick').forEach((c) => c.setAttribute('aria-pressed', String(c === b))); render();
-    }));
-    $('#logoUpload').addEventListener('change', (e) => {
+    const input = $('#logoUpload'), status = $('#logoStatus');
+    if (input) input.addEventListener('change', (e) => {
       const file = e.target.files && e.target.files[0]; if (!file) return;
-      const status = $('#uploadStatus');
-      if (!/^image\/(png|jpeg|svg\+xml|webp)$/.test(file.type)) { status.textContent = `${file.name} is not a PNG, JPG, SVG or WebP. Choose an image file.`; return; }
-      if (file.size > 8 * 1024 * 1024) { status.textContent = `${file.name} is over 8 MB. Choose a smaller file.`; return; }
+      if (!/^image\/(png|jpeg|svg\+xml|webp)$/.test(file.type)) { status.textContent = 'Choose a PNG, JPG, SVG or WebP.'; return; }
+      if (file.size > 8 * 1024 * 1024) { status.textContent = 'That file is over 8 MB. Choose a smaller one.'; return; }
       const reader = new FileReader();
       reader.onload = () => {
         const img = new Image();
-        img.onload = () => { state.logo = { type: 'image', src: reader.result, aspect: img.naturalWidth / img.naturalHeight || 1 }; $$('#logoPicks .logo-pick').forEach((c) => c.setAttribute('aria-pressed', 'false')); status.textContent = `${file.name} is on the product. It stays in your browser and is not uploaded anywhere.`; render(); };
-        img.onerror = () => { status.textContent = `${file.name} could not be read. Try another image.`; };
+        img.onload = () => {
+          state.type = 'image'; state.src = reader.result; state.aspect = (img.naturalWidth / img.naturalHeight) || 1;
+          picks.forEach((c) => c.setAttribute('aria-pressed', 'false'));
+          status.textContent = 'Your logo is on the job. It stays in your browser.';
+          draw();
+        };
+        img.onerror = () => { status.textContent = 'That image could not be read. Try another.'; };
         img.src = reader.result;
       };
       reader.readAsDataURL(file);
     });
-    $('#logoSize').addEventListener('input', (e) => { state.size = Number(e.target.value); render(); });
-
-    // Drag the logo inside the print area.
-    let drag = null;
-    const toVB = (ev) => { const r = svg.getBoundingClientRect(); return { x: (ev.clientX - r.left) * 800 / r.width, y: (ev.clientY - r.top) * 620 / r.height }; };
-    canvas.addEventListener('pointerdown', (ev) => {
-      const t = ev.target.closest && ev.target.closest('#logoG'); if (!t) return;
-      const p = toVB(ev); drag = { x: p.x - state.dx, y: p.y - state.dy }; canvas.setPointerCapture(ev.pointerId); ev.preventDefault();
-    });
-    canvas.addEventListener('pointermove', (ev) => {
-      if (!drag) return; const p = toVB(ev); const P = pos(); const w = logoWidth(), h = w / state.logo.aspect;
-      let dx = p.x - drag.x, dy = p.y - drag.y;
-      const [x0, y0, x1, y1] = P.bounds;
-      dx = Math.max(x0 + w / 2 - P.cx, Math.min(x1 - w / 2 - P.cx, dx));
-      dy = Math.max(y0 + h / 2 - P.cy, Math.min(y1 - h / 2 - P.cy, dy));
-      state.dx = dx; state.dy = dy; render();
-    });
-    const end = () => { drag = null; };
-    canvas.addEventListener('pointerup', end); canvas.addEventListener('pointercancel', end);
-    // Keyboard: arrow keys nudge the logo inside the print area (Shift for bigger steps).
-    canvas.addEventListener('keydown', (ev) => {
-      if (!ev.target.closest || !ev.target.closest('#logoG')) return;
-      const stepPx = ev.shiftKey ? 20 : 4; let dx = state.dx, dy = state.dy;
-      if (ev.key === 'ArrowLeft') dx -= stepPx; else if (ev.key === 'ArrowRight') dx += stepPx; else if (ev.key === 'ArrowUp') dy -= stepPx; else if (ev.key === 'ArrowDown') dy += stepPx; else return;
-      ev.preventDefault();
-      const P = pos(); const w = logoWidth(), h = w / state.logo.aspect; const [x0, y0, x1, y1] = P.bounds;
-      state.dx = Math.max(x0 + w / 2 - P.cx, Math.min(x1 - w / 2 - P.cx, dx));
-      state.dy = Math.max(y0 + h / 2 - P.cy, Math.min(y1 - h / 2 - P.cy, dy));
-      render();
-    });
-
-    const proofLine = $('#proofLine');
-    $('#approveBtn').addEventListener('click', () => { proofLine.classList.add('done'); });
-    ['#productChips', '#swatches', '#logoPicks', '#positionChips', '#logoSize'].forEach((s) => { const el = $(s); if (el) el.addEventListener('click', () => proofLine.classList.remove('done')); });
-    $('#logoSize').addEventListener('input', () => proofLine.classList.remove('done'));
-
-    // Printers see garments; distributors see promo products. Switch when the audience changes.
-    function syncAudience() {
-      if (isPromo() === PROMO.includes(state.product)) { render(); return; }
-      const b = $(`#productChips [data-product="${isPromo() ? 'tote' : 'hoodie'}"]`); if (b) b.click();
-    }
-    onAudience(syncAudience);
-    buildPositions(); render(); syncAudience();
-    return { render };
-  })();
-
-  /* ---------- Quote chase: messages go out until the customer says yes or no ---------- */
-  (function chase() {
-    const box = $('#chase'); if (!box) return;
-    const rows = $$('.chase-row', box);
-    const accept = $('#quoteAccept');
-    const rTime = $('#chaseResultTime'), rHead = $('#chaseResultHead'), rBody = $('#chaseResultBody');
-    let timers = [], done = false;
-    function reset() {
-      timers.forEach(clearTimeout); timers = []; done = false;
-      rows.forEach((r) => r.classList.remove('in'));
-      accept.disabled = false; accept.textContent = 'Accept quote';
-    }
-    function finish(step, viaClick) {
-      done = true; timers.forEach(clearTimeout);
-      rows.forEach((r) => { if (Number(r.dataset.step) > step && !r.classList.contains('result')) r.classList.remove('in'); });
-      if (viaClick) { rTime.textContent = 'now'; rHead.textContent = isPromo() ? 'Accepted. Chasing stopped.' : 'Quote accepted. Chasing stopped.'; rBody.textContent = step ? `Sam accepted from the quote link after ${step} follow-up${step > 1 ? 's' : ''}. The remaining messages were never sent.` : 'Sam accepted from the quote link before any follow-up was needed.'; }
-      else { rTime.textContent = isPromo() ? '+4 d' : '+3 d'; rHead.textContent = isPromo() ? 'Accepted after the 2nd follow-up.' : 'Quote accepted after the 2nd follow-up.'; rBody.textContent = isPromo() ? 'Sam replied yes on WhatsApp. Chasing stopped. Messages 3 and 4 were never sent. Order confirmed the same afternoon.' : 'Sam replied yes on WhatsApp. Chasing stopped. Messages 3 and 4 were never sent. Artwork proof went out the same afternoon.'; }
-      rows[rows.length - 1].classList.add('in');
-      accept.disabled = true; accept.textContent = 'Accepted';
-    }
-    function play() {
-      reset();
-      const gap = reduce ? 0 : 1500;
-      rows.slice(0, 2).forEach((r, i) => timers.push(setTimeout(() => r.classList.add('in'), 400 + i * gap)));
-      timers.push(setTimeout(() => { if (!done) finish(2, false); }, 400 + 2 * gap + 300));
-    }
-    accept.addEventListener('click', () => { const sent = rows.filter((r) => r.classList.contains('in') && !r.classList.contains('result')).length; finish(sent, true); });
-    $('#chaseReplay').addEventListener('click', play);
-    onVisible(box, play, 0.3);
-  })();
-
-  /* ---------- CRM: the pipeline board; pick a card to open that client's record ---------- */
-  (function crm() {
-    const cols = $('#crmCols'), rec = $('#crmRecord'), total = $('#crmTotal'); if (!cols) return;
-    const DATA = {
-      print: {
-        stages: ['Enquiry', 'Quote sent', 'Proof sent', 'Won'],
-        cards: [
-          { stage: 0, client: 'harbour', job: 'Staff polos, embroidered', value: 920 },
-          { stage: 0, client: 'leeds', job: 'Training tops, 60 players', value: 1640 },
-          { stage: 1, client: 'okafor', job: 'Bottle green hoodies', value: 1142 },
-          { stage: 2, client: 'hartley', job: 'Van door signs, pair', value: 860 },
-          { stage: 3, client: 'okafor', job: 'Navy hoodies, 48', value: 1142 }
-        ],
-        clients: {
-          okafor: { name: 'Okafor Roofing Ltd', who: 'Sam Okafor · Director', owner: 'Dan', since: 'Customer since 2023', stats: ['£4,380 lifetime', '5 orders', 'Last order 18 Sep'],
-            remind: { when: '6 Jan', text: 'Okafor reordered workwear in the second week of January the last two years. Dan to get in touch.' },
-            timeline: [
-              ['22 Sep', 'Call', 'Asked for the same hoodies in bottle green. Quote sent, chasing started.'],
-              ['18 Sep', 'Order', 'PL-04821 · 48 navy hoodies · Dispatched, tracking sent.'],
-              ['04 Sep', 'Quote', 'Accepted on WhatsApp after the 2nd follow-up.'],
-              ['12 Jan', 'Order', '30 hi-vis vests, left chest print.']
-            ] },
-          harbour: { name: 'Harbour Dental Group', who: 'Priya Shah · Practice manager', owner: 'Dan', since: 'New enquiry', stats: ['£0 lifetime', '0 orders', 'Enquired 24 Sep'],
-            remind: { when: '27 Sep', text: 'No reply to the first follow-up yet. The WhatsApp nudge goes out on Friday.' },
-            timeline: [
-              ['25 Sep', 'Email', 'Follow-up 1 sent: price breaks at 25 and 50.'],
-              ['24 Sep', 'Enquiry', 'Staff polos with the practice logo, 3 sites. Mock-up sent.']
-            ] },
-          leeds: { name: 'Leeds Rugby Club', who: 'Tom Brennan · Kit secretary', owner: 'Mia', since: 'Customer since 2021', stats: ['£7,960 lifetime', '9 orders', 'Last order 2 Aug'],
-            remind: { when: '1 Jul', text: 'New season kit is ordered every July. Reminder already set for next year.' },
-            timeline: [
-              ['23 Sep', 'Enquiry', 'Training tops for the new juniors. Mock-up sent the same day.'],
-              ['02 Aug', 'Order', '120 match shirts, numbers and sponsor.'],
-              ['14 Jul', 'Call', 'Confirmed sponsor artwork for the season.']
-            ] },
-          hartley: { name: 'Hartley Plumbing', who: 'Jo Hartley · Owner', owner: 'Dan', since: 'Customer since 2024', stats: ['£1,210 lifetime', '2 orders', 'Last order 3 Mar'],
-            remind: { when: '3 Mar', text: 'Business cards run out about once a year. Reorder nudge set.' },
-            timeline: [
-              ['20 Sep', 'Proof', 'Van door signs sent for approval.'],
-              ['19 Sep', 'Enquiry', 'Signs for the new van.'],
-              ['03 Mar', 'Order', '500 business cards.']
-            ] }
-        }
-      },
-      promo: {
-        stages: ['Enquiry', 'Visuals sent', 'Quote sent', 'Won'],
-        cards: [
-          { stage: 0, client: 'harbour', job: 'Branded water bottles', value: 1200 },
-          { stage: 0, client: 'techweek', job: 'Lanyards and badges, 800', value: 640 },
-          { stage: 1, client: 'okafor', job: 'Travel mugs to match', value: 1038 },
-          { stage: 2, client: 'kirk', job: 'Christmas gift sets, 120', value: 3450 },
-          { stage: 3, client: 'okafor', job: 'Tote bags, 250', value: 774 }
-        ],
-        clients: {
-          okafor: { name: 'Okafor Roofing Ltd', who: 'Sam Okafor · Director', owner: 'Dan', since: 'Client since 2023', stats: ['£6,420 lifetime', '7 orders', 'Last order 18 Sep'],
-            remind: { when: '21 Oct', text: 'Okafor ordered Christmas gifts on 18 Nov last year. Dan to send ideas before they start looking.' },
-            timeline: [
-              ['22 Sep', 'Call', 'Asked for travel mugs to match. New enquiry logged, chasing started.'],
-              ['18 Sep', 'Order', 'PL-04821 · 250 tote bags · Dispatched, supplier tracking sent.'],
-              ['04 Sep', 'Quote', 'Accepted on WhatsApp after the 2nd follow-up.'],
-              ['03 Sep', 'Enquiry', 'Tote bags for the Leeds trade show. Visuals sent in 1 hour.']
-            ] },
-          harbour: { name: 'Harbour Dental Group', who: 'Priya Shah · Practice manager', owner: 'Dan', since: 'New enquiry', stats: ['£0 lifetime', '0 orders', 'Enquired 24 Sep'],
-            remind: { when: '27 Sep', text: 'No reply to the first follow-up yet. The WhatsApp nudge goes out on Friday.' },
-            timeline: [
-              ['25 Sep', 'Email', 'Follow-up 1 sent: bottles priced at 100 and 250.'],
-              ['24 Sep', 'Enquiry', 'Water bottles for a patient campaign, 3 sites. Visuals sent the same morning.']
-            ] },
-          techweek: { name: 'Leeds Tech Week', who: 'Amir Khan · Events lead', owner: 'Mia', since: 'Client since 2022', stats: ['£5,180 lifetime', '4 orders', 'Last order 12 Oct 2025'],
-            remind: { when: '1 Aug', text: 'The event runs every October. Ideas go out in August, before the budget is spent.' },
-            timeline: [
-              ['23 Sep', 'Enquiry', 'Lanyards and name badges for 800 delegates.'],
-              ['12 Oct 2025', 'Order', '800 lanyards, 600 tote bags, speaker gifts.'],
-              ['04 Aug 2025', 'Email', 'Reminder: event ideas sent. Enquiry came back in 2 days.']
-            ] },
-          kirk: { name: 'Kirk & Rowe Solicitors', who: 'Helen Rowe · Partner', owner: 'Dan', since: 'Client since 2024', stats: ['£3,990 lifetime', '3 orders', 'Last order 20 Nov 2025'],
-            remind: { when: '10 Oct', text: 'Quote expires in 14 days. Christmas gifts need confirming by mid-October to arrive in time.' },
-            timeline: [
-              ['26 Sep', 'Quote', 'Gift sets for 120 clients, 3 options at £22, £29 and £36 a head.'],
-              ['24 Sep', 'Visuals', 'Notebook, pen and bottle set, logo on all three.'],
-              ['20 Nov 2025', 'Order', '100 Christmas gift sets.']
-            ] }
-        }
-      }
-    };
-    const money = (n) => '£' + n.toLocaleString('en-GB');
-    let current = null;
-    function data() { return DATA[isPromo() ? 'promo' : 'print']; }
-    function openClient(id, btn) {
-      const D = data(), c = D.clients[id]; current = id;
-      $$('.crm-card', cols).forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.client === id && (!btn || b === btn))));
-      rec.innerHTML = '';
-      const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
-      const head = el('div', 'crm-rec-head');
-      head.appendChild(el('p', 'kicker', c.since + ' · Account: ' + c.owner));
-      head.appendChild(el('h3', 'h3', c.name));
-      head.appendChild(el('p', 'small muted', c.who));
-      rec.appendChild(head);
-      const stats = el('div', 'crm-stats'); c.stats.forEach((s) => stats.appendChild(el('span', 'mono', s))); rec.appendChild(stats);
-      const rm = el('div', 'crm-remind');
-      rm.appendChild(el('span', 'mono', 'Reminder · ' + c.remind.when)); rm.appendChild(el('p', null, c.remind.text));
-      rec.appendChild(rm);
-      const tl = el('ol', 'crm-timeline');
-      c.timeline.forEach(([d, kind, txt]) => { const li = el('li'); li.appendChild(el('span', 'mono d', d)); li.appendChild(el('span', 'k', kind)); li.appendChild(el('p', null, txt)); tl.appendChild(li); });
-      rec.appendChild(tl);
-    }
-    function draw() {
-      const D = data(); cols.innerHTML = '';
-      let sum = 0;
-      D.stages.forEach((st, i) => {
-        const cards = D.cards.filter((c) => c.stage === i);
-        const col = document.createElement('div'); col.className = 'crm-col';
-        const h = document.createElement('p'); h.className = 'crm-col-h';
-        const v = cards.reduce((a, c) => a + c.value, 0); if (i < 3) sum += v;
-        h.innerHTML = '<span>' + st + '</span><span class="mono">' + money(v) + '</span>';
-        col.appendChild(h);
-        cards.forEach((c) => {
-          const b = document.createElement('button'); b.type = 'button'; b.className = 'crm-card'; b.dataset.client = c.client;
-          b.setAttribute('aria-pressed', 'false');
-          b.innerHTML = '<strong></strong><span class="j"></span><span class="mono v"></span>';
-          b.querySelector('strong').textContent = D.clients[c.client].name;
-          b.querySelector('.j').textContent = c.job; b.querySelector('.v').textContent = money(c.value);
-          b.addEventListener('click', () => openClient(c.client, b));
-          col.appendChild(b);
-        });
-        cols.appendChild(col);
-      });
-      total.textContent = 'Open ' + money(sum);
-      const first = $$('.crm-card', cols).find((b) => b.dataset.client === 'okafor');
-      openClient('okafor', first);
-    }
-    onAudience(draw);
     draw();
+    return { draw };
   })();
 
-  /* ---------- Phone: transcript types itself out ---------- */
-  (function phone() {
-    const box = $('#call'); if (!box) return;
-    const lines = $('#callLines'), timer = $('#callTimer'), foot = $('#callFoot');
-    const promoScript = [
-      { who: 'Shop', text: 'Northside Promotions. I can check an order or find a product for you. What’s your order number, or what are you looking for?' },
-      { who: 'Caller', text: 'Hi, it’s Sam Okafor. Ringing about our tote bags for the trade show, I don’t have the order number.' },
-      { who: 'Shop', text: 'Found it. PL-0-4-8-2-1, 250 natural tote bags, one colour print. They’re in production with the supplier and due to ship on Thursday. Want me to text you the tracking number when it comes through?' },
-      { who: 'Caller', text: 'Yes please. Could we get some travel mugs to match?' },
-      { who: 'Shop', text: 'I’ll log that as a new enquiry, and Dan will send visuals and prices for travel mugs today. Anything else?' },
-      { who: 'Caller', text: 'No, that’s everything. Thanks.' }
-    ];
-    const script = [
-      { who: 'Shop', text: 'Northside Print. I can check an order or stock for you. What’s your order number, or what are you looking for?' },
-      { who: 'Caller', text: 'Hi, it’s Sam Okafor. Ringing about my hoodies, I don’t have the number on me.' },
-      { who: 'Shop', text: 'Found it. PL-0-4-8-2-1, 48 navy hoodies, left chest. They’re being embroidered now and should be packed tomorrow. Want me to text you when they ship?' },
-      { who: 'Caller', text: 'Yes please. Could I get the same again in bottle green?' },
-      { who: 'Shop', text: 'Bottle green JH001 is in stock in all your sizes. I’ll note it on your order and Dan will send a quote today. Anything else?' },
-      { who: 'Caller', text: 'No, that’s everything. Thanks.' }
-    ];
-    let running = 0, tick = null;
-    function fmt(s) { return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); }
-    function play() {
-      const id = ++running; clearInterval(tick);
-      lines.textContent = ''; foot.textContent = 'Answered on the first ring'; box.classList.remove('speaking');
-      let secs = 0; timer.textContent = fmt(0);
-      if (!reduce) tick = setInterval(() => { secs++; timer.textContent = fmt(secs); }, 1000);
-      const lines_ = isPromo() ? promoScript : script;
-      const els = lines_.map((l) => {
-        const row = document.createElement('div'); row.className = 'line' + (l.who === 'Shop' ? ' shop' : '');
-        const who = document.createElement('span'); who.className = 'who'; who.textContent = l.who === 'Shop' ? 'Northside' : 'Sam';
-        const p = document.createElement('p'); row.appendChild(who); row.appendChild(p); lines.appendChild(row); return { row, p, l };
-      });
-      let i = 0;
-      function next() {
-        if (id !== running) return;
-        if (i >= els.length) { box.classList.remove('speaking'); clearInterval(tick); foot.textContent = isPromo() ? 'Call 1 min 42 s · Logged to PL-04821 · New enquiry: travel mugs · Chasing started · Dan notified' : 'Call 1 min 48 s · Logged to PL-04821 · Note added: bottle green requote · Dan notified'; timer.textContent = '01:48'; return; }
-        const { row, p, l } = els[i]; row.classList.add('in');
-        if (reduce) { p.textContent = l.text; i++; next(); return; }
-        box.classList.toggle('speaking', l.who === 'Shop');
-        let c = 0; p.classList.add('caret');
-        const t = setInterval(() => {
-          if (id !== running) { clearInterval(t); return; }
-          c += 2; p.textContent = l.text.slice(0, c);
-          if (c >= l.text.length) { clearInterval(t); p.classList.remove('caret'); i++; setTimeout(next, 650); }
-        }, 22);
-      }
-      setTimeout(next, reduce ? 0 : 500);
+  /* ---------- The barcode on the job sheet ---------- */
+  (function barcode() {
+    const g = $('#barcode'); if (!g) return;
+    const code = 'PL04821'; let x = 0;
+    for (let i = 0; i < code.length * 6; i++) {
+      const w = [2, 3, 1.5, 3, 2, 1.5][(i * 7 + code.charCodeAt(i % code.length)) % 6];
+      if (i % 2 === 0) g.appendChild(svgEl('rect', { x, y: 0, width: w, height: 72, fill: '#151515' }));
+      x += w + (i % 2 === 0 ? 1.5 : 2.5);
     }
-    $('#callReplay').addEventListener('click', play);
-    onVisible(box, play, 0.3);
   })();
 
-  /* ---------- The floor: scan the runsheet, the job moves, the customer is told ---------- */
-  (function floor() {
-    const sheet = $('#runsheet'); if (!sheet) return;
-    const btn = $('#scanBtn'), hint = $('#scanHint'), log = $('#floorLog'), sms = $('#floorSms'), smsText = $('#floorSmsText');
-    const ticks = $$('#rsTicks .tick');
-    const steps = [
-      { bench: 'Artwork', t: '09:12', log: 'Scanned at Artwork. Logo digitised, proof sent to Sam.', sms: 'Your proof is ready. Approve it and we start embroidering: northside.link/PL-04821', next: 'Scan at Embroidery 2' },
-      { bench: 'Embroidery 2', t: '14:32', log: 'Scanned at Embroidery 2. In production. Customer messaged.', sms: 'Your hoodies are being embroidered. We’ll message when they’re packed.', next: 'Scan at Packing' },
-      { bench: 'Packing', t: '16:40', log: 'Scanned at Packing. 2 boxes. Courier booked for tomorrow.', sms: 'Packed and ready. Courier collects tomorrow; tracking number to follow.', next: 'Start again' }
-    ];
-    let n = 0, busy = false;
-    btn.addEventListener('click', () => {
-      if (busy) return;
-      if (n >= steps.length) {
-        n = 0; ticks.forEach((t) => t.classList.remove('done')); sms.hidden = true;
-        $$('li', log).slice(1).forEach((li) => li.remove()); btn.textContent = 'Scan at Artwork'; hint.textContent = 'Each scan moves the job one stage.'; return;
+  /* ---------- The stage: one job, shown as it moves ---------- */
+  const stage = (function () {
+    const root = $('#stage'); if (!root) return null;
+    const layers = {}; $$('.layer', root).forEach((l) => { layers[l.dataset.layer] = l; });
+    const videos = $$('video', root);
+    const stamps = $$('.stamp', root);
+    let current = 'hoodie';
+
+    function video(layer, on) {
+      const v = layer.querySelector('video'); if (!v) return;
+      if (!on) { v.pause(); return; }
+      if (!v.getAttribute('src')) { v.src = v.dataset.src; v.load(); }
+      if (!reduce) { const p = v.play(); if (p && p.catch) p.catch(() => {}); }
+    }
+    function showStamps(name) {
+      stamps.forEach((s) => {
+        const on = s.dataset.stamp === name;
+        if (hasGsap && !reduce) {
+          if (on) gsap.fromTo(s, { autoAlpha: 0, scale: 1.3, transformOrigin: '50% 50%' }, { autoAlpha: 1, scale: 1, duration: 0.5, ease: 'power3.out', delay: 0.25, overwrite: 'auto' });
+          else gsap.to(s, { autoAlpha: 0, duration: 0.2, overwrite: 'auto' });
+        } else { s.style.visibility = on ? 'visible' : 'hidden'; s.style.opacity = on ? '1' : '0'; }
+      });
+    }
+    // The hoodie layer serves three states: plain, with the quote stamp, with the approved stamp.
+    const layerFor = (name) => (name === 'quote' || name === 'approve') ? 'hoodie' : name;
+
+    function show(name) {
+      if (!layers[layerFor(name)] || name === current) return;
+      const from = layers[layerFor(current)], to = layers[layerFor(name)];
+      current = name; root.dataset.state = name;
+      if (from !== to) {
+        Object.keys(layers).forEach((k) => { if (layers[k] !== to) video(layers[k], false); });
+        video(to, true);
+        if (hasGsap && !reduce) {
+          gsap.to(from, { autoAlpha: 0, duration: 0.45, ease: 'power2.out', overwrite: 'auto' });
+          gsap.fromTo(to, { autoAlpha: 0, scale: 1.04, transformOrigin: '50% 50%' }, { autoAlpha: 1, scale: 1, duration: 0.8, ease: 'power3.out', overwrite: 'auto' });
+        } else {
+          from.classList.remove('is-on'); from.style.cssText = '';
+          to.classList.add('is-on'); to.style.cssText = '';
+        }
       }
-      const s = steps[n]; busy = true;
-      sheet.classList.add('scanning'); hint.textContent = 'Scanning…';
-      setTimeout(() => {
-        sheet.classList.remove('scanning');
-        ticks[n].classList.add('done');
-        const li = document.createElement('li'); li.className = 'new';
-        li.innerHTML = `<span class="t">${s.t}</span><span>${s.log}</span>`;
-        log.insertBefore(li, log.firstChild);
-        smsText.textContent = s.sms; sms.hidden = false;
-        n++; btn.textContent = s.next; hint.textContent = n < steps.length ? 'Same code at the same bench twice does nothing.' : 'Three scans, three messages, nothing typed.';
-        busy = false;
-      }, reduce ? 0 : 950);
+      showStamps(name);
+    }
+    document.addEventListener('visibilitychange', () => { if (document.hidden) videos.forEach((v) => v.pause()); else video(layers[layerFor(current)], true); });
+    return { show };
+  })();
+
+  /* ---------- Their words, your quote ---------- */
+  (function ask() {
+    const text = $('#askText'); if (!text) return;
+    const PRODUCTS = [
+      { key: 'hoodie', words: /hood(?:ie|ies|y|ys)|sweat(?:shirt|shirts)|jumper/i, name: 'AWDis JH001 hoodie', base: 26.40, img: 'assets/hoodie.webp', deco: 'left chest logo, embroidered' },
+      { key: 'polo', words: /\bpolos?\b/i, name: 'Kustom Kit KK403 polo', base: 14.20, img: 'assets/polo.webp', deco: 'left chest logo, embroidered' },
+      { key: 'tee', words: /t[- ]?shirts?|\btees?\b|tshirts?/i, name: 'Gildan heavy cotton t-shirt', base: 9.60, img: null, deco: 'front print, one colour' },
+      { key: 'cap', words: /\bcaps?\b|\bhats?\b/i, name: 'Beechfield B653 cap', base: 11.90, img: 'assets/cap.webp', deco: 'front logo, embroidered' },
+      { key: 'mug', words: /\bmugs?\b/i, name: 'Stainless travel mug', base: 8.40, img: 'assets/mug.webp', deco: 'wrap print, one colour' },
+      { key: 'bottle', words: /\bbottles?\b/i, name: 'Aluminium sports bottle', base: 7.90, img: 'assets/bottle.webp', deco: 'front print, one colour' },
+      { key: 'pen', words: /\bpens?\b/i, name: 'Push-button ballpen', base: 0.85, img: 'assets/pen.webp', deco: 'barrel print, one colour' }
+    ];
+    const COLOURS = [
+      ['airforce blue', '#4F5D73'], ['royal blue', '#2a4a9a'], ['sky blue', '#A8C3E4'], ['bottle green', '#1E4D3B'], ['heather grey', '#8E8E8E'],
+      ['navy', '#1F2A44'], ['black', '#232323'], ['white', '#F4F2EC'], ['grey', '#8E8E8E'], ['gray', '#8E8E8E'], ['green', '#1E4D3B'],
+      ['red', '#9A1F1F'], ['blue', '#4F5D73'], ['orange', '#D2691E'], ['yellow', '#E1C340'], ['pink', '#D98AA8'], ['purple', '#5A3C78'], ['stone', '#E9E1CC']
+    ];
+    const BREAKS = [[250, 0.25, '250+'], [100, 0.20, '100+'], [50, 0.15, '50+'], [25, 0.10, '25+'], [10, 0.05, '10+']];
+    const money = (n) => '£' + n.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+    const thumb = $('#qThumb');
+    let last = { product: PRODUCTS[0], colour: COLOURS[5] };
+
+    function parse() {
+      const t = text.value;
+      const qm = t.match(/\b(\d{1,4})\b/); let qty = qm ? Number(qm[1]) : 1;
+      if (qty < 1) qty = 1; if (qty > 9999) qty = 9999;
+      const product = PRODUCTS.find((p) => p.words.test(t)) || last.product;
+      const colour = COLOURS.find((c) => new RegExp('\\b' + c[0] + '\\b', 'i').test(t)) || last.colour;
+      last = { product, colour };
+      const band = BREAKS.find((b) => qty >= b[0]);
+      const each = Math.round(product.base * (1 - (band ? band[1] : 0)) * 100) / 100;
+      const total = Math.round(each * qty * 100) / 100;
+      const dm = t.match(/\bby (?:the )?(\d{1,2})(?:st|nd|rd|th)?\b/i) || t.match(/\bby (monday|tuesday|wednesday|thursday|friday|saturday|sunday|next week|friday)\b/i);
+      const when = dm ? 'Delivery by ' + (isNaN(dm[1]) ? cap(dm[1].toLowerCase()) : 'the ' + dm[1] + ({ 1: 'st', 2: 'nd', 3: 'rd', 21: 'st', 22: 'nd', 23: 'rd', 31: 'st' }[Number(dm[1])] || 'th')) : 'Delivery in 7 to 10 days';
+
+      $('#qName').textContent = qty + ' × ' + product.name;
+      $('#qSub').innerHTML = '';
+      const sw = document.createElement('i'); sw.className = 'swatch'; sw.style.background = colour[1];
+      $('#qSub').appendChild(sw); $('#qSub').appendChild(document.createTextNode(cap(colour[0]) + ' · ' + product.deco));
+      $('#qEach').textContent = money(each) + ' each';
+      $('#qBreak').textContent = band ? qty + ' is in the ' + band[2] + ' price band. ' + Math.round(band[1] * 100) + '% off.' : 'Order 10 or more and the price per item drops.';
+      $('#qTotal').textContent = money(total) + ' + VAT';
+      $('#qWhen').textContent = when;
+      thumb.innerHTML = '';
+      if (product.img) { const im = document.createElement('img'); im.src = product.img; im.alt = ''; im.width = 56; im.height = 56; thumb.appendChild(im); }
+    }
+    text.addEventListener('input', parse);
+    parse();
+  })();
+
+  /* ---------- Films: pick a row, the player plays it ---------- */
+  const films = (function () {
+    const video = $('#filmVideo'); if (!video) return null;
+    const track = $('#filmTrack'), now = $('#filmNow');
+    const FILMS = {
+      storefront: { title: 'Storefront', file: 'storefront-setup', len: '0:48' },
+      clubshops: { title: 'Club shops', file: 'club-shop-setup', len: '1:14' },
+      quotes: { title: 'Quotes', file: 'client-quotes', len: '1:42' },
+      customers: { title: 'Customer accounts', file: 'customer-trading', len: '0:46' },
+      pipeline: { title: 'Order pipeline', file: 'order-pipeline', len: '1:07' },
+      voice: { title: 'Phone answering', file: 'voice-ai', len: '1:27' }
+    };
+    const rows = $$('.frow');
+    let cur = 'storefront';
+    function select(id, play) {
+      const f = FILMS[id]; if (!f) return;
+      rows.forEach((r) => r.setAttribute('aria-pressed', String(r.dataset.film === id)));
+      if (id !== cur) {
+        cur = id;
+        video.pause();
+        video.poster = 'assets/system/' + f.file + '-poster.webp';
+        track.src = 'assets/system/' + f.file + '.vtt';
+        video.src = 'assets/system/' + f.file + '.mp4';
+        video.load();
+        now.textContent = f.title + ' · ' + f.len + ' · recorded in Presslane, with captions';
+      }
+      if (play) { const p = video.play(); if (p && p.catch) p.catch(() => {}); }
+    }
+    rows.forEach((r) => r.addEventListener('click', () => select(r.dataset.film, true)));
+    $$('[data-film].val').forEach((a) => a.addEventListener('click', () => { select(a.dataset.film, false); }));
+    return { select };
+  })();
+
+  /* ---------- Talk to us ---------- */
+  (function contact() {
+    const form = $('#contactForm'); if (!form) return;
+    const email = $('#cEmail'), more = $('#cMore'), next = $('#cNext'), name = $('#cName');
+    const ok = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+    const say = (msg, said) => { next.textContent = msg; next.classList.toggle('said', !!said); };
+    const reveal = () => { if (more.hidden) { more.hidden = false; } };
+    email.addEventListener('input', () => { if (ok(email.value.trim())) reveal(); });
+    let busy = false;
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!ok(email.value.trim())) { say('Please check your email address.', true); email.focus(); return; }
+      if (more.hidden) { reveal(); name.focus(); return; }
+      if (!name.value.trim()) { say('Please add your name.', true); name.focus(); return; }
+      if (busy) return; busy = true;
+      say('Sending…', true);
+      const body = { agency: agency.key, name: name.value, email: email.value, phone: $('#cPhone').value, message: $('#cMessage').value, website: form.elements.website.value };
+      try {
+        const r = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+        const data = await r.json().catch(() => ({}));
+        if (r.ok) { say('Thanks. We have your details and will be in touch within one working day.', true); form.reset(); more.hidden = true; }
+        else { say(data.error || 'Sorry, that did not send. Please try again in a minute.', true); }
+      } catch (err) { say('Sorry, that did not send. Please try again in a minute.', true); }
+      busy = false;
     });
   })();
+
+  /* ---------- Motion: the stage follows the reading, and each section arrives in its own way ---------- */
+  if (hasGsap && stage) {
+    const mm = gsap.matchMedia();
+    mm.add({ wide: '(min-width: 900px)', narrow: '(max-width: 899px)', motion: '(prefers-reduced-motion: no-preference)', still: '(prefers-reduced-motion: reduce)' }, (ctx) => {
+      const { motion, wide } = ctx.conditions;
+
+      if (wide) {
+        // The stage: whichever paragraph is in the middle of the screen decides what the stage shows.
+        $$('[data-stage]').forEach((el) => {
+          ScrollTrigger.create({
+            trigger: el, start: 'top 58%', end: 'bottom 42%',
+            onToggle: (self) => { if (self.isActive) stage.show(el.dataset.stage); }
+          });
+        });
+      } else {
+        // On a phone the steps carry their own clips; each plays only while it is on screen.
+        stage.show('hoodie');
+        $$('.m-pic video').forEach((v) => {
+          ScrollTrigger.create({
+            trigger: v, start: 'top 80%', end: 'bottom 20%',
+            onToggle: (self) => {
+              if (self.isActive) { if (!v.getAttribute('src')) { v.src = v.dataset.src; v.load(); } if (motion) { const p = v.play(); if (p && p.catch) p.catch(() => {}); } }
+              else v.pause();
+            }
+          });
+        });
+      }
+
+      if (!motion) return;
+
+      gsap.defaults({ ease: 'power3.out', duration: 0.9 });
+      const once = (trigger, start) => ({ trigger, start: start || 'top 82%', toggleActions: 'play none none none', once: true });
+
+      // Signature: the hoodie settles into the stage on load.
+      gsap.from('#stageSvg', { scale: 1.06, autoAlpha: 0, duration: 1.3, transformOrigin: '50% 50%', delay: 0.15 });
+      gsap.from('.stage-bar > *', { y: 12, autoAlpha: 0, stagger: 0.06, duration: 0.6, delay: 0.7 });
+
+      // The gaps: one line at a time.
+      gsap.from('.gaps .col p', { y: 16, autoAlpha: 0, stagger: 0.12, duration: 0.7, scrollTrigger: once('.gaps') });
+
+      // One job: the heading, then each step's words, then its evidence.
+      gsap.from('.job h2', { y: 20, autoAlpha: 0, scrollTrigger: once('.job h2') });
+      $$('.step').forEach((step) => {
+        const tl = gsap.timeline({ scrollTrigger: once(step, 'top 80%') });
+        tl.from(step.querySelector('p'), { y: 22, autoAlpha: 0, duration: 0.8 })
+          .from(step.querySelectorAll('.evidence > *'), { y: 18, autoAlpha: 0, duration: 0.7 }, '-=0.45');
+        const cards = step.querySelectorAll('.ui-card');
+        if (cards.length) tl.from(cards, { y: 10, autoAlpha: 0, stagger: 0.09, duration: 0.5 }, '-=0.4');
+      });
+
+      // The box: the sheet prints out from the top, then its rows.
+      const sheet = $('.sheet');
+      if (sheet) {
+        const tl = gsap.timeline({ scrollTrigger: once(sheet, 'top 78%') });
+        tl.from(sheet, { yPercent: 6, autoAlpha: 0, duration: 0.9 })
+          .from(sheet.querySelectorAll('h2, .group h3, .item, .foot-line'), { y: 12, autoAlpha: 0, stagger: 0.05, duration: 0.5 }, '-=0.4');
+      }
+
+      // Their words, your quote.
+      gsap.from('.ask-in > *:not(.ask-title)', { y: 18, autoAlpha: 0, stagger: 0.1, scrollTrigger: once('.ask', 'top 70%') });
+      gsap.from('.quote-card', { y: 24, autoAlpha: 0, scale: 0.98, transformOrigin: '50% 100%', duration: 1, scrollTrigger: once('.ask-out', 'top 70%') });
+      gsap.from('.ask-title span', { y: 30, autoAlpha: 0, stagger: 0.12, duration: 0.9, scrollTrigger: once('.ask', 'top 40%') });
+
+      // Price: the heading and the picture, then every row.
+      gsap.from('.price-head > *', { y: 18, autoAlpha: 0, stagger: 0.12, scrollTrigger: once('.price') });
+      gsap.from('.price-list .pgroup', { y: 20, autoAlpha: 0, stagger: 0.15, scrollTrigger: once('.price-list') });
+      gsap.from('.pitem', { y: 10, autoAlpha: 0, stagger: 0.08, duration: 0.6, scrollTrigger: once('.price-list', 'top 75%') });
+
+      // Films: the player opens, the list arrives row by row.
+      gsap.from('.player', { clipPath: 'inset(0 0 100% 0)', duration: 1.1, ease: 'power2.inOut', scrollTrigger: once('.films', 'top 75%') });
+      gsap.from('.film-list h2', { y: 18, autoAlpha: 0, scrollTrigger: once('.film-list') });
+      gsap.from('.frow', { x: -14, autoAlpha: 0, stagger: 0.07, duration: 0.6, scrollTrigger: once('#filmRows', 'top 80%') });
+
+      // Who: the row slides in from the right.
+      gsap.from('.who .head > *', { y: 16, autoAlpha: 0, stagger: 0.1, scrollTrigger: once('.who') });
+      gsap.from('.row figure', { x: 40, autoAlpha: 0, stagger: 0.08, duration: 0.8, scrollTrigger: once('.row', 'top 85%') });
+
+      // Talk to us: the prompt, then the field.
+      gsap.from('.talk .prompt span', { y: 16, autoAlpha: 0, stagger: 0.12, scrollTrigger: once('.talk', 'top 75%') });
+      gsap.from('.talk .ask-form, .talk .no-agency, .talk .weeks', { y: 18, autoAlpha: 0, stagger: 0.12, scrollTrigger: once('.talk', 'top 70%') });
+
+      return () => {};
+    });
+
+    // Fonts and lazy pictures change the layout; recalculate once they are in.
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => ScrollTrigger.refresh());
+    window.addEventListener('load', () => ScrollTrigger.refresh());
+  }
 })();

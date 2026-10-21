@@ -1,21 +1,46 @@
 # Presslane marketing site
 
-Single-page static site: `index.html`, `styles.css`, `app.js`, `assets/`. No build step, no dependencies.
+A single static page: `index.html`, `styles.css`, `app.js`, `agencies.js`, `assets/`. No build step. GSAP is
+self-hosted in `assets/vendor/`, the Manrope font in `assets/fonts/`.
 
-Run locally: `python -m http.server 3470` in this folder, then open http://localhost:3470/
+The page is built as a split stage: the reading column on the left, and on the right one job (48 hoodies,
+with whichever logo the visitor picks or uploads) that changes as the visitor scrolls: quote, proof, stitched
+on film, boxed and scanned on film, delivered. On a phone the stage is a band at the top of the first screen
+and the three steps that carry pictures show them inline.
 
-Python's server cannot seek video, so the chapter buttons in "The real system" only work on a server with range requests, such as `npx http-server -p 3471` (Vercel supports them).
+## Run it locally
 
-The system films in `assets/system/` are web encodes of the masters in `explainer_video/` (H.264 CRF 28, AAC 96k mono), with posters and subtitles (`.vtt`) beside each one.
+Any static server with range requests works. Python's `http.server` drops connections under load and cannot
+seek video, so use Node:
 
-Deploy on Vercel: import this folder as the project root (framework preset "Other", no build command, output directory `.`).
+```bash
+npx http-server -p 3471 .
+```
 
-Brand rules come from `../Presslane brand book.pdf`. Garment photos come from `../images` (background removed, plus a greyscale base for recolouring). Product screenshots in `assets/` are taken from the
-customer tracking page in `C:\python\oliver embrodery website solution\tracking-app`.
+Then open http://127.0.0.1:3471/. Add `?agency=leonardopower` to see an agency's version (booking buttons
+and the contact form); that choice lasts for the browser tab only.
+
+## Files
+
+| Where | What |
+| --- | --- |
+| `assets/photos/` | Generated stills (Higgsfield, 21 Oct 2026): the three gaps, four kinds of shop, the workshop, the delivered parcel. WebP, 1000 to 1600 px wide. |
+| `assets/video/` | Two generated 4.5 s silent loops (`make.mp4`, `send.mp4`) with posters. 960 × 960, H.264. |
+| `assets/system/` | The six real screen recordings with posters and `.vtt` captions. |
+| `assets/hoodie.webp`, `polo.webp`, `cap.webp`, `mug.webp`, `pen.webp`, `bottle.webp` | Garment and product cut-outs used by the stage and the quote demo. |
+| `assets/vendor/` | GSAP 3.13.0 core and ScrollTrigger. |
+| `assets/fonts/` | Manrope variable, latin subset. |
+| `api/contact.js` | The Vercel function behind the contact form. |
+| `tools/readability.py` | Scores the page's visible text by section (Flesch-Kincaid). Run `python -I tools/readability.py index.html` before a change goes live; the target is grade 5 or under in every section. |
+
+Files from the previous page that nothing uses now and can be deleted when you are sure: `assets/hero-network.*`,
+`assets/stage-*.webp`, `assets/enquiry-*`, `assets/*-grey.webp`.
 
 ## Agencies and their calendar links
 
-Each agency has its own address (for example `presslane.northside.com`) pointing at this same site. The site recognises the address and uses that agency's calendar link on every "Book a demo" button. On any other address the buttons are hidden, and the phone price bar links to the pricing section instead.
+Each agency has its own address (for example `presslane.northside.com`) pointing at this same site. The site
+recognises the address and uses that agency's booking link on every "Book a call" button, and shows the
+contact form. On any other address those are hidden and the page says to come through an agency.
 
 To add an agency:
 
@@ -23,22 +48,33 @@ To add an agency:
    ```js
    "northside": { name: "Northside Print", domain: "presslane.northside.com", book: "https://calendly.com/northside/presslane-demo" },
    ```
-   The key is lowercase letters, numbers and hyphens; `domain` has no `https://` or trailing slash; `book` must start with `https://`.
 2. In Vercel, add the domain to this project (Settings, Domains).
-3. The agency adds the DNS record Vercel shows them at their domain host (usually a CNAME for `presslane` pointing to `cname.vercel-dns.com`).
+3. The agency adds the DNS record Vercel shows them (usually a CNAME for `presslane` pointing to `cname.vercel-dns.com`).
 
-Before the address is live, `?agency=northside` on any address tests the same setup.
+Before the address is live, `?agency=northside` on any address tests the same setup for that tab.
 
 ## Contact form
 
-On an agency's address (or with `?agency=<key>`) a contact form appears above the closing section. Enquiries go to `api/contact.js`, a Vercel function, which adds the person to that agency's LeadConnector (HighLevel) location as a contact, tagged `presslane-website`, with their message as a note. On any other address the form is hidden.
-
-Each agency's location id and token stay out of the site. They live in one Vercel environment variable, `PRESSLANE_CRM` (Settings, Environment Variables, Production), holding JSON keyed like `agencies.js`:
+Enquiries go to `api/contact.js`, which adds the person to the agency's LeadConnector (HighLevel) location as a
+contact tagged `presslane-website`, with their message as a note. Each agency's location id and token live in one
+Vercel environment variable, `PRESSLANE_CRM`, as JSON keyed like `agencies.js`:
 
 ```json
 {"leonardopower": {"locationId": "abc123", "token": "pit-..."}, "octopusup": {"locationId": "def456", "token": "pit-..."}}
 ```
 
-The token is a Private Integration token from the agency's sub-account (Settings, Private Integrations) with the `contacts.write` scope. Redeploy after changing the variable. Never put a token in `agencies.js` or any other file in this folder: everything here is public.
+The token is a Private Integration token with the `contacts.write` scope. Redeploy after changing the variable.
+Never put a token in any file in this folder: everything here is public.
 
-The form needs Vercel to run; `python -m http.server` shows it but cannot send it.
+## Deploy
+
+Vercel: import this folder as the project root (framework preset "Other", no build command, output directory
+`.`). Keep the meeting-notes `.docx` and anything else private out of this folder: a CLI deploy publishes
+whatever is here.
+
+## Sample content to confirm before launch
+
+- The quote demo prices (hoodie £26.40, polo £14.20, t-shirt £9.60, cap £11.90, mug £8.40, bottle £7.90,
+  pen £0.85 before volume breaks of 5, 10, 15, 20 and 25 per cent) are illustrative.
+- "Northside Print", "Sam Okafor" and "Okafor Roofing" are fictional.
+- The delivery dates and the tracking number in the job steps are illustrative.

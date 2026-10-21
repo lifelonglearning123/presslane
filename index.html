@@ -3,760 +3,404 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Presslane — One AI platform for print, embroidery and promotional merchandise</title>
-  <meta name="description" content="Presslane is the AI platform for printers, embroiderers and promotional merchandise companies: storefront, quotes, artwork, back office, suppliers, school and club shops, and quote retargeting. Customers see their logo on the product, every quote is chased, every stage is messaged, the phone is answered, and the floor updates the system by scanning a runsheet.">
-  <meta property="og:title" content="Presslane — One AI platform. Everything your business runs on.">
-  <meta property="og:description" content="The storefront and back office for printers, embroiderers and sign makers. AI that chases quotes, answers the phone and tracks every job in your shop's name.">
+  <title>Presslane: runs the shop while you print</title>
+  <meta name="description" content="Presslane does the office side of a print or embroidery shop. It sends your quotes, keeps customers in the loop, answers the phone and tracks every job from quote to door. £199 a month.">
+  <meta property="og:title" content="Presslane runs the shop while you print">
+  <meta property="og:description" content="Quotes sent, customers told, the phone answered, every job tracked. Software for printers and embroiderers, £199 a month.">
   <meta property="og:type" content="website">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400..700&family=Inter:wght@300..700&family=Archivo:wght@400;600;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="preload" href="assets/fonts/manrope-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="styles.css">
+  <script>document.documentElement.classList.add('js')</script>
 </head>
 <body>
-<a class="skip" href="#top">Skip to content</a>
+<a class="skip" href="#main">Skip to content</a>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
-    <!-- The mark: two rails, one job square, 18 × 8 units. Master artwork, not redrawn. -->
-    <symbol id="mark" viewBox="0 0 18 8">
-      <rect class="mark-rail" x="0" y="0" width="18" height="1"/>
-      <rect class="mark-rail" x="0" y="7" width="18" height="1"/>
-      <rect class="mark-job" x="12" y="2" width="4" height="4"/>
-    </symbol>
-    <!-- Sample customer logos for the mock-up. Single colour so they read on any garment. -->
+    <!-- Sample customer logos for the stage. One colour so they read on any garment. -->
     <symbol id="logo-okafor" viewBox="0 0 132 60">
       <path d="M10 30 L34 10 L58 30 H48 L34 18 L20 30 Z" fill="currentColor"/>
       <rect x="28" y="30" width="12" height="14" fill="currentColor"/>
-      <text x="66" y="28" font-family="Archivo, sans-serif" font-weight="800" font-size="15" fill="currentColor" letter-spacing="-0.5">OKAFOR</text>
-      <text x="66" y="44" font-family="Archivo, sans-serif" font-weight="400" font-size="11" fill="currentColor" letter-spacing="1.2">ROOFING</text>
+      <text x="66" y="28" font-family="Manrope, sans-serif" font-weight="800" font-size="15" fill="currentColor" letter-spacing="-0.5">OKAFOR</text>
+      <text x="66" y="44" font-family="Manrope, sans-serif" font-weight="500" font-size="11" fill="currentColor" letter-spacing="1.2">ROOFING</text>
     </symbol>
     <symbol id="logo-hartley" viewBox="0 0 132 60">
       <circle cx="26" cy="30" r="17" fill="none" stroke="currentColor" stroke-width="5"/>
       <path d="M26 16 V30 L36 36" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="square"/>
-      <text x="52" y="26" font-family="Archivo, sans-serif" font-weight="800" font-size="13" fill="currentColor">HARTLEY</text>
-      <text x="52" y="42" font-family="Archivo, sans-serif" font-weight="600" font-size="11" fill="currentColor" letter-spacing="0.8">PLUMBING</text>
+      <text x="52" y="26" font-family="Manrope, sans-serif" font-weight="800" font-size="13" fill="currentColor">HARTLEY</text>
+      <text x="52" y="42" font-family="Manrope, sans-serif" font-weight="600" font-size="11" fill="currentColor" letter-spacing="0.8">PLUMBING</text>
     </symbol>
-    <symbol id="logo-willink" viewBox="6 0 132 60">
+    <symbol id="logo-crest" viewBox="6 0 132 60">
       <path d="M40 6 H80 V32 C80 44 60 54 60 54 C60 54 40 44 40 32 Z" fill="none" stroke="currentColor" stroke-width="4"/>
       <path d="M50 20 H70 M50 30 H70 M60 20 V44" stroke="currentColor" stroke-width="4"/>
     </symbol>
   </defs>
 </svg>
 
-<header class="nav">
-  <div class="wrap">
-    <a class="lockup" href="#top"><img src="assets/presslane-lockup.svg" alt="Presslane, home" width="150" height="19"></a>
-    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navLinks" id="navToggle">Menu</button>
-    <nav aria-label="Page sections" id="navLinks">
-      <ul class="nav-links">
-        <li><a href="#system">The system</a></li>
-        <li><a href="#lane">What it does</a></li>
-        <li><a href="#mockup">See it work</a></li>
-        <li><a href="#who">Who it is for</a></li>
-        <li><a href="#pricing">Pricing</a></li>
-        <li class="nav-only-mobile" data-only="print"><a href="#film">Watch the film</a></li>
-      </ul>
-    </nav>
-    <a class="btn nav-watch js-demo" href="#pricing" hidden>Book a demo</a>
-  </div>
-</header>
+<main id="main">
 
-<main id="top">
+  <!-- ============ The split: the sheet on the left, the stage on the right ============ -->
+  <div class="split">
 
-  <!-- HERO: the lane from the mark. The job square travels the six stages left to right; a window shows the real thing at each stage. app.js drives it. -->
-  <section class="hero" id="hero" aria-labelledby="heroTitle">
-    <div class="wrap hero-top">
-      <div class="hero-copy">
-        <h1 class="hero-h" id="heroTitle">Runs the shop<br>while you print.</h1>
-        <p class="hero-sub" data-promo="The storefront and back office for promotional merchandise companies. Visuals made, quotes chased, every order followed to the door.">The storefront and back office for printers, embroiderers and promotional merchandise companies. Quotes chased, customers told, the floor scanned.</p>
-        <div class="hero-ctas">
-          <a class="hbtn teal" href="#film" data-only="print">Watch the film</a>
-          <a class="hbtn teal" href="#mockup" data-only="promo">Make a visual</a>
-          <a class="hbtn ghost" href="#system">See the system</a>
-        </div>
-      </div>
-      <figure class="hero-window" id="heroWindow">
-        <div class="hero-obj" data-stage="0"><img src="assets/system/client-quotes-poster.webp" alt="A quote in Presslane: 100 hoodies drop from £16.36 to £13.09 each on the volume break" width="1280" height="720"></div>
-        <div class="hero-obj" data-stage="1">
-          <svg viewBox="0 0 800 620" role="img" aria-label="Proof: the customer's logo on the left chest of an Airforce blue hoodie" data-only="print"><image href="assets/hoodie.webp" x="157.5" y="30" width="485" height="560"/><use href="#logo-okafor" x="420" y="261" width="80" height="36" color="#F3F2F2" fill="#F3F2F2"/></svg>
-          <svg viewBox="0 0 800 620" role="img" aria-label="Visual: the customer's logo printed on a natural cotton tote bag" data-only="promo"><image href="assets/tote.webp" x="157.5" y="30" width="485" height="560"/><use href="#logo-okafor" x="325" y="391" width="150" height="68" color="#201E1D" fill="#201E1D"/></svg>
-        </div>
-        <div class="hero-obj" data-stage="2">
-          <div class="paper" data-only="print"><p class="paper-k">Runsheet</p><p class="paper-no">PL-04821</p><p class="paper-row">48 × AWDis JH001 hoodie, Airforce blue<br>Embroidery, left chest, 1 colour</p><svg class="paper-bars bars" viewBox="0 0 240 64" preserveAspectRatio="none" data-code="PL04821" aria-hidden="true"></svg></div>
-          <div class="paper" data-only="promo"><p class="paper-k">Purchase order · Supplier</p><p class="paper-no">PO-1187</p><p class="paper-row">250 × natural 5oz cotton tote<br>Screen print, front, 1 colour</p><svg class="paper-bars bars" viewBox="0 0 240 64" preserveAspectRatio="none" data-code="PO1187" aria-hidden="true"></svg></div>
-          <span class="hero-scan" aria-hidden="true"></span>
-        </div>
-        <div class="hero-obj" data-stage="3"><div class="paper tilt"><p class="paper-k">Courier · 2 of 2</p><p class="paper-no small-no">JD0002234567GB</p><p class="paper-row">Sam Okafor, Okafor Roofing Ltd<br>14 Kirkgate, Leeds LS1 6BY</p><svg class="paper-bars bars" viewBox="0 0 240 64" preserveAspectRatio="none" data-code="JD0002234567GB" aria-hidden="true"></svg></div></div>
-        <div class="hero-obj" data-stage="4"><div class="sms"><p class="sms-from" data-promo="Northside Promotions · SMS">Northside Print · SMS</p><p class="sms-b" data-promo="Your tote bags are on their way. Track them: JD0002234567GB">Your hoodies are on their way. Track them: JD0002234567GB</p></div></div>
-        <div class="hero-obj" data-stage="5"><div class="sms"><p class="sms-from" data-promo="Northside Promotions · SMS">Northside Print · SMS</p><p class="sms-b">Delivered. Same again next time is one click: northside.link/PL-04821</p></div></div>
-        <figcaption class="hero-cap" aria-live="polite"><span class="hero-cap-k" id="heroCapK"></span><span id="heroCapT"></span></figcaption>
-      </figure>
-    </div>
+    <!-- The stage: one job, your logo on it -->
+    <aside class="stage" aria-label="One job, shown as it moves">
+      <div class="stage-inner" id="stage" data-state="hoodie">
 
-    <div class="hero-lane" aria-hidden="true">
-      <div class="wrap"><div class="hero-track" id="heroTrack"><span class="hero-job" id="heroJob"></span></div></div>
-    </div>
-    <div class="wrap">
-      <div class="hero-stages" role="group" aria-label="Stages of a job" id="heroStages">
-        <button type="button" data-stage="0"><span class="n">01</span> <span class="l">Quote</span></button>
-        <button type="button" data-stage="1"><span class="n">02</span> <span class="l">Artwork</span></button>
-        <button type="button" data-stage="2"><span class="n">03</span> <span class="l">Production</span></button>
-        <button type="button" data-stage="3"><span class="n">04</span> <span class="l">Pick &amp; pack</span></button>
-        <button type="button" data-stage="4"><span class="n">05</span> <span class="l">Dispatch</span></button>
-        <button type="button" data-stage="5"><span class="n">06</span> <span class="l">Delivered</span></button>
-      </div>
-    </div>
-
-    <div class="wrap hero-foot">
-      <button type="button" class="hero-pause" id="heroPause" aria-pressed="false">Pause</button>
-      <div class="hero-choose">
-        <span class="hero-choose-k">Start with your business</span>
-        <a class="choose" href="#problem" data-audience="print">I'm a printer or embroiderer</a>
-        <a class="choose" href="#problem" data-audience="promo">I sell promotional merchandise</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- PROBLEM -->
-  <section class="section dark" id="problem">
-    <div class="wrap">
-      <div class="head">
-        <h2 class="h1" data-promo="A distributor wins on speed, and on following up.">A print shop loses money in the gaps between jobs, not in the jobs.</h2>
-        <p class="lead" data-promo="The brief lands at ten. The first distributor back with visuals and a price usually gets the order. And most enquiries that don’t convert were never chased, because the team had already moved on to the next one.">The quote that was never chased. The customer who rang three times to ask where their hoodies were. The job that sat finished on a bench because nobody updated the system. Every one of these is time the owner spent not printing.</p>
-      </div>
-      <div class="cols">
-        <div>
-          <h3 class="h2" data-promo="Visuals">Quotes</h3>
-          <p class="small" data-promo="Every brief needs the client’s logo on three or four products. Done by hand, that’s the morning gone.">Most quotes that do not convert were never followed up. Shops are too busy printing to chase.</p>
-        </div>
-        <div>
-          <h3 class="h2" data-promo="Quotes">Calls</h3>
-          <p class="small" data-promo="Price breaks, setup charges, carriage. Built in a spreadsheet, checked twice, sent late.">“Where is my order?” is the most common inbound call. It has an answer; nobody has time to give it.</p>
-        </div>
-        <div>
-          <h3 class="h2" data-promo="Follow-up">Status</h3>
-          <p class="small" data-promo="Most enquiries that don’t convert were never chased. The team moved on to the next brief.">The system is on a PC in the office. The job is on the floor. The two rarely agree.</p>
-        </div>
-      </div>
-      <div class="belief">
-        <p class="kicker">Our belief</p>
-        <p class="lead" data-promo="The time between a brief and an order should be spent selling. Presslane does the visuals, the pricing and the chasing, so a small team can answer every brief the same day.">The shop should run itself between the moments a person needs to be involved. Presslane exists to make those moments the only ones a printer has to touch.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- THE SYSTEM: a map of the £199 package, one recorded film per part. app.js loads a film only when its part is picked. -->
-  <section class="section surface" id="system" aria-labelledby="systemTitle">
-    <div class="wrap">
-      <div class="sys-head">
-        <h2 class="h1" id="systemTitle">The real system, one film per part.</h2>
-        <p class="lead">Five short films recorded in Presslane itself. Together they are the £199 package. Pick a part to watch it.</p>
-      </div>
-
-      <div class="sys-map" role="group" aria-label="Parts of the £199 package">
-        <div class="sys-stage">
-          <p class="sys-stage-k">Work comes in</p>
-          <button class="sys-part" type="button" data-film="storefront" aria-pressed="true" aria-controls="sysPlayer">
-            <span class="sys-part-name">Storefront</span>
-            <span class="sys-part-s">Your website and shop, from a template.</span>
-            <span class="sys-part-t mono">0:48</span>
-            <span class="sys-part-bar" aria-hidden="true"></span>
-          </button>
-          <button class="sys-part" type="button" data-film="clubshops" aria-pressed="false" aria-controls="sysPlayer">
-            <span class="sys-part-name">Club shops</span>
-            <span class="sys-part-s">A shop for every school, club or company.</span>
-            <span class="sys-part-t mono">1:14</span>
-            <span class="sys-part-bar" aria-hidden="true"></span>
-          </button>
-        </div>
-        <div class="sys-stage">
-          <p class="sys-stage-k">You sell</p>
-          <button class="sys-part" type="button" data-film="quotes" aria-pressed="false" aria-controls="sysPlayer">
-            <span class="sys-part-name">Quotes</span>
-            <span class="sys-part-s">Priced from your supplier list, accepted online.</span>
-            <span class="sys-part-t mono">1:42</span>
-            <span class="sys-part-bar" aria-hidden="true"></span>
-          </button>
-          <button class="sys-part" type="button" data-film="customers" aria-pressed="false" aria-controls="sysPlayer">
-            <span class="sys-part-name">Customer accounts</span>
-            <span class="sys-part-s">Trade terms, credit limits, one record each.</span>
-            <span class="sys-part-t mono">0:46</span>
-            <span class="sys-part-bar" aria-hidden="true"></span>
-          </button>
-        </div>
-        <div class="sys-stage">
-          <p class="sys-stage-k">You make and ship</p>
-          <button class="sys-part sys-part-tall" type="button" data-film="pipeline" aria-pressed="false" aria-controls="sysPlayer">
-            <span class="sys-part-name">Order pipeline</span>
-            <span class="sys-part-s">Every order on one board, moving on its own.</span>
-            <span class="sys-flow" aria-hidden="true"><span>Artwork</span><span>Production</span><span>Pick &amp; pack</span><span>Dispatch</span><span>Delivered</span></span>
-            <span class="sys-part-t mono">1:07</span>
-            <span class="sys-part-bar" aria-hidden="true"></span>
-          </button>
-        </div>
-      </div>
-
-      <div class="sys-player" id="sysPlayer">
-        <div class="sys-main">
-        <figure class="sys-screen">
-          <video id="sysVideo" playsinline preload="none" width="1920" height="1080" poster="assets/system/storefront-setup-poster.webp" aria-label="Storefront film">
-            Your browser cannot play this video.
-          </video>
-          <button class="sys-play" type="button" id="sysPlay">
-            <span class="promo-play-square" aria-hidden="true"></span>
-            <span id="sysPlayLabel">Play with sound · 0:48</span>
-          </button>
-        </figure>
-        <ol class="sys-chapters" id="sysChapters" aria-label="Chapters"></ol>
-        </div>
-        <div class="sys-side">
-          <div>
-            <h3 class="h3" id="sysTitle">Storefront</h3>
-            <p class="small" id="sysDesc"></p>
-          </div>
-          <div class="sys-side-foot">
-            <button class="btn outline" type="button" id="sysNext">Next: Club shops</button>
-            <button class="film-btn" type="button" id="sysSubs" aria-pressed="false">Subtitles</button>
-          </div>
-          <details class="sys-transcript">
-            <summary>Read the voiceover</summary>
-            <div id="sysTranscript" class="small"></div>
-          </details>
-        </div>
-      </div>
-
-      <div class="sys-beyond">
-        <p class="small"><strong>Add-ons</strong></p>
-        <ul>
-          <li><a href="#mockup">Logo mock-ups and proofs</a></li>
-          <li><a href="#system" data-film="voice">Phone answering: watch it <span class="mono">1:27</span></a></li>
-          <li>Quote retargeting</li>
-          <li>Local SEO and AEO</li>
-          <li>AI marketing</li>
-          <li><a href="#pricing">See pricing</a></li>
-        </ul>
-      </div>
-    </div>
-  </section>
-
-  <!-- PRICING: one plan, exactly what it includes, add-ons priced separately. Demo buttons (.js-demo) take the visiting agency's calendar link from agencies.js, and stay hidden without one. -->
-  <section class="section pricing" id="pricing" aria-labelledby="pricingTitle">
-    <div class="wrap">
-      <h2 class="pr-h" id="pricingTitle">One price for the whole shop.</h2>
-      <p class="pr-sub">Everything in the films above, for one monthly price. No setup fee and no contract.</p>
-      <div class="pr-grid">
-        <div class="pr-plan">
-          <p class="pr-k">The Presslane package</p>
-          <p class="pr-price"><span class="pr-amt">£199</span><span class="pr-per">a month<br>+ VAT</span></p>
-          <p class="pr-terms">Cancel any time. No setup fee.</p>
-          <a class="hbtn teal pr-cta js-demo" href="#pricing" hidden>Book a demo</a>
-          <p class="pr-with" id="prWith" hidden></p>
-          <p class="pr-k pr-inc-k">Included</p>
-          <ul class="pr-inc">
-            <li><span>Storefront</span><a href="#system" data-film="storefront">Watch it <span class="mono">0:48</span></a></li>
-            <li><span>Club shops, on their own web address</span><a href="#system" data-film="clubshops">Watch it <span class="mono">1:14</span></a></li>
-            <li><span>Quotes, with follow-ups on their own</span><a href="#system" data-film="quotes">Watch it <span class="mono">1:42</span></a></li>
-            <li><span>Customer accounts and trade credit</span><a href="#system" data-film="customers">Watch it <span class="mono">0:46</span></a></li>
-            <li><span>Order pipeline and barcode scanning</span><a href="#system" data-film="pipeline">Watch it <span class="mono">1:07</span></a></li>
-            <li><span>Supplier list, with your products priced from it</span></li>
-          </ul>
-        </div>
-        <div class="pr-addons">
-          <p class="pr-k">Add when you need them</p>
-          <ul>
-            <li><div><strong>Phone answering</strong><span>Calls answered in your shop's name, with every order to hand. <a href="#system" data-film="voice">Watch it · 1:27</a></span></div><span class="pr-add-price">£100 a month</span></li>
-            <li><div><strong>Logo mock-ups and proofs</strong><span>Customers place their logo on the product. That picture becomes the proof.</span></div><span class="pr-add-price">£100 a month</span></li>
-            <li><div><strong>Quote retargeting</strong><span>Everyone who asked for a quote is followed up until they come back.</span></div><span class="pr-add-price">£100 a month</span></li>
-            <li><div><strong>Local SEO and AEO</strong><span>Found on Google and on AI answer engines when people nearby search for what you make.</span></div><span class="pr-add-price">£100 a month</span></li>
-            <li><div><strong>AI marketing</strong><span>Social media posts for your shop, created with AI.</span></div><span class="pr-add-price">£500 a month</span></li>
-          </ul>
-          <p class="pr-note">All prices exclude VAT.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- FILM + PRESENTATION -->
-  <section class="section" id="film" data-only="print">
-    <div class="wrap">
-      <div class="film-wrap">
-        <div class="copy">
-          <h2 class="h1">Sixty seconds on the shop floor.</h2>
-          <p class="body">The film shows the gaps a print shop loses money in and what Presslane does about each one: the quote that gets chased, the customer who is told at every stage, the sheet that updates the system. It has sound, and every point is also written on screen.</p>
-          <div class="deck">
-            <a class="deck-cover" href="assets/presslane-presentation.pdf" target="_blank" rel="noopener" aria-label="Open the Presslane presentation (PDF)">
-              <span class="deck-kicker">Presentation · 2026</span>
-              <svg viewBox="0 0 18 8" aria-hidden="true"><use href="#mark"/></svg>
-              <span class="deck-title">Runs the shop while you print.</span>
-            </a>
-            <div class="deck-copy">
-              <h3 class="h3">The presentation</h3>
-              <p class="small">14 slides for the printer who wants the argument on paper: the problem, the three promises, the lane, the runsheet, the platform and who it is for.</p>
-              <a class="btn outline" href="assets/presslane-presentation.pdf" target="_blank" rel="noopener">Open the presentation (PDF, 1.4 MB, new tab)</a>
-            </div>
-          </div>
-        </div>
-        <figure class="promo" id="promo" data-player>
-          <video id="promoVideo" aria-label="Presslane promotional film, 60 seconds" playsinline preload="metadata" poster="assets/presslane-promo-poster.webp" width="720" height="1280">
-            <source src="assets/presslane-promo.mp4" type="video/mp4">
-            Your browser cannot play this video. <a href="assets/presslane-promo.mp4">Download it</a> instead.
-          </video>
-          <button class="promo-play" type="button" id="promoPlay" aria-label="Play the film">
-            <span class="promo-play-square" aria-hidden="true"></span>
-            <span>Play · 60 s</span>
-          </button>
-          <figcaption class="caption"><span>Presslane · promotional film</span><span class="mono">1080 × 1920 · 60 s</span></figcaption>
-        </figure>
-      </div>
-    </div>
-  </section>
-
-  <!-- THE LANE + LIVE TRACKER -->
-  <section class="section" id="lane">
-    <div class="wrap">
-      <div class="head">
-        <h2 class="h1">One lane from quote to door.</h2>
-        <p class="lead" data-promo="Every order travels the same six stages, whether you decorate it or your supplier does. The client and your team see the same picture, and the client is told at each one, in your name and branding. Pick a stage to see what the client sees.">Every job travels the same six stages. The customer and the printer see the same picture, and the customer is told at each one, in the shop's own name and branding. Pick a stage to see what the customer sees.</p>
-      </div>
-
-      <div class="lane-tiles" role="group" aria-label="Stages of a job" id="laneTiles">
-        <button class="tile" aria-pressed="true" data-stage="1"><span class="n">01</span><span><strong>Order received</strong><span class="s">Paid and confirmed by email.</span></span></button>
-        <button class="tile" aria-pressed="false" data-stage="2"><span class="n">02</span><span data-promo="&lt;strong&gt;Artwork sent&lt;/strong&gt;&lt;span class=&quot;s&quot;&gt;Visual and proof sent for sign-off.&lt;/span&gt;"><strong>Proof sent</strong><span class="s">Logo digitised and mocked up on the garment.</span></span></button>
-        <button class="tile" aria-pressed="false" data-stage="3"><span class="n">03</span><span data-promo="&lt;strong&gt;Artwork approved&lt;/strong&gt;&lt;span class=&quot;s&quot;&gt;One click from the client. The order goes to production.&lt;/span&gt;"><strong>Proof approved</strong><span class="s">One click from the customer. Runsheet prints.</span></span></button>
-        <button class="tile" aria-pressed="false" data-stage="4"><span class="n">04</span><span data-promo="&lt;strong&gt;In production&lt;/strong&gt;&lt;span class=&quot;s&quot;&gt;In-house or at your supplier. Client told.&lt;/span&gt;"><strong>In production</strong><span class="s">Scanned at the bench. Customer told.</span></span></button>
-        <button class="tile" aria-pressed="false" data-stage="5"><span class="n">05</span><span data-promo="&lt;strong&gt;Dispatched&lt;/strong&gt;&lt;span class=&quot;s&quot;&gt;The supplier’s tracking code, passed straight on.&lt;/span&gt;"><strong>Dispatched</strong><span class="s">Tracking number sent.</span></span></button>
-        <button class="tile" aria-pressed="false" data-stage="6"><span class="n">06</span><span><strong>Delivered</strong><span class="s">Reorder is one click.</span></span></button>
-      </div>
-
-      <div class="tracker">
-        <figure class="shot" style="margin:0">
-          <img src="assets/stage-1.webp" alt="Customer tracking page at stage 1, order received" width="1440" height="750" data-stage="1" loading="eager">
-          <img src="assets/stage-2.webp" alt="Customer tracking page at stage 2, artwork proof sent" width="1440" height="750" data-stage="2" hidden>
-          <img src="assets/stage-3.webp" alt="Customer tracking page at stage 3, proof approved" width="1440" height="750" data-stage="3" hidden>
-          <img src="assets/stage-4.webp" alt="Customer tracking page at stage 4, in production" width="1440" height="750" data-stage="4" hidden>
-          <img src="assets/stage-5.webp" alt="Customer tracking page at stage 5, dispatched with tracking number" width="1440" height="750" data-stage="5" hidden>
-          <img src="assets/stage-6.webp" alt="Customer tracking page at stage 6, delivered" width="1440" height="750" data-stage="6" hidden>
-          <figcaption class="caption"><span>Customer · track-your-order page</span><span data-promo="Your logo and colours, not ours">Shop's own logo and colours, not ours</span></figcaption>
-        </figure>
-        <div class="msg" id="laneMsg" role="region" aria-label="What the customer is told at this stage">
-          <div>
-            <p class="kicker" id="laneMsgKicker">Status · Fri 15 Aug, 10:42</p>
-            <p class="h3" id="laneMsgHead">Thanks, we have your order.</p>
-            <p class="body" id="laneMsgBody">Proof coming today. We'll message you when it's ready to approve.</p>
-          </div>
-          <p class="foot" id="laneMsgFoot"><strong>Sent by</strong> the order confirmation. Nobody typed it.</p>
-        </div>
-      </div>
-      <div class="tracker-controls">
-        <button type="button" id="lanePlay" aria-pressed="true">Pause</button>
-        <span>Advances on its own, or click a stage.</span>
-      </div>
-      <p class="sys-link"><a href="#system" data-film="pipeline">Watch the order pipeline in Presslane</a> <span class="mono">1:07</span></p>
-    </div>
-  </section>
-
-  <!-- MOCK-UP DEMO -->
-  <section class="section surface" id="mockup">
-    <div class="wrap">
-      <div class="feature">
-        <div class="copy">
-          <h2 class="h1" data-promo="Visuals in minutes, not an afternoon.">Customers see their logo on the product before they order.</h2>
-          <p class="body" data-promo="Upload the client’s logo, pick a tote, travel mug, pen or bottle, and see it placed and sized on the real product. It goes out with the quote, and that picture becomes the visual they approve.">They upload a logo, pick a hoodie, polo, cap or business card, and see it placed and sized on the real product. That picture becomes the proof they approve, and the placement picture the bench works from.</p>
-          <ul class="points" data-promo="&lt;li&gt;&lt;strong&gt;Same-day response.&lt;/strong&gt; Visuals go out with the price while the brief is still warm.&lt;/li&gt;&lt;li&gt;&lt;strong&gt;Approved in one click.&lt;/strong&gt; The client signs off what you have already shown them.&lt;/li&gt;&lt;li&gt;&lt;strong&gt;Priced as they go.&lt;/strong&gt; Quantity breaks and print costs update with every change.&lt;/li&gt;">
-            <li><strong>Fewer artwork rounds.</strong> The customer approves what they have already seen.</li>
-            <li><strong>Goes on the runsheet.</strong> The same picture prints on the sheet at the bench.</li>
-            <li><strong>Priced as they go.</strong> Quantity breaks and decoration cost update with every change.</li>
-          </ul>
+        <div class="layer layer-field is-on" data-layer="hoodie">
+          <svg viewBox="0 0 800 900" role="img" aria-label="A slate blue hoodie with your logo on the left chest" id="stageSvg">
+            <image href="assets/hoodie.webp" x="100" y="104" width="600" height="693" preserveAspectRatio="xMidYMid meet"/>
+            <g class="logo-slot" data-w="99" data-h="45" transform="translate(474 412)"></g>
+            <g class="stamp" data-stamp="quote" transform="translate(150 120) rotate(-6)">
+              <rect x="0" y="0" width="236" height="64" fill="#ffffff" stroke="#29735c" stroke-width="4"/>
+              <text x="118" y="42" text-anchor="middle" font-family="Manrope, sans-serif" font-weight="800" font-size="26" fill="#29735c">Quote sent</text>
+            </g>
+            <g class="stamp" data-stamp="approve" transform="translate(150 120) rotate(-6)">
+              <rect x="0" y="0" width="214" height="64" fill="#29735c"/>
+              <text x="107" y="42" text-anchor="middle" font-family="Manrope, sans-serif" font-weight="800" font-size="26" fill="#ffffff">Approved</text>
+            </g>
+          </svg>
         </div>
 
-        <div class="mockup" id="mockupDemo">
-          <div class="mockup-canvas" id="mockupCanvas">
-            <svg viewBox="0 0 800 600" id="mockupSvg" role="img" aria-label="Product mock-up preview"></svg>
-            <span class="drag-hint"><span class="hint-pointer">Drag the logo, or focus it and use the arrow keys</span><span class="hint-touch">Drag the logo to move it</span></span>
-            <p class="sr-only" id="mockStatus" aria-live="polite"></p>
-          </div>
-          <div class="controls">
-            <div class="control">
-              <div class="lbl">Product</div>
-              <div class="chips" id="productChips">
-                <button class="chip" aria-pressed="true" data-product="hoodie" data-only="print">Hoodie</button>
-                <button class="chip" aria-pressed="false" data-product="polo" data-only="print">Polo</button>
-                <button class="chip" aria-pressed="false" data-product="cap" data-only="print">Cap</button>
-                <button class="chip" aria-pressed="false" data-product="card" data-only="print">Business card</button>
-                <button class="chip" aria-pressed="false" data-product="tote" data-only="promo">Tote bag</button>
-                <button class="chip" aria-pressed="false" data-product="mug" data-only="promo">Travel mug</button>
-                <button class="chip" aria-pressed="false" data-product="pen" data-only="promo">Pen</button>
-                <button class="chip" aria-pressed="false" data-product="bottle" data-only="promo">Bottle</button>
+        <div class="layer" data-layer="gap1"><img src="assets/photos/gap-quote.webp" alt="A paper quote half pushed into a desk drawer" width="1000" height="1250" loading="lazy"></div>
+        <div class="layer" data-layer="gap2"><img src="assets/photos/gap-phone.webp" alt="A desk phone ringing on a print shop counter" width="1000" height="1250" loading="lazy"></div>
+        <div class="layer" data-layer="gap3"><img src="assets/photos/gap-bench.webp" alt="A finished box with a hoodie on top, sitting on a workbench" width="1000" height="1250" loading="lazy"></div>
+
+        <div class="layer" data-layer="make">
+          <video muted loop playsinline preload="none" poster="assets/video/make-poster.webp" data-src="assets/video/make.mp4" aria-label="An embroidery machine stitching a logo onto a hoodie"></video>
+        </div>
+        <div class="layer" data-layer="send">
+          <video muted loop playsinline preload="none" poster="assets/video/send-poster.webp" data-src="assets/video/send.mp4" aria-label="Hands boxing a hoodie and scanning the job sheet"></video>
+        </div>
+        <div class="layer" data-layer="done"><img src="assets/photos/delivered.webp" alt="An open parcel of hoodies on an office desk" width="1200" height="1800" loading="lazy"></div>
+
+        <div class="layer layer-sheet" data-layer="sheet">
+          <svg viewBox="0 0 600 800" role="img" aria-label="A job sheet with your logo and a barcode" id="sheetSvg">
+            <rect x="0" y="0" width="600" height="800" fill="#ffffff"/>
+            <text x="40" y="64" font-family="Manrope, sans-serif" font-weight="800" font-size="34" fill="#151515">Job sheet</text>
+            <text x="560" y="64" text-anchor="end" font-family="Manrope, sans-serif" font-weight="800" font-size="34" fill="#29735c">PL-04821</text>
+            <rect x="40" y="86" width="520" height="4" fill="#151515"/>
+            <text x="40" y="136" font-family="Manrope, sans-serif" font-weight="700" font-size="20" fill="#151515">Customer</text>
+            <text x="40" y="164" font-family="Manrope, sans-serif" font-size="18" fill="#151515">Sam Okafor, Okafor Roofing</text>
+            <text x="40" y="190" font-family="Manrope, sans-serif" font-size="18" fill="#58615a">Due Thursday · Courier</text>
+            <text x="320" y="136" font-family="Manrope, sans-serif" font-weight="700" font-size="20" fill="#151515">Job</text>
+            <text x="320" y="164" font-family="Manrope, sans-serif" font-size="18" fill="#151515">48 × AWDis JH001 hoodie</text>
+            <text x="320" y="190" font-family="Manrope, sans-serif" font-size="18" fill="#58615a">Airforce blue · left chest</text>
+            <text x="320" y="216" font-family="Manrope, sans-serif" font-size="18" fill="#58615a">S 6 · M 12 · L 18 · XL 8 · XXL 4</text>
+            <rect x="40" y="250" width="200" height="130" fill="#e4efe8"/>
+            <g class="logo-slot dark" data-w="150" data-h="68" transform="translate(140 315)"></g>
+            <image href="assets/hoodie.webp" x="300" y="246" width="260" height="300" preserveAspectRatio="xMidYMid meet"/>
+            <g class="logo-slot" data-w="40" data-h="18" transform="translate(462 379)"></g>
+            <text x="40" y="430" font-family="Manrope, sans-serif" font-weight="700" font-size="18" fill="#151515">Scan at each bench</text>
+            <g id="barcode" transform="translate(40 450)"></g>
+            <text x="40" y="546" font-family="Manrope, sans-serif" font-size="16" fill="#58615a">PL04821</text>
+            <g font-family="Manrope, sans-serif" font-size="16" fill="#151515">
+              <rect x="40" y="600" width="150" height="90" fill="none" stroke="#151515" stroke-width="2"/><text x="52" y="626">Artwork</text>
+              <rect x="225" y="600" width="150" height="90" fill="none" stroke="#151515" stroke-width="2"/><text x="237" y="626">Making</text>
+              <rect x="410" y="600" width="150" height="90" fill="none" stroke="#151515" stroke-width="2"/><text x="422" y="626">Packed</text>
+            </g>
+          </svg>
+        </div>
+
+        <div class="stage-bar">
+          <span class="bar-label">Your logo</span>
+          <button class="logo-pick" type="button" aria-pressed="true" data-logo="logo-okafor" aria-label="Okafor Roofing logo"><svg viewBox="0 0 132 60"><use href="#logo-okafor"/></svg></button>
+          <button class="logo-pick" type="button" aria-pressed="false" data-logo="logo-hartley" aria-label="Hartley Plumbing logo"><svg viewBox="0 0 132 60"><use href="#logo-hartley"/></svg></button>
+          <button class="logo-pick" type="button" aria-pressed="false" data-logo="logo-crest" aria-label="School crest"><svg viewBox="6 0 132 60"><use href="#logo-crest"/></svg></button>
+          <label class="upload">Upload yours<input type="file" id="logoUpload" accept="image/png,image/jpeg,image/svg+xml,image/webp" aria-describedby="logoStatus"></label>
+          <span class="bar-status" id="logoStatus" aria-live="polite">It stays in your browser.</span>
+        </div>
+      </div>
+    </aside>
+
+
+    <div class="read">
+
+      <!-- Hero: the menu sheet -->
+      <section class="hero" id="top" data-stage="hoodie">
+        <div class="top">
+          <a class="link" href="#job">How it works</a>
+          <a class="lockup" href="#top" aria-label="Presslane, home"><img src="assets/presslane-lockup.svg" alt="Presslane" width="260" height="33"></a>
+          <a class="link" href="#price">Price</a>
+        </div>
+        <div class="hero-body">
+          <h1 class="lines">
+            <span class="line"><span data-line style="--i:0">Runs the shop</span></span>
+            <span class="line"><span data-line style="--i:1">while you print.</span></span>
+          </h1>
+          <p class="sub" data-rise style="--i:1">Presslane sends your quotes, keeps customers in the loop, answers the phone and tracks every job. You print.</p>
+          <a class="button js-book" href="#talk" data-rise style="--i:2" hidden>Book a call</a>
+          <a class="button js-noagency" href="#job" data-rise style="--i:2">See how it works</a>
+        </div>
+      </section>
+
+      <!-- The gaps: where the money goes -->
+      <section class="gaps" aria-label="Where the money goes">
+        <div class="col">
+          <p data-stage="hoodie">A print shop loses money between jobs, not on them.</p>
+          <p data-stage="gap1">The quote nobody chased. Most lost quotes were never followed up.</p>
+          <p data-stage="gap2">The customer who rang three times. “Where is my order?” is the call you get most.</p>
+          <p data-stage="gap3">The job that sat on the bench. It was finished. The computer said it was not.</p>
+          <p data-stage="hoodie">Presslane closes those gaps. Here is one job, start to finish.</p>
+        </div>
+      </section>
+
+      <!-- One job, start to finish -->
+      <section class="job" id="job">
+        <h2>One job, start to finish</h2>
+
+        <div class="step" data-stage="quote">
+          <p><b>A customer asks.</b> Sam wants 48 hoodies with his logo on the chest. Presslane sends him a price in minutes, with his logo on the hoodie. He says yes and pays online.</p>
+          <div class="evidence">
+            <div class="ui-quote" data-ui>
+              <div class="ui-row">
+                <div class="ui-thumb"><svg viewBox="0 0 120 120" aria-hidden="true"><image href="assets/hoodie.webp" x="8" y="2" width="104" height="120" preserveAspectRatio="xMidYMid meet"/><g class="logo-slot" data-w="18" data-h="8" transform="translate(74 53)"></g></svg></div>
+                <div class="grow"><div class="ui-name">48 × AWDis JH001 hoodie, airforce blue</div><div class="ui-sub">Left chest logo, embroidered</div></div>
+                <div class="ui-money">£23.76 each</div>
               </div>
+              <div class="ui-row ui-total"><span>Total</span><span class="ui-money">£1,140.48 + VAT</span></div>
+              <div class="ui-row"><span class="ui-sub">Holds for 14 days</span><span class="ui-btn">Accept and pay</span></div>
             </div>
-            <div class="control">
-              <div class="lbl">Colour <span class="mono" id="colourName">Airforce blue</span></div>
-              <div class="swatches" id="swatches">
-                <button class="chip as-shot" id="asShot" aria-pressed="true" type="button">As photographed</button>
-                <button class="swatch" aria-pressed="false" data-colour="#1F2A44" data-name="Navy" aria-label="Navy" title="Navy" style="background:#1F2A44"></button>
-                <button class="swatch" aria-pressed="false" data-colour="#232323" data-name="Black" aria-label="Black" title="Black" style="background:#232323"></button>
-                <button class="swatch" aria-pressed="false" data-colour="#8E8E8E" data-name="Heather grey" aria-label="Heather grey" title="Heather grey" style="background:#8E8E8E"></button>
-                <button class="swatch" aria-pressed="false" data-colour="#F4F2EC" data-name="White" aria-label="White" title="White" style="background:#F4F2EC"></button>
-                <button class="swatch" aria-pressed="false" data-colour="#1E4D3B" data-name="Bottle green" aria-label="Bottle green" title="Bottle green" style="background:#1E4D3B"></button>
-                <button class="swatch" aria-pressed="false" data-colour="#9A1F1F" data-name="Red" aria-label="Red" title="Red" style="background:#9A1F1F"></button>
+          </div>
+        </div>
+
+        <div class="step" data-stage="approve">
+          <p><b>He checks the picture.</b> Sam sees his logo on the hoodie and approves it with one tap. The job sheet prints at the bench.</p>
+          <div class="evidence">
+            <div class="ui-quote" data-ui>
+              <div class="ui-row">
+                <div class="ui-thumb"><svg viewBox="0 0 120 120" aria-hidden="true"><image href="assets/hoodie.webp" x="8" y="2" width="104" height="120" preserveAspectRatio="xMidYMid meet"/><g class="logo-slot" data-w="18" data-h="8" transform="translate(74 53)"></g></svg></div>
+                <div class="grow"><div class="ui-name">Proof for job PL-04821</div><div class="ui-sub">Left chest · 90 × 41 mm · 8,000 stitches</div></div>
               </div>
-            </div>
-            <div class="control">
-              <div class="lbl">Logo</div>
-              <div class="logos" id="logoPicks">
-                <button class="logo-pick" aria-pressed="true" data-logo="logo-okafor" aria-label="Okafor Roofing logo"><svg><use href="#logo-okafor"/></svg></button>
-                <button class="logo-pick" aria-pressed="false" data-logo="logo-hartley" aria-label="Hartley Plumbing logo"><svg><use href="#logo-hartley"/></svg></button>
-                <button class="logo-pick" aria-pressed="false" data-logo="logo-willink" aria-label="School crest logo"><svg><use href="#logo-willink"/></svg></button>
-                <label class="upload">Upload your own<input type="file" aria-describedby="uploadStatus" accept="image/png,image/jpeg,image/svg+xml,image/webp" id="logoUpload"></label>
-              </div>
-              <p class="small muted upload-status" id="uploadStatus" aria-live="polite"></p>
-            </div>
-            <div class="control">
-              <div class="lbl">Position <span class="mono" id="sizeReadout">90 × 60 mm</span></div>
-              <div class="chips" id="positionChips"></div>
-              <label class="sr-only" for="logoSize">Logo size</label>
-              <input type="range" id="logoSize" min="50" max="130" value="100" step="1">
+              <div class="ui-row"><span class="ui-ok">Approved by Sam, 14:32</span><span class="ui-sub">Job sheet printed</span></div>
             </div>
           </div>
-          <div class="proof-line" id="proofLine">
-            <span class="mono" id="proofText">Proof · PL-04821 · Hoodie, Airforce blue · Left chest · 90 × 41 mm · 48 pcs · £1,142.40 inc. VAT</span>
-            <button class="btn" type="button" id="approveBtn" data-promo="Approve this visual">Approve this proof</button>
-            <span class="approved" data-promo="&lt;i class=&quot;sq ink&quot;&gt;&lt;/i&gt;Visual approved 14:32 · Order confirmed"><i class="sq ink"></i>Proof approved 14:32 · Runsheet printed</span>
+        </div>
+
+        <div class="step" data-stage="make">
+          <p><b>You make it.</b> Print or stitch, as you always have. Scan the job sheet at the bench and the job moves on the board. Sam gets an email.</p>
+          <figure class="m-pic"><video muted loop playsinline preload="none" poster="assets/video/make-poster.webp" data-src="assets/video/make.mp4" aria-label="An embroidery machine stitching a logo onto a hoodie"></video></figure>
+          <div class="evidence">
+            <div class="ui-frames" data-ui aria-label="The job board">
+              <div class="ui-card"><span class="ui-stage">Artwork</span><span>Approved</span></div>
+              <div class="ui-card live"><span class="ui-stage">Making</span><span><b>PL-04821</b> · 48 hoodies</span></div>
+              <div class="ui-card"><span class="ui-stage">Packed</span><span>Waiting</span></div>
+            </div>
           </div>
+        </div>
+
+        <div class="step" data-stage="send">
+          <p><b>You send it.</b> Pack it, scan it, post it. Sam gets the tracking number the moment it leaves.</p>
+          <figure class="m-pic"><video muted loop playsinline preload="none" poster="assets/video/send-poster.webp" data-src="assets/video/send.mp4" aria-label="Hands boxing a hoodie and scanning the job sheet"></video></figure>
+          <div class="evidence">
+            <div class="ui-mail" data-ui>
+              <div class="ui-from">From Northside Print to Sam</div>
+              <div class="ui-subject">Your hoodies are on their way</div>
+              <div>DPD · 1534 2345 6789 · arriving Thursday</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step" data-stage="done">
+          <p><b>Every step, Sam is told.</b> Each email comes from your shop, in your name. He can check the job any time on your website, so he does not need to ring.</p>
+          <figure class="m-pic"><img src="assets/photos/delivered.webp" alt="An open parcel of hoodies on an office desk" width="1200" height="1800" loading="lazy"></figure>
+          <div class="evidence">
+            <div class="ui-track" data-ui>
+              <ol>
+                <li class="done"><i></i>Quote</li>
+                <li class="done"><i></i>Paid</li>
+                <li class="done"><i></i>Approved</li>
+                <li class="done"><i></i>Made</li>
+                <li class="done"><i></i>Sent</li>
+                <li class="now"><i></i>Delivered</li>
+              </ol>
+              <div class="ui-note">Six emails sent, in your name. No calls needed.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- What is in the box: the job sheet -->
+      <section class="box" id="box" data-stage="sheet">
+        <div class="sheet">
+          <h2>What’s in the box</h2>
+
+          <div class="group">
+            <h3>Selling</h3>
+            <div class="item"><div class="item-row"><span class="name">Online shop</span><a class="val" href="#films" data-film="storefront">Watch · 0:48</a></div><p class="desc">Your products, your prices, your logo. Customers order and pay.</p></div>
+            <div class="item"><div class="item-row"><span class="name">Quotes</span><a class="val" href="#films" data-film="quotes">Watch · 1:42</a></div><p class="desc">Build a quote in minutes. Customers accept and pay online.</p></div>
+            <div class="item"><div class="item-row"><span class="name">Club and school shops</span><a class="val" href="#films" data-film="clubshops">Watch · 1:14</a></div><p class="desc">A shop for each team or school, on its own web address.</p></div>
+          </div>
+
+          <div class="group">
+            <h3>Making</h3>
+            <div class="item"><div class="item-row"><span class="name">Job board</span><a class="val" href="#films" data-film="pipeline">Watch · 1:07</a></div><p class="desc">Every job on one board. Scan at the bench to move it on.</p></div>
+            <div class="item"><div class="item-row"><span class="name">Customer updates</span><span class="val plain">included</span></div><p class="desc">An email at every step, in your name.</p></div>
+          </div>
+
+          <div class="group">
+            <h3>Money</h3>
+            <div class="item"><div class="item-row"><span class="name">Customer accounts</span><a class="val" href="#films" data-film="customers">Watch · 0:46</a></div><p class="desc">Trade customers order now and pay later, up to a limit you set.</p></div>
+            <div class="item"><div class="item-row"><span class="name">Invoices</span><span class="val plain">included</span></div><p class="desc">Sent when the job goes out. Paid online.</p></div>
+          </div>
+
+          <p class="foot-line">All of it for £199 a month. <a class="link-plain" href="#price">See the price</a></p>
+        </div>
+      </section>
+
+    </div><!-- /.read -->
+
+  </div><!-- /.split -->
+
+  <!-- ============ Showcase: their words, your quote ============ -->
+  <section class="ask" id="ask" aria-labelledby="askTitle">
+    <div class="ask-in">
+      <label class="lbl" for="askText">A customer writes to you. Change the words and watch the quote change.</label>
+      <textarea id="askText" rows="5" spellcheck="false" style="resize:none">Hi, can I get 48 hoodies with our logo on the chest? Navy if you have it. Need them by the 18th.</textarea>
+      <p class="hint">Try a different number, a polo or a cap, another colour.</p>
+    </div>
+    <div class="ask-out">
+      <div class="quote-card" data-ui aria-live="polite">
+        <div class="ui-head"><span>Quote Q-0422 · Northside Print</span><span>Holds for 14 days</span></div>
+        <div class="ui-body">
+          <div class="ui-row">
+            <div class="ui-thumb" id="qThumb"><img src="assets/hoodie.webp" alt="" width="56" height="56"></div>
+            <div class="grow"><div class="ui-name" id="qName">48 × AWDis JH001 hoodie</div><div class="ui-sub" id="qSub"><i class="swatch" style="background:#1F2A44"></i>Navy · left chest logo, embroidered</div></div>
+            <div class="ui-money" id="qEach">£23.76 each</div>
+          </div>
+          <div class="ui-row"><span class="ui-sub" id="qBreak">48 is in the 25+ price band. 10% off.</span></div>
+          <div class="ui-row ui-total"><span>Total</span><span class="ui-money" id="qTotal">£1,140.48 + VAT</span></div>
+          <div class="ui-row"><span class="ui-sub" id="qWhen">Delivery by the 18th</span><span class="ui-btn">Accept and pay</span></div>
+        </div>
+      </div>
+    </div>
+    <h2 class="ask-title" id="askTitle"><span class="a">Their words.</span><span class="b">Your quote.</span></h2>
+  </section>
+
+  <!-- ============ Price ============ -->
+  <section class="price" id="price">
+    <div class="price-head">
+      <h2>One price</h2>
+      <img src="assets/photos/shop-embroidery.webp" alt="Hands guiding a polo shirt on an embroidery machine" width="1000" height="1250" loading="lazy">
+    </div>
+    <div class="price-list">
+      <div class="pgroup">
+        <h3>The package</h3>
+        <div class="pitem">
+          <div class="prow"><span>Presslane</span><span class="money">£199 a month</span></div>
+          <p class="pdesc ink">Online shop, quotes, job board, customer updates, club shops, accounts and invoices. Plus VAT. No set-up fee. Cancel any time.</p>
+        </div>
+      </div>
+      <div class="pgroup">
+        <h3>Add if you want them</h3>
+        <div class="pitem">
+          <div class="prow"><span>Phone answering</span><span class="money">£100</span></div>
+          <p class="pdesc">Answered in your name, day and night. It knows your prices, sizes and every order.</p>
+        </div>
+        <div class="pitem">
+          <div class="prow"><span>Logo pictures</span><span class="money">100</span></div>
+          <p class="pdesc">Customers see their logo on the product before they buy. That picture becomes the proof.</p>
+        </div>
+        <div class="pitem">
+          <div class="prow"><span>Found on Google</span><span class="money">100</span></div>
+          <p class="pdesc">We help people near you find your shop.</p>
+        </div>
+        <div class="pitem">
+          <div class="prow"><span>Social posts</span><span class="money">500</span></div>
+          <p class="pdesc">We make and post your social media for you. Each add-on is a month, plus VAT.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- QUOTE CHASE -->
-  <section class="section" id="quotes">
-    <div class="wrap">
-      <div class="head">
-        <h2 class="h1" data-promo="No enquiry goes quiet.">No quote goes cold.</h2>
-        <p class="lead" data-promo="Every enquiry is answered and followed up by email, SMS or WhatsApp, on the schedule you set, from the moment it arrives until the client orders or tells you they have gone elsewhere. Each message is shorter than the last, signed by your account manager, and always tells them how to say no.">Every quote is followed up by email, SMS or WhatsApp, on the schedule you set, until the customer buys or tells us they have gone elsewhere. Each message is shorter than the last, signed by a person at your shop, and always tells them how to say no.</p>
-      </div>
-      <figure class="enquiry-film" id="enquiryFilm">
-        <video id="enquiryVideo" muted playsinline loop preload="none" width="1280" height="720"
-          poster="assets/enquiry-print-poster.webp"
-          data-src-print="assets/enquiry-print.mp4" data-poster-print="assets/enquiry-print-poster.webp"
-          data-src-promo="assets/enquiry-promo.mp4" data-poster-promo="assets/enquiry-promo-poster.webp"
-          data-src-print-tall="assets/enquiry-print-tall.mp4" data-poster-print-tall="assets/enquiry-print-tall-poster.webp"
-          data-src-promo-tall="assets/enquiry-promo-tall.mp4" data-poster-promo-tall="assets/enquiry-promo-tall-poster.webp"
-          aria-label="30-second film: every enquiry answered within the hour and followed up until the customer says yes or no. Captions are part of the picture.">
-          <source src="assets/enquiry-print.mp4" type="video/mp4">
-          Your browser cannot play this video. <a href="assets/enquiry-print.mp4">Download it</a> instead.
-        </video>
-        <figcaption class="film-bar">
-          <span class="film-title">No enquiry goes quiet <span class="muted">30 seconds, with captions</span></span>
-          <span class="film-controls">
-            <button class="film-btn" type="button" id="enquiryPlay" aria-pressed="false">Play</button>
-            <button class="film-btn" type="button" id="enquirySound" aria-pressed="false">Sound on</button>
-          </span>
-        </figcaption>
-      </figure>
-      <div class="quote-wrap">
-        <div class="quote-card">
-          <div>
-            <p class="kicker" data-promo="Enquiry · PL-04821 · Visuals sent">Quote · PL-04821</p>
-            <p class="h3" data-promo="250 natural cotton tote bags, 1-colour print">48 embroidered hoodies, left chest logo</p>
-            <p class="small muted" data-promo="5oz natural cotton, 38 × 42 cm. 1-colour screen print, one side, setup included. Delivered to Leeds by 14 Oct for the trade show.">Navy AWDis heavyweight, sizes S to XXL. Single-colour thread, 8,000 stitches. Artwork as supplied. Delivery to Leeds.</p>
-          </div>
-          <div>
-            <div class="total"><span>Total inc. VAT</span><span class="mono" data-promo="£774.00">£1,142.40</span></div>
-            <button class="btn" type="button" id="quoteAccept">Accept quote</button>
-          </div>
-        </div>
-        <div class="chase" id="chase">
-          <div class="chase-rows">
-            <div class="chase-row" data-step="1">
-              <span class="t" data-promo="+1 h">+24 h</span><span class="ch">EMAIL</span>
-              <div><strong data-promo="Your tote bags: visuals and prices">Your quote for 48 hoodies, PL-04821</strong><p data-promo="Hi Sam, thanks for your enquiry. Visuals of your logo on the natural tote are attached, priced at 250 and 500. Accept here and we’ll book it in. Dan, Northside Promotions">Hi Sam, the quote we sent yesterday is attached. It holds for 14 days. If you'd like to go ahead, accept it here and we'll send the artwork proof the same day. Dan, Northside Print</p></div>
-            </div>
-            <div class="chase-row" data-step="2">
-              <span class="t" data-promo="+2 d">+3 d</span><span class="ch">WHATSAPP</span>
-              <div><strong data-promo="Any questions on the tote bags?">Any questions on the hoodie quote?</strong><p data-promo="Hi Sam, Dan at Northside. Happy to price 500, or add a second print colour. Visuals: northside.link/PL-04821">Hi Sam, Dan at Northside. Happy to adjust quantities or sizes. Quote: northside.link/PL-04821</p></div>
-            </div>
-            <div class="chase-row" data-step="3">
-              <span class="t" data-promo="+6 d">+7 d</span><span class="ch">SMS</span>
-              <div><strong data-promo="Still on for the trade show?">Open until the 26th</strong><p data-promo="Northside Promotions: your tote bag prices, PL-04821, hold until the 26th, in time for 14 Oct. Accept or ask a question: northside.link/PL-04821">Northside Print: your hoodie quote PL-04821 is open until the 26th. Accept or ask a question: northside.link/PL-04821</p></div>
-            </div>
-            <div class="chase-row" data-step="4">
-              <span class="t" data-promo="+12 d">+13 d</span><span class="ch">EMAIL</span>
-              <div><strong data-promo="Last day on your prices">Last day on your quote</strong><p>Hi Sam, PL-04821 expires tomorrow. If you've gone another way, no problem, reply “no thanks” and we'll stop. Otherwise it's one click to go ahead.</p></div>
-            </div>
-            <div class="chase-row result" data-step="5">
-              <span class="t" id="chaseResultTime">+3 d</span><span class="ch">RESULT</span>
-              <div><strong id="chaseResultHead" data-promo="Accepted after the 2nd follow-up.">Quote accepted after the 2nd follow-up.</strong><p id="chaseResultBody" data-promo="Sam replied yes on WhatsApp. Chasing stopped. Order confirmed the same afternoon.">Sam accepted on WhatsApp. Chasing stopped. Artwork proof sent the same afternoon.</p></div>
-            </div>
-          </div>
-          <div class="chase-foot">
-            <span>Stops on yes, no, “no thanks”, STOP, or 14 days of silence.</span>
-            <button type="button" id="chaseReplay">Replay</button>
-          </div>
-        </div>
-      </div>
-      <p class="sys-link"><a href="#system" data-film="quotes">Watch a quote built and accepted in Presslane</a> <span class="mono">1:42</span></p>
+  <!-- ============ Films: the real system ============ -->
+  <section class="films" id="films">
+    <div class="player">
+      <video id="filmVideo" controls playsinline preload="none" poster="assets/system/storefront-setup-poster.webp" width="1920" height="1080">
+        <track id="filmTrack" kind="captions" srclang="en" label="English" src="assets/system/storefront-setup.vtt" default>
+      </video>
+      <p class="now" id="filmNow">Storefront · 0:48 · recorded in Presslane, with captions</p>
     </div>
-  </section>
-
-  <!-- CRM: the pipeline board and the client record. Board and record are drawn by app.js for the current audience. -->
-  <section class="section surface" id="crm">
-    <div class="wrap">
-      <div class="head">
-        <h2 class="h1" data-promo="Every client, every brief, one record.">Every customer, every job, one record.</h2>
-        <p class="lead" data-promo="Your accounts are the business. Every client’s enquiries, visuals, quotes, orders and calls sit on one timeline, every open enquiry sits on one board, and you are reminded before their regular orders come round: the Christmas gifts, the trade show, the new-starter kits.">Every customer’s enquiries, quotes, proofs, orders and calls sit on one timeline, every open job sits on one board, and you are reminded before their regular orders come round: the club’s new season, the staff kit, the Christmas rush.</p>
-      </div>
-
-      <div class="crm" id="crmDemo">
-        <div class="crm-board">
-          <div class="crm-bar">
-            <span class="kicker" data-promo="Pipeline · Enquiries and quotes">Pipeline · Enquiries and jobs</span>
-            <span class="mono small" id="crmTotal"></span>
-          </div>
-          <div class="crm-cols" id="crmCols"></div>
-          <p class="crm-hint small muted">Pick a card to open the client.</p>
-        </div>
-        <div class="crm-record" id="crmRecord" aria-live="polite"></div>
-      </div>
-      <p class="sys-link"><a href="#system" data-film="customers">Watch a trade account set up in Presslane</a> <span class="mono">0:46</span></p>
-
-      <div class="cols">
-        <div>
-          <h3 class="h3">One record per client</h3>
-          <p class="small" data-promo="Every enquiry, visual, quote, order and call on one timeline. Anyone on the team can pick up the account and know where it stands.">Every enquiry, quote, proof, order and call on one timeline. Anyone in the shop can pick up the customer and know where it stands.</p>
-        </div>
-        <div>
-          <h3 class="h3">Every open enquiry on one board</h3>
-          <p class="small" data-promo="Enquiries and quotes by stage and value, with the chasing already running on each. You can see what is about to close and what has gone quiet.">Enquiries and jobs by stage and value, with the chasing already running on each. You can see what is about to close and what has gone quiet.</p>
-        </div>
-        <div>
-          <h3 class="h3">Reminded before they reorder</h3>
-          <p class="small" data-promo="Last year’s Christmas order, the annual trade show, the new-starter kits. You get a nudge in time to send ideas before the client goes looking elsewhere.">The club’s new season, the annual staff kit, last year’s Christmas order. You get a nudge in time to get in touch before the customer goes looking elsewhere.</p>
-        </div>
+    <div class="film-list">
+      <h2>The real system, on film</h2>
+      <div id="filmRows">
+        <button class="frow" type="button" aria-pressed="true" data-film="storefront"><span>Storefront</span><span class="len">0:48</span></button>
+        <p class="fdesc">A shop front from a template. Move sections, set the words and colours, check it on a phone, publish.</p>
+        <button class="frow" type="button" aria-pressed="false" data-film="clubshops"><span>Club shops</span><span class="len">1:14</span></button>
+        <p class="fdesc">A shop for a school or club on its own address, with its crest and its sizes.</p>
+        <button class="frow" type="button" aria-pressed="false" data-film="quotes"><span>Quotes</span><span class="len">1:42</span></button>
+        <p class="fdesc">A quote built from your price list, sent, accepted and paid online.</p>
+        <button class="frow" type="button" aria-pressed="false" data-film="customers"><span>Customer accounts</span><span class="len">0:46</span></button>
+        <p class="fdesc">A trade customer set up to order now and pay later, with a credit limit.</p>
+        <button class="frow" type="button" aria-pressed="false" data-film="pipeline"><span>Order pipeline</span><span class="len">1:07</span></button>
+        <p class="fdesc">Every accepted quote lands as an order and moves down the board to the door.</p>
+        <button class="frow" type="button" aria-pressed="false" data-film="voice"><span>Phone answering</span><span class="len">1:27</span></button>
+        <p class="fdesc">A customer rings for an update. The answer changes as the order moves.</p>
       </div>
     </div>
   </section>
 
-  <!-- PHONE -->
-  <section class="section dark" id="phone">
-    <div class="wrap">
-      <div class="feature swap">
-        <div class="copy">
-          <h2 class="h1" data-promo="Clients stop ringing to ask. When they do ring, the phone knows.">Customers stop ringing to ask. When they do ring, the phone knows.</h2>
-          <p class="body" data-promo="The phone is answered in your name by an assistant that knows every enquiry, every order and where it is with the supplier. It reads numbers in groups of two, offers a text when the tracking comes through, and hands to a person the moment someone asks.">The phone is answered in your shop's name by an assistant that knows every order, every proof and every stock line. It reads numbers in groups of two, offers a text when the job ships, and hands to a person the moment someone asks.</p>
-          <ul class="points">
-            <li data-promo="&lt;strong&gt;Answers status and enquiries.&lt;/strong&gt; Order number or company name is enough to find the job."><strong>Answers stock and status.</strong> Order number or surname is enough to find the job.</li>
-            <li data-promo="&lt;strong&gt;Turns requests into enquiries.&lt;/strong&gt; A new request on the call is logged, and the chasing starts."><strong>Logs the call to the order.</strong> Notes and follow-ups land on the job, not in a voicemail.</li>
-            <li><strong>Never denies what it is.</strong> It does not say it is automated unless asked, and never pretends otherwise.</li>
-          </ul>
-        </div>
-        <div class="call" id="call">
-          <div class="call-head">
-            <span>Incoming · 07700 900123 · Sam Okafor</span>
-            <span class="live"><span class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span id="callTimer">00:00</span></span>
-          </div>
-          <div class="lines" id="callLines" aria-hidden="true"></div>
-          <p class="sr-only" data-promo="Transcript. Northside Promotions: Northside Promotions. I can check an order or find a product for you. What’s your order number, or what are you looking for? Sam: Hi, it’s Sam Okafor. Ringing about our tote bags for the trade show, I don’t have the order number. Northside Promotions: Found it. PL-04821, 250 natural tote bags, one colour print. They’re in production with the supplier and due to ship on Thursday. Want me to text you the tracking number when it comes through? Sam: Yes please. Could we get some travel mugs to match? Northside Promotions: I’ll log that as a new enquiry and Dan will send visuals and prices for travel mugs today. Anything else? Sam: No, that’s everything. Thanks.">Transcript. Northside Print: Northside Print. I can check an order or stock for you. What's your order number, or what are you looking for? Sam: Hi, it's Sam Okafor. Ringing about my hoodies, I don't have the number on me. Northside Print: Found it. PL-04821, 48 navy hoodies, left chest. They're being embroidered now and should be packed tomorrow. Want me to text you when they ship? Sam: Yes please. Could I get the same again in bottle green? Northside Print: Bottle green JH001 is in stock in all your sizes. I'll note it on your order and Dan will send a quote today. Anything else? Sam: No, that's everything. Thanks.</p>
-          <div class="call-foot">
-            <span id="callFoot">Ringing</span>
-            <button type="button" id="callReplay">Replay call</button>
-          </div>
-        </div>
-      </div>
-      <figure class="promo promo-wide" id="phoneFilm" data-player>
-        <video id="phoneVideo" aria-label="Phone answering film, 1 minute 27 seconds, with sound" playsinline preload="none" poster="assets/system/voice-ai-poster.webp" width="1920" height="1080">
-          <source src="assets/system/voice-ai.mp4" type="video/mp4">
-          <track kind="subtitles" srclang="en" label="English" src="assets/system/voice-ai.vtt">
-          Your browser cannot play this video. <a href="assets/system/voice-ai.mp4">Download it</a> instead.
-        </video>
-        <button class="promo-play" type="button" aria-label="Play the phone answering film">
-          <span class="promo-play-square" aria-hidden="true"></span>
-          <span>Play with sound · 1:27</span>
-        </button>
-        <figcaption class="caption"><span>A customer rings for an update, recorded in Presslane. The answer changes as the order moves.</span><span class="mono">1:27</span></figcaption>
-      </figure>
+  <!-- ============ Who it is for ============ -->
+  <section class="who" id="who">
+    <div class="head">
+      <h2>For people who print and stitch</h2>
+      <p>One person in a unit, or a team of twenty.</p>
+    </div>
+    <div class="row" aria-label="The kinds of shop Presslane is for">
+      <figure><img src="assets/photos/shop-print.webp" alt="Hands pulling a squeegee across a screen on a printing carousel" width="1000" height="1250" loading="lazy"><figcaption>Garment printers</figcaption></figure>
+      <figure><img src="assets/photos/shop-embroidery.webp" alt="A polo shirt being stitched on a multi-head embroidery machine" width="1000" height="1250" loading="lazy"><figcaption>Embroiderers</figcaption></figure>
+      <figure><img src="assets/photos/shop-signs.webp" alt="Hands applying cut vinyl to a van door" width="1000" height="1250" loading="lazy"><figcaption>Sign makers</figcaption></figure>
+      <figure><img src="assets/photos/shop-promo.webp" alt="Mugs, pens and tote bags being boxed on a packing table" width="1000" height="1250" loading="lazy"><figcaption>Promo gift companies</figcaption></figure>
     </div>
   </section>
 
-  <!-- THE FLOOR -->
-  <section class="section surface" id="floor" data-only="print">
-    <div class="wrap">
-      <div class="floor-wrap">
-        <div class="runsheet" id="runsheet" aria-label="Runsheet for order PL-04821">
-          <div class="rs-top">
-            <div><div class="rs-k">Runsheet</div><div class="rs-no">PL-04821</div></div>
-            <div class="rs-shop"><strong>Northside Print</strong><span>Due Thu 18 Sep · Courier</span></div>
-          </div>
-          <div class="rs-grid">
-            <div><div class="rs-k">Customer</div>Sam Okafor<br>Okafor Roofing Ltd<br>14 Kirkgate, Leeds LS1 6BY<br><span class="mono">07700 900123</span></div>
-            <div><div class="rs-k">Job</div><span id="rsJobLine">48 × AWDis JH001 hoodie, Airforce blue</span><br><span id="rsDecoLine">Embroidery, left chest, 1 colour (white)</span><br><span class="mono">8,000 st · <span id="rsSize">90 × 60 mm</span></span><br><span class="mono">S6 M12 L18 XL8 XXL4</span></div>
-          </div>
-          <div class="rs-pics">
-            <div class="rs-pic" id="rsLogo">Logo proof</div>
-            <div class="rs-pic" id="rsPlacement">Placement picture</div>
-          </div>
-          <div class="rs-bottom">
-            <div class="barcode">
-              <div class="rs-k">Scan at each bench</div>
-              <svg viewBox="0 0 240 64" preserveAspectRatio="none" class="bars" data-code="PL04821"></svg>
-              <div class="code">PL04821</div>
-              <span class="beam"></span>
-            </div>
-            <div class="ticks" id="rsTicks">
-              <div class="tick" data-step="1">Artwork</div>
-              <div class="tick" data-step="2">Production</div>
-              <div class="tick" data-step="3">Packed</div>
-            </div>
-          </div>
-        </div>
+  <!-- ============ Talk to us ============ -->
+  <section class="talk" id="talk" aria-label="Talk to us">
+    <div class="talk-photo"><img src="assets/photos/workshop.webp" alt="A small embroidery and print workshop in the morning, machines ready and a rail of finished garments" width="1600" height="900" loading="lazy"></div>
+    <div class="talk-col">
+      <p class="prompt"><span class="soft">Three weeks from now, your shop could be live.</span><span class="hard">Tell us what you print.</span></p>
 
-        <div class="copy">
-          <h2 class="h1">The floor updates the system.</h2>
-          <p class="body">Every order prints a runsheet with a barcode the moment it is confirmed. Scan it at each bench and the status changes and the customer is messaged. No PC, no typing, no walking to the office. Mono laser, any barcode scanner, and a pen if the scanner is down.</p>
-          <div class="floor-actions">
-            <button class="btn" type="button" id="scanBtn">Scan at Artwork</button>
-            <span class="mono" id="scanHint">Each scan moves the job one stage.</span>
-          </div>
-          <div class="floor-log">
-            <ul id="floorLog">
-              <li><span class="t">09:10</span><span>Runsheet printed. Quote accepted after 2nd follow-up (WhatsApp).</span></li>
-            </ul>
-          </div>
-          <div class="floor-sms" id="floorSms" hidden>
-            <p class="from">Northside Print · SMS</p>
-            <p id="floorSmsText"></p>
-          </div>
+      <form class="ask-form js-agency" id="contactForm" novalidate hidden>
+        <div class="field-wrap">
+          <label class="sr-only" for="cEmail">Your email</label>
+          <input class="field" id="cEmail" name="email" type="email" autocomplete="email" required maxlength="200" placeholder="Your email">
+          <button class="go" type="submit" aria-label="Send"><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M3 10h12M10 4l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.4"/></svg></button>
         </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ALSO INCLUDED -->
-  <section class="section" id="included">
-    <div class="wrap">
-      <div class="head">
-        <h2 class="h1" data-promo="A catalogue site that sells, under your name.">A storefront that sells, on data that connects to anything.</h2>
-        <p class="lead" data-promo="Your website is table stakes, so it is done properly and then left alone. Answering briefs and chasing enquiries is the point.">The storefront is table stakes, so it is done properly and then left alone. The back office is the point.</p>
-      </div>
-      <div class="cols">
-        <div>
-          <h3 class="h3">Every product, listed once</h3>
-          <p class="small" data-promo="Bags, pens, drinkware, notebooks and apparel. Your margins, quantity breaks and print prices, set once and used on every visual and quote.">Hoodies, caps and bags to brand. Business cards, posters and safety signs to print. Set up once, sold everywhere, with quantity breaks and decoration pricing that customers can actually buy.</p>
+        <div class="more" id="cMore" hidden>
+          <label class="sr-only" for="cName">Your name</label>
+          <input class="field short" id="cName" name="name" autocomplete="name" required maxlength="100" placeholder="Your name">
+          <label class="sr-only" for="cPhone">Phone, if you would rather talk</label>
+          <input class="field short" id="cPhone" name="phone" type="tel" autocomplete="tel" maxlength="40" placeholder="Phone, if you would rather talk">
+          <label class="sr-only" for="cMessage">What do you print?</label>
+          <textarea class="field" id="cMessage" name="message" rows="3" maxlength="4000" placeholder="What do you print? Hoodies, workwear, signs, mugs?"></textarea>
+          <button class="button" type="submit">Send</button>
         </div>
-        <div>
-          <h3 class="h3">Pages search engines can read</h3>
-          <p class="small">Every product and category page is built so Google and answer engines can read it: product schema, real descriptions, pages that render. To be found by people nearby, add Local SEO and AEO.</p>
-        </div>
-        <div>
-          <h3 class="h3">Open to any other tool</h3>
-          <p class="small" data-promo="Accounts, suppliers, your CRM, your own spreadsheets. The data is yours and any third-party app can read it. Nothing is locked in a PC in the office.">Accounts, couriers, suppliers, your own spreadsheets. The data is yours and any third-party app can read it. Nothing is locked in a PC in the office.</p>
-        </div>
-      </div>
-      <p class="sys-link"><a href="#system" data-film="storefront">Watch a storefront built in Presslane</a> <span class="mono">0:48</span> <a href="#system" data-film="clubshops">Watch a club shop set up</a> <span class="mono">1:14</span></p>
-    </div>
-  </section>
-
-  <!-- WHO -->
-  <section class="section dark" id="who">
-    <div class="wrap">
-      <div class="head">
-        <h2 class="h1" data-promo="Built for the independent distributor.">Built for the whole print and decoration trade.</h2>
-        <p class="lead" data-promo="UK first. For sales-led teams who would rather be selling than making mock-ups.">UK first. Then every English-speaking market.</p>
-      </div>
-      <div class="who-grid">
-        <div><i class="sq"></i><div data-promo="&lt;strong&gt;Independent distributors&lt;/strong&gt;&lt;span&gt;1 to 10 staff&lt;/span&gt;"><strong>Independent print shops</strong><span>1 to 10 staff</span></div></div>
-        <div><i class="sq"></i><div data-promo="&lt;strong&gt;Distributors who decorate some lines&lt;/strong&gt;&lt;span&gt;Print or embroidery in-house, the rest from suppliers&lt;/span&gt;"><strong>Embroidery and garment decorators</strong><span>Workwear, teams, merch</span></div></div>
-        <div><i class="sq"></i><div data-promo="&lt;strong&gt;Corporate gifting and event merch&lt;/strong&gt;&lt;span&gt;Exhibitions, conferences, launches&lt;/span&gt;"><strong>Trade printers</strong><span>Mid-size, high volume</span></div></div>
-        <div><i class="sq"></i><div data-promo="&lt;strong&gt;Workwear and uniform resellers&lt;/strong&gt;&lt;span&gt;Staff kit and reorders&lt;/span&gt;"><strong>Sign and display makers</strong><span>Safety signs, banners, boards</span></div></div>
-        <div><i class="sq"></i><div data-promo="&lt;strong&gt;Growing sales teams&lt;/strong&gt;&lt;span&gt;Every account manager, one way of working&lt;/span&gt;"><strong>Franchise and multi-site groups</strong><span>Every site, one way of working</span></div></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- CONTACT: shown only on an agency's address. Enquiries go to that agency's CRM through api/contact.js, which holds the tokens. -->
-  <section class="section pricing contact" id="contact" aria-labelledby="contactTitle" hidden>
-    <div class="wrap ct-grid">
-      <div>
-        <h2 class="pr-h" id="contactTitle">Ask us anything.</h2>
-        <p class="pr-sub" id="ctWith">Leave your details and we will get back to you.</p>
-      </div>
-      <form class="ct-form" id="contactForm" novalidate>
-        <div class="ct-row">
-          <label><span>Name</span><input name="name" autocomplete="name" required maxlength="100"></label>
-          <label><span>Company <em>optional</em></span><input name="company" autocomplete="organization" maxlength="120"></label>
-        </div>
-        <div class="ct-row">
-          <label><span>Email</span><input name="email" type="email" autocomplete="email" required maxlength="200"></label>
-          <label><span>Phone <em>optional</em></span><input name="phone" type="tel" autocomplete="tel" maxlength="40"></label>
-        </div>
-        <label><span>Message</span><textarea name="message" rows="5" maxlength="4000"></textarea></label>
-        <label class="ct-hp" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off"></label>
-        <button class="hbtn teal" type="submit">Send</button>
-        <p class="ct-status" id="ctStatus" role="status" aria-live="polite"></p>
+        <label class="hp" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off"></label>
+        <p class="next" id="cNext">We reply within one working day and show you Presslane on your own products.</p>
       </form>
+
+      <p class="ask-form js-agency" hidden><a class="button quiet js-book" href="#talk">Book a call</a></p>
+
+      <p class="no-agency js-noagency">Presslane comes to you through a partner agency. Use the web address they gave you to book a call.</p>
+
+      <dl class="weeks">
+        <div><dt>Week one</dt><dd>We build your shop from your product list and your logo.</dd></div>
+        <div><dt>Week two</dt><dd>You check it on your phone. We change what you want changed.</dd></div>
+        <div><dt>Week three</dt><dd>You go live. Your old website stays on until you are happy.</dd></div>
+      </dl>
     </div>
   </section>
 
-  <!-- CLOSING POSTER: teal as a full field, display type only. -->
-  <section class="section teal poster" id="close">
-    <div class="wrap">
-      <h2 class="display" data-promo="Answer every brief the same day.">Runs the shop while you print.</h2>
-      <div class="poster-row">
-        <p class="lead" data-promo="Visuals made, quotes priced, every enquiry chased. The only thing left to do is sell.">Quotes chased, customers told, the floor scanned. The only thing left to do is make the job.</p>
-        <div class="btn-row">
-          <a class="btn ink js-demo" href="#pricing" hidden>Book a demo</a>
-          <a class="btn outline on-teal-outline" href="#pricing">See pricing</a>
-        </div>
-      </div>
-    </div>
-  </section>
+  <footer class="foot">
+    <span>Presslane, software for print shops</span>
+    <nav aria-label="Page"><a href="#job">How it works</a><a href="#box">The box</a><a href="#films">Films</a><a href="#price">Price</a></nav>
+    <span class="right">2026 · <a class="link-plain" href="assets/presslane-presentation.pdf">The presentation (PDF)</a></span>
+  </footer>
 
 </main>
 
-<!-- Phones: the price and the one action stay a thumb away. Hidden over the hero, pricing and closing sections. -->
-<div class="mbar" id="mbar" aria-hidden="true">
-  <p><strong>£199</strong> a month + VAT</p>
-  <a class="hbtn teal js-demo" href="#pricing" tabindex="-1" hidden>Book a demo</a>
-  <a class="mbar-link" href="#pricing" tabindex="-1" id="mbarPricing">What's included</a>
-</div>
-
-<footer class="footer">
-  <div class="wrap">
-    <div>
-      <a class="lockup" href="#top" aria-label="Presslane, home">
-        <svg viewBox="0 0 18 8" aria-hidden="true"><use href="#mark"/></svg>
-        <span>Presslane</span>
-      </a>
-      <p class="tag">Runs the shop while you print.</p>
-    </div>
-    <div>
-      <ul>
-        <li><a href="#system">The system, on film</a></li>
-        <li><a href="#lane">What it does</a></li>
-        <li><a href="#mockup" data-promo="Visuals">Logo mock-ups</a></li>
-        <li><a href="#quotes" data-promo="Enquiry follow-up">Quote follow-up</a></li>
-        <li><a href="#crm">The CRM</a></li>
-        <li><a href="#phone">The phone</a></li>
-        <li data-only="print"><a href="#floor">Runsheets</a></li>
-      </ul>
-    </div>
-    <div>
-      <ul>
-        <li><a href="#who">Who it is for</a></li>
-        <li><a href="#included">Also included</a></li>
-        <li><a href="#pricing">Pricing</a></li>
-        <li data-only="print"><a href="#film">Watch the film</a></li>
-        <li data-only="print"><a href="assets/presslane-presentation.pdf" target="_blank" rel="noopener">Presentation (PDF, new tab)</a></li>
-      </ul>
-    </div>
-    <div class="legal">
-      <span>Customer messages are sent in the shop's name. Presslane is never mentioned to a customer unless they ask.</span>
-    </div>
-  </div>
-</footer>
-
+<script src="assets/vendor/gsap.min.js" defer></script>
+<script src="assets/vendor/ScrollTrigger.min.js" defer></script>
 <script src="agencies.js" defer></script>
 <script src="app.js" defer></script>
 </body>

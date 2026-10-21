@@ -5,3 +5,6 @@ explainer_video/
 # Secrets: contact form tokens (see README, Contact form)
 .env
 .env.*
+
+# design skill working files
+.taste-skill/
