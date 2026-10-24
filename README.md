@@ -24,7 +24,7 @@ and the contact form); that choice lasts for the browser tab only.
 
 | Where | What |
 | --- | --- |
-| `assets/photos/` | Generated stills (Higgsfield, 21 Oct 2026): the three gaps, four kinds of shop, the workshop, the delivered parcel. WebP, 1000 to 1600 px wide. |
+| `assets/photos/` | Generated stills (Higgsfield, 21 and 24 Oct 2026): the three gaps, four kinds of shop, the workshop, the delivered parcel, and four with people in them (the owner on the phone, the roofer at his van, the embroiderer, the handover at the counter). The people are invented and are never presented as named customers. WebP, 1000 to 1600 px wide. |
 | `assets/video/` | Two generated 4.5 s silent loops (`make.mp4`, `send.mp4`) with posters. 960 × 960, H.264. |
 | `assets/system/` | The six real screen recordings with posters and `.vtt` captions. |
 | `assets/hoodie.webp`, `polo.webp`, `cap.webp`, `mug.webp`, `pen.webp`, `bottle.webp` | Garment and product cut-outs used by the stage and the quote demo. |

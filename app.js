@@ -263,6 +263,18 @@
     mm.add({ wide: '(min-width: 900px)', narrow: '(max-width: 899px)', motion: '(prefers-reduced-motion: no-preference)', still: '(prefers-reduced-motion: reduce)' }, (ctx) => {
       const { motion, wide } = ctx.conditions;
 
+      // On a phone, on an agency address, the one action stays within reach once the hero has gone,
+      // and steps aside while the form itself is on screen.
+      const callbar = $('.callbar');
+      if (!wide && callbar && agency.data) {
+        document.body.classList.add('has-callbar');
+        const setBar = (on) => callbar.classList.toggle('is-on', on);
+        ScrollTrigger.create({ trigger: '.hero', start: 'bottom 70%', onEnter: () => setBar(true), onLeaveBack: () => setBar(false) });
+        // Off while the dark "their words" field and the form are on screen, so it never sits on their titles.
+        ScrollTrigger.create({ trigger: '.ask', start: 'top 90%', end: 'bottom 60%', onToggle: (self) => setBar(!self.isActive) });
+        ScrollTrigger.create({ trigger: '.talk', start: 'top 80%', end: 'bottom bottom', onEnter: () => setBar(false), onLeaveBack: () => setBar(true) });
+      }
+
       if (wide) {
         // The stage: whichever paragraph is in the middle of the screen decides what the stage shows.
         $$('[data-stage]').forEach((el) => {
@@ -333,6 +345,10 @@
       // Who: the row slides in from the right.
       gsap.from('.who .head > *', { y: 16, autoAlpha: 0, stagger: 0.1, scrollTrigger: once('.who') });
       gsap.from('.row figure', { x: 40, autoAlpha: 0, stagger: 0.08, duration: 0.8, scrollTrigger: once('.row', 'top 85%') });
+
+      // Your questions: the picture settles, then each question in turn.
+      gsap.from('.faq-pic > *', { y: 16, autoAlpha: 0, stagger: 0.12, scrollTrigger: once('.faq', 'top 75%') });
+      gsap.from('.faq-list h2, .faq .qa', { y: 14, autoAlpha: 0, stagger: 0.09, duration: 0.6, scrollTrigger: once('.faq-list', 'top 80%') });
 
       // Talk to us: the prompt, then the field.
       gsap.from('.talk .prompt span', { y: 16, autoAlpha: 0, stagger: 0.12, scrollTrigger: once('.talk', 'top 75%') });
