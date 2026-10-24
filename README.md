@@ -32,6 +32,7 @@ and the contact form); that choice lasts for the browser tab only.
 | `assets/fonts/` | Manrope variable, latin subset. |
 | `api/contact.js` | The Vercel function behind the contact form. |
 | `tools/readability.py` | Scores the page's visible text by section (Flesch-Kincaid). Run `python -I tools/readability.py index.html` before a change goes live; the target is grade 5 or under in every section. |
+| `etrader/index.html` | The comparison page for shops on eTrader, served at `/etrader` on every agency address. Same styles and script as the main page; its form adds "Which suppliers do you sell?", which `api/contact.js` puts at the top of the CRM note. The eTrader figures in its table were read from etraderwebsites.co.uk on 23 October 2026: keep a dated screenshot of those pages as evidence, and re-check them before any campaign. |
 | `presentation/index.html` | The source of the 14-page A4 portrait presentation the footer links to, in the site's own styles, with JPEG copies of the pictures in `presentation/img/`. Edit it, then print it to `assets/presslane-presentation.pdf`: open it in Chrome and print (A4, portrait, no margins, background graphics on), or `npm install --no-save playwright-core` once and run `node tools/render-presentation.mjs`. |
 
 Files from the previous page that nothing uses now and can be deleted when you are sure: `assets/hero-network.*`,

@@ -45,7 +45,12 @@ module.exports = async function handler(req, res) {
   }
 
   const name = clean(b.name, 100), email = clean(b.email, 200), phone = clean(b.phone, 40), company = clean(b.company, 120);
-  const message = String(b.message == null ? '' : b.message).trim().slice(0, 4000);
+  const suppliers = clean(b.suppliers, 300);
+  const page = clean(b.page, 60);
+  let message = String(b.message == null ? '' : b.message).trim().slice(0, 4000);
+  // The eTrader comparison page asks which suppliers the shop sells; it goes on the note so week one can start.
+  if (suppliers) message = 'Suppliers: ' + suppliers + (message ? '\n\n' + message : '');
+  if (page) message = (message ? message + '\n\n' : '') + 'Sent from: ' + page;
   if (!name) return res.status(400).json({ error: 'Please add your name.' });
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return res.status(400).json({ error: 'Please check your email address.' });
 

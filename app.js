@@ -148,13 +148,13 @@
   (function ask() {
     const text = $('#askText'); if (!text) return;
     const PRODUCTS = [
-      { key: 'hoodie', words: /hood(?:ie|ies|y|ys)|sweat(?:shirt|shirts)|jumper/i, name: 'AWDis JH001 hoodie', base: 26.40, img: 'assets/hoodie.webp', deco: 'left chest logo, embroidered' },
-      { key: 'polo', words: /\bpolos?\b/i, name: 'Kustom Kit KK403 polo', base: 14.20, img: 'assets/polo.webp', deco: 'left chest logo, embroidered' },
+      { key: 'hoodie', words: /hood(?:ie|ies|y|ys)|sweat(?:shirt|shirts)|jumper/i, name: 'AWDis JH001 hoodie', base: 26.40, img: '/assets/hoodie.webp', deco: 'left chest logo, embroidered' },
+      { key: 'polo', words: /\bpolos?\b/i, name: 'Kustom Kit KK403 polo', base: 14.20, img: '/assets/polo.webp', deco: 'left chest logo, embroidered' },
       { key: 'tee', words: /t[- ]?shirts?|\btees?\b|tshirts?/i, name: 'Gildan heavy cotton t-shirt', base: 9.60, img: null, deco: 'front print, one colour' },
-      { key: 'cap', words: /\bcaps?\b|\bhats?\b/i, name: 'Beechfield B653 cap', base: 11.90, img: 'assets/cap.webp', deco: 'front logo, embroidered' },
-      { key: 'mug', words: /\bmugs?\b/i, name: 'Stainless travel mug', base: 8.40, img: 'assets/mug.webp', deco: 'wrap print, one colour' },
-      { key: 'bottle', words: /\bbottles?\b/i, name: 'Aluminium sports bottle', base: 7.90, img: 'assets/bottle.webp', deco: 'front print, one colour' },
-      { key: 'pen', words: /\bpens?\b/i, name: 'Push-button ballpen', base: 0.85, img: 'assets/pen.webp', deco: 'barrel print, one colour' }
+      { key: 'cap', words: /\bcaps?\b|\bhats?\b/i, name: 'Beechfield B653 cap', base: 11.90, img: '/assets/cap.webp', deco: 'front logo, embroidered' },
+      { key: 'mug', words: /\bmugs?\b/i, name: 'Stainless travel mug', base: 8.40, img: '/assets/mug.webp', deco: 'wrap print, one colour' },
+      { key: 'bottle', words: /\bbottles?\b/i, name: 'Aluminium sports bottle', base: 7.90, img: '/assets/bottle.webp', deco: 'front print, one colour' },
+      { key: 'pen', words: /\bpens?\b/i, name: 'Push-button ballpen', base: 0.85, img: '/assets/pen.webp', deco: 'barrel print, one colour' }
     ];
     const COLOURS = [
       ['airforce blue', '#4F5D73'], ['royal blue', '#2a4a9a'], ['sky blue', '#A8C3E4'], ['bottle green', '#1E4D3B'], ['heather grey', '#8E8E8E'],
@@ -215,9 +215,10 @@
       if (id !== cur) {
         cur = id;
         video.pause();
-        video.poster = 'assets/system/' + f.file + '-poster.webp';
-        track.src = 'assets/system/' + f.file + '.vtt';
-        video.src = 'assets/system/' + f.file + '.mp4';
+        // Root-absolute, so the same script serves the main page and pages a folder down.
+        video.poster = '/assets/system/' + f.file + '-poster.webp';
+        track.src = '/assets/system/' + f.file + '.vtt';
+        video.src = '/assets/system/' + f.file + '.mp4';
         video.load();
         now.textContent = f.title + ' · ' + f.len + ' · recorded in Presslane, with captions';
       }
@@ -244,7 +245,8 @@
       if (!name.value.trim()) { say('Please add your name.', true); name.focus(); return; }
       if (busy) return; busy = true;
       say('Sending…', true);
-      const body = { agency: agency.key, name: name.value, email: email.value, phone: $('#cPhone').value, message: $('#cMessage').value, website: form.elements.website.value };
+      const suppliers = form.elements.suppliers ? form.elements.suppliers.value : '';
+      const body = { agency: agency.key, name: name.value, email: email.value, phone: $('#cPhone').value, message: $('#cMessage').value, suppliers, page: form.dataset.page || '', website: form.elements.website.value };
       try {
         const r = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
         const data = await r.json().catch(() => ({}));
@@ -340,6 +342,18 @@
     });
 
     // Fonts and lazy pictures change the layout; recalculate once they are in.
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => ScrollTrigger.refresh());
+    window.addEventListener('load', () => ScrollTrigger.refresh());
+  } else if (hasGsap) {
+    // A page without the stage (the eTrader comparison): each block arrives once as it comes into view.
+    gsap.matchMedia().add('(prefers-reduced-motion: no-preference)', () => {
+      gsap.defaults({ ease: 'power3.out', duration: 0.8 });
+      $$('[data-reveal]').forEach((el) => {
+        const parts = el.matches('[data-reveal="parts"]') ? Array.from(el.children) : [el];
+        gsap.from(parts, { y: 18, autoAlpha: 0, stagger: 0.08, scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none none', once: true } });
+      });
+      gsap.from('.frow', { x: -14, autoAlpha: 0, stagger: 0.07, duration: 0.6, scrollTrigger: { trigger: '#filmRows', start: 'top 80%', once: true } });
+    });
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => ScrollTrigger.refresh());
     window.addEventListener('load', () => ScrollTrigger.refresh());
   }

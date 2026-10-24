@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Presslane for shops on eTrader</title>
+  <meta name="description" content="You pay eTrader about £199 a month for a website that sells. Presslane costs the same and runs the rest of the shop: the quote, the chase, the job board, the customer update, the invoice. Nothing up front.">
+  <meta property="og:title" content="Presslane for shops on eTrader">
+  <meta property="og:description" content="Same £199 a month. A shop that quotes, chases and tells the customer. Nothing to pay up front. Your old site stays on until you are happy.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="/assets/fonts/manrope-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    /* The comparison page: the main page's styles, one reading column, flush left. */
+    @font-face { font-family: "IBM Plex Mono"; src: url("/assets/fonts/plex-mono-500-latin.woff2") format("woff2"); font-weight: 500; font-display: swap; } /* taste-skill-ignore: the brief asks for a Plex Mono kicker */
+    .cmp { background: var(--paper); }
+    .cmp-wrap { max-width: 1120px; margin: 0 auto; padding: 0 var(--margin); }
+    .cmp-top { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 20px 0; }
+    .cmp-top .lockup { width: clamp(140px, 16vw, 220px); }
+    .cmp-top nav { display: flex; gap: 24px; font-size: var(--step-small); font-weight: 600; }
+    .cmp-top nav a { text-decoration: none; }
+    .kicker { font-family: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace; font-weight: 500; font-size: 14px; letter-spacing: 0.06em; color: var(--accent); } /* taste-skill-ignore: the brief asks for this kicker */
+    .cmp-hero { padding: 72px 0 96px; display: grid; gap: 24px; max-width: 960px; }
+    .cmp-hero h1 { font-size: clamp(1.75rem, 1.2rem + 1.9vw, 3rem); line-height: 1.06; letter-spacing: -0.03em; max-width: 36ch; }
+    .cmp-hero .sub { font-size: var(--step-lead); line-height: 1.4; max-width: 58ch; }
+    .cmp-ctas { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; }
+    .cmp-section { padding: 0 0 var(--section); }
+    .cmp-section h2 { font-size: var(--step-head); margin-bottom: 28px; max-width: 20ch; }
+    .cmp-section h3 { font-size: var(--step-lead); font-weight: 700; margin: 40px 0 10px; max-width: 24ch; }
+    .cmp-section p, .cmp-section li { max-width: 46ch; line-height: 1.6; }
+    .cmp-section p + p { margin-top: 12px; }
+    .plain { list-style: none; padding: 0; display: grid; gap: 12px; }
+    .plain li { padding-left: 28px; position: relative; }
+    .plain li::before { content: ""; position: absolute; left: 0; top: 0.55em; width: 12px; height: 12px; background: var(--accent); }
+    .cmp-section .closing { font-weight: 700; margin-top: 14px; }
+    .change-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px 56px; align-items: start; }
+    .change-grid > *, .same-grid > *, .weeks-grid > * { min-width: 0; }
+    .change-grid figure img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+    .change-grid .ui-quote { margin-top: 18px; max-width: 46ch; }
+
+    /* the table: a real table, so it keeps its lines */
+    .side { width: 100%; border-collapse: collapse; font-size: var(--step-body); }
+    .side th, .side td { text-align: left; vertical-align: top; padding: 14px 16px 14px 0; border-bottom: 1px solid var(--ui-line); }
+    .side th { font-weight: 700; font-size: var(--step-small); color: var(--muted); }
+    .side th.brand { color: var(--ink); font-size: var(--step-body); }
+    .side td:first-child { font-weight: 600; width: 30%; }
+    .side td.yes { color: var(--accent); font-weight: 600; }
+    .side td { padding-right: 24px; }
+    .source { font-size: var(--step-small); color: var(--muted); margin-top: 16px; max-width: 70ch; }
+
+    .weeks-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
+    .weeks-grid h3 { margin-top: 0; }
+    .band { margin: 0 0 40px; }
+    .band img { width: 100%; aspect-ratio: 16 / 7; object-fit: cover; }
+    .same-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px 56px; align-items: start; }
+    .same-grid figure img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; }
+    .same-grid figcaption { font-size: var(--step-small); color: var(--muted); margin-top: 10px; }
+    .guide ol { padding-left: 22px; display: grid; gap: 12px; }
+    .guide li::marker { color: var(--accent); font-weight: 700; }
+
+    /* the films block from the main page, in one column here */
+    .cmp .films { padding: 0; grid-template-columns: 5fr 1fr 5fr; max-width: none; }
+    .cmp .player { top: 12vh; }
+    .cmp .talk { padding: 0 0 96px; }
+    .cmp .talk-col { margin: 0; max-width: 560px; }
+    .cmp .talk .weeks { display: none; }
+    .cmp .foot { margin-top: 0; }
+
+    @media (max-width: 899px) {
+      .cmp-top nav { gap: 14px; }
+      .cmp-top nav a { white-space: nowrap; }
+      .cmp-top nav a:first-child { display: none; }
+      .cmp-hero { padding: 40px 0 64px; }
+      .cmp-section h2 { font-size: 1.5rem; }
+      .change-grid, .same-grid { grid-template-columns: 1fr; gap: 24px; }
+      .change-grid figure { order: -1; }
+      .band img { aspect-ratio: 4 / 3; }
+      /* the table stacks: each row becomes what, then eTrader, then Presslane */
+      .side { font-size: 1rem; }
+      .side thead { display: none; }
+      .side tr { display: block; padding: 14px 0; border-bottom: 1px solid var(--ui-line); }
+      .side td { display: block; border: 0; padding: 2px 0; width: auto; }
+      .side td:first-child { width: auto; font-size: var(--step-body); padding-bottom: 6px; }
+      .side td:nth-child(2)::before { content: "eTrader: "; color: var(--muted); }
+      .side td:nth-child(3)::before { content: "Presslane: "; color: var(--muted); font-weight: 400; }
+      .weeks-grid { grid-template-columns: 1fr; gap: 20px; }
+      .cmp .films { grid-template-columns: 1fr; }
+      .cmp .player { position: static; }
+    }
+  </style>
+  <script>document.documentElement.classList.add('js')</script>
+</head>
+<body class="cmp">
+<a class="skip" href="#main">Skip to content</a>
+
+<div class="cmp-wrap">
+  <header class="cmp-top">
+    <a class="lockup" href="/" aria-label="Presslane, home"><img src="/assets/presslane-lockup.svg" alt="Presslane" width="220" height="28"></a>
+    <nav aria-label="Page"><a class="link" href="#side">Side by side</a><a class="link" href="#films">Films</a><a class="link" href="#talk">Book a call</a></nav>
+  </header>
+</div>
+
+<main id="main" class="cmp-wrap">
+
+  <section class="cmp-hero" aria-labelledby="h1">
+    <p class="kicker">FOR SHOPS ON ETRADER</p><!-- taste-skill-ignore: the brief asks for this kicker -->
+    <h1 id="h1">Same £199 a month. A shop that quotes, chases and tells the customer.</h1>
+    <p class="sub">You pay eTrader about £199 a month for a website that sells. Presslane costs the same and runs the rest of the shop: the quote, the chase, the job board, the customer update, the invoice. Nothing to pay up front. Your old site stays on until you are happy.</p>
+    <div class="cmp-ctas">
+      <a class="button js-book" href="#talk" hidden>Book a call</a>
+      <a class="button quiet" href="#films">See it on film</a>
+    </div>
+  </section>
+
+  <section class="cmp-section" id="same">
+    <h2>What stays the same</h2>
+    <div class="same-grid" data-reveal="parts">
+      <ul class="plain">
+        <li>Your domain and your email address.</li>
+        <li>A shop that sells your suppliers’ ranges, in your colours, with your logo.</li>
+        <li>A shop for each school and club, on its own web address. As many as you need, included.</li>
+        <li>Trade customers who order now and pay later, up to a limit you set.</li>
+        <li>£199 a month, plus VAT.</li>
+      </ul>
+      <figure><img src="/assets/system/club-shop-setup-poster.webp" alt="A school shop in Presslane: a tie and a polo shirt with the school badge" width="1280" height="720" loading="lazy"><figcaption>A school shop in Presslane, on its own web address.</figcaption></figure>
+    </div>
+  </section>
+
+  <section class="cmp-section" id="changes">
+    <h2>What changes</h2>
+
+    <div class="change-grid" data-reveal="parts">
+      <div>
+        <h3>The quote goes out with a price.</h3>
+        <p>On eTrader, Quick Quote is a form. It emails you, and the customer waits while you work it out and write back.</p>
+        <p>In Presslane, a customer asks for 48 hoodies with their logo. The price comes back in minutes, with their logo on the hoodie. They change the number and the price changes. They say yes and pay online. If they go quiet, Presslane chases them by email, text or WhatsApp.</p>
+        <p class="closing">No quote goes cold.</p>
+      </div>
+      <div>
+        <div class="ui-quote" data-ui>
+          <div class="ui-row">
+            <div class="ui-thumb"><img src="/assets/hoodie.webp" alt="" width="56" height="56"></div>
+            <div class="grow"><div class="ui-name">48 × AWDis JH001 hoodie, airforce blue</div><div class="ui-sub">Left chest logo, embroidered</div></div>
+            <div class="ui-money">£23.76 each</div>
+          </div>
+          <div class="ui-row ui-total"><span>Total</span><span class="ui-money">£1,140.48 + VAT</span></div>
+          <div class="ui-row"><span class="ui-sub">Holds for 14 days</span><span class="ui-btn">Accept and pay</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="change-grid" data-reveal="parts">
+      <div>
+        <h3>The customer is told. They stop ringing.</h3>
+        <p>Quote. Paid. Approved. Made. Sent. Delivered. Six emails, from your shop, in your name. They can check the job on your website at any time.</p>
+        <p class="closing">“Where is my order?” stops being the call you get most.</p>
+      </div>
+      <div>
+        <div class="ui-track" data-ui>
+          <ol>
+            <li class="done"><i></i>Quote</li><li class="done"><i></i>Paid</li><li class="done"><i></i>Approved</li>
+            <li class="done"><i></i>Made</li><li class="now"><i></i>Sent</li><li><i></i>Delivered</li>
+          </ol>
+          <div class="ui-note">Five emails sent so far, in your name.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="change-grid" data-reveal="parts">
+      <div>
+        <h3>The floor updates the system.</h3>
+        <p>Every job on one board. Scan the job sheet at the bench and the job moves on. The office knows what the bench knows without anyone walking over.</p>
+        <div class="ui-frames" data-ui style="margin-top:18px;" aria-label="The job board">
+          <div class="ui-card"><span class="ui-stage">Artwork</span><span>Approved</span></div>
+          <div class="ui-card live"><span class="ui-stage">Making</span><span><b>PL-04821</b> · 48 hoodies</span></div>
+          <div class="ui-card"><span class="ui-stage">Packed</span><span>Waiting</span></div>
+        </div>
+      </div>
+      <figure><img src="/assets/video/make-poster.webp" alt="An embroidery machine stitching a logo onto a hoodie" width="960" height="960" loading="lazy"></figure>
+    </div>
+
+    <div class="change-grid" data-reveal="parts">
+      <div>
+        <h3>A shop front from this decade.</h3>
+        <p>Built from a template. Move the sections, set the words and colours, check it on a phone, publish.</p>
+        <p>Every page has a title and a description, so Google can list it. Google can only list a page it can read.</p>
+      </div>
+      <figure><img src="/assets/system/storefront-setup-poster.webp" alt="A Presslane shop front: a t-shirt product page with colours and sizes" width="1280" height="720" loading="lazy"></figure>
+    </div>
+  </section>
+
+  <section class="cmp-section" id="side" data-reveal>
+    <h2>Side by side</h2>
+    <div class="side-scroll">
+      <table class="side">
+        <thead>
+          <tr><th scope="col"><span class="sr-only">What</span></th><th scope="col" class="brand">eTrader</th><th scope="col" class="brand">Presslane</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>A month</td><td>about £199</td><td>£199</td></tr>
+          <tr><td>To start</td><td>up to £4,000 set-up</td><td class="yes">£0</td></tr>
+          <tr><td>Minimum term</td><td>3 months</td><td class="yes">none</td></tr>
+          <tr><td>Quote</td><td>a form that emails you</td><td>a price in minutes, accepted and paid online, chased if it goes quiet</td></tr>
+          <tr><td>Customer told during the job</td><td>no</td><td class="yes">at every step, in your name</td></tr>
+          <tr><td>Job board, scanning at the bench</td><td>no</td><td class="yes">yes</td></tr>
+          <tr><td>Shops for schools and clubs</td><td>yes, included</td><td>yes, included</td></tr>
+          <tr><td>Trade accounts</td><td>yes</td><td>yes</td></tr>
+          <tr><td>Invoices</td><td>not stated</td><td>sent when the job goes out, paid online</td></tr>
+          <tr><td>Logo on the garment before they buy</td><td>no</td><td>add-on, £100 a month</td></tr>
+          <tr><td>Phone answered day and night with the order’s status</td><td>no</td><td>add-on, £250 a month</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="source">eTrader figures from etraderwebsites.co.uk (How it works, FAQ, Case studies), read 23 October 2026. Presslane prices plus VAT.</p>
+  </section>
+
+  <section class="cmp-section" id="moving" data-reveal="parts">
+    <h2>Moving over</h2>
+    <figure class="band"><img src="/assets/photos/workshop.webp" alt="A small embroidery and print workshop in the morning, machines ready and a rail of finished garments" width="1600" height="900" loading="lazy"></figure>
+    <div class="weeks-grid">
+      <div><h3>Week one</h3><p>We build your shop from your product list and your logo. Tell us which suppliers you sell and we load their ranges. Your school and club shops are rebuilt on their own addresses.</p></div>
+      <div><h3>Week two</h3><p>You check it on your phone. We change what you want changed.</p></div>
+      <div><h3>Week three</h3><p>You go live. Your eTrader site stays on until your domain moves, on the day you say.</p></div>
+    </div>
+    <p style="margin-top:32px;"><a class="link-plain" href="#leaving">How to leave eTrader without losing your website</a></p>
+  </section>
+
+  <section class="cmp-section guide" id="leaving" data-reveal="parts">
+    <h2>How to leave eTrader without losing your website</h2>
+    <p>Your domain name is yours. eTrader’s terms say it is returned to you when you leave. Here is the order to do things in, so nothing goes dark.</p>
+    <ol>
+      <li><b>Check who holds the domain.</b> Look it up on a WHOIS site. If it is in your name, you are fine. If it is in eTrader’s name, ask them in writing to put it in yours. Do this first; it can take a few days.</li>
+      <li><b>Keep your email where it is for now.</b> If eTrader also runs your email, we move your mailboxes before the domain, so no message is lost.</li>
+      <li><b>Let us build the new shop.</b> It runs on a Presslane address while you check it. Your eTrader site stays live.</li>
+      <li><b>Move the domain on a day you choose.</b> For a .co.uk, eTrader changes one setting (the IPS tag) to point the domain at us. For a .com, they take the transfer lock off and give you a transfer code. Either takes a few hours to a day.</li>
+      <li><b>Then cancel eTrader.</b> Give notice only once the new shop answers on your own domain.</li>
+    </ol>
+    <p class="source">We do the technical steps with you on a call. If anything in eTrader’s terms has changed, we check it with them before the move.</p>
+  </section>
+
+  <section class="films" id="films">
+    <div class="player">
+      <video id="filmVideo" controls playsinline preload="none" poster="/assets/system/storefront-setup-poster.webp" width="1920" height="1080">
+        <track id="filmTrack" kind="captions" srclang="en" label="English" src="/assets/system/storefront-setup.vtt" default>
+      </video>
+      <p class="now" id="filmNow">Storefront · 0:48 · recorded in Presslane, with captions</p>
+    </div>
+    <div class="film-list">
+      <h2>The real system, on film</h2>
+      <div id="filmRows">
+        <button class="frow" type="button" aria-pressed="true" data-film="storefront"><span>Storefront</span><span class="len">0:48</span></button>
+        <p class="fdesc">A shop front from a template. Move sections, set the words and colours, check it on a phone, publish.</p>
+        <button class="frow" type="button" aria-pressed="false" data-film="clubshops"><span>Club shops</span><span class="len">1:14</span></button>
+        <p class="fdesc">A shop for a school or club on its own address, with its crest and its sizes.</p>
+        <button class="frow" type="button" aria-pressed="false" data-film="quotes"><span>Quotes</span><span class="len">1:42</span></button>
+        <p class="fdesc">A quote built from your price list, sent, accepted and paid online.</p>
+        <button class="frow" type="button" aria-pressed="false" data-film="customers"><span>Customer accounts</span><span class="len">0:46</span></button>
+        <p class="fdesc">A trade customer set up to order now and pay later, with a credit limit.</p>
+        <button class="frow" type="button" aria-pressed="false" data-film="pipeline"><span>Order pipeline</span><span class="len">1:07</span></button>
+        <p class="fdesc">Every accepted quote lands as an order and moves down the board to the door.</p>
+        <button class="frow" type="button" aria-pressed="false" data-film="voice"><span>Phone answering</span><span class="len">1:27</span></button>
+        <p class="fdesc">A customer rings for an update. The answer changes as the order moves.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="talk" id="talk" aria-label="Book a call">
+    <div class="talk-col">
+      <p class="prompt"><span class="soft">We reply within one working day.</span><span class="hard">Book a call and we show you Presslane on your own products.</span></p>
+
+      <form class="ask-form js-agency" id="contactForm" data-page="etrader" novalidate hidden>
+        <div class="field-wrap">
+          <label class="sr-only" for="cEmail">Your email</label>
+          <input class="field" id="cEmail" name="email" type="email" autocomplete="email" required maxlength="200" placeholder="Your email">
+          <button class="go" type="submit" aria-label="Send"><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M3 10h12M10 4l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.4"/></svg></button>
+        </div>
+        <div class="more" id="cMore" hidden>
+          <label class="sr-only" for="cName">Your name</label>
+          <input class="field short" id="cName" name="name" autocomplete="name" required maxlength="100" placeholder="Your name">
+          <label class="sr-only" for="cPhone">Phone, if you would rather talk</label>
+          <input class="field short" id="cPhone" name="phone" type="tel" autocomplete="tel" maxlength="40" placeholder="Phone, if you would rather talk">
+          <label class="sr-only" for="cSuppliers">Which suppliers do you sell?</label>
+          <input class="field short" id="cSuppliers" name="suppliers" maxlength="300" placeholder="Which suppliers do you sell? Pencarrie, Ralawise…">
+          <label class="sr-only" for="cMessage">Anything else</label>
+          <textarea class="field" id="cMessage" name="message" rows="3" maxlength="4000" placeholder="Anything else you want us to know"></textarea>
+          <button class="button" type="submit">Send</button>
+        </div>
+        <label class="hp" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off"></label>
+        <p class="next" id="cNext">Your email first. Then your name and which suppliers you sell, so week one can start.</p>
+      </form>
+
+      <p class="ask-form js-agency" hidden><a class="button quiet js-book" href="#talk">Book a call</a></p>
+
+      <p class="no-agency js-noagency">Presslane comes to you through a partner agency. Use the web address they gave you to book a call.</p>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <span>Presslane, software for print shops</span>
+    <nav aria-label="Site"><a href="/">The main page</a><a href="#side">Side by side</a><a href="#films">Films</a><a href="#talk">Book a call</a></nav>
+    <span class="right">2026 · <a class="link-plain" href="/assets/presslane-presentation.pdf">The presentation (PDF)</a></span>
+  </footer>
+
+</main>
+
+<script src="/assets/vendor/gsap.min.js" defer></script>
+<script src="/assets/vendor/ScrollTrigger.min.js" defer></script>
+<script src="/agencies.js" defer></script>
+<script src="/app.js" defer></script>
+</body>
+</html>
