@@ -11,10 +11,15 @@ const VERSION = '2021-07-28';
 
 const clean = (v, max) => String(v == null ? '' : v).replace(/\s+/g, ' ').trim().slice(0, max);
 
-// Pasting a .env file into Vercel can keep the quotes around the value, so strip them before parsing.
+// Accept the value however it was pasted into Vercel: the bare JSON, the JSON wrapped in quotes,
+// or the whole PRESSLANE_CRM='…' line from the .env file. Only the part from the first "{" to the
+// last "}" is read.
 function config() {
-  const raw = String(process.env.PRESSLANE_CRM || '').trim().replace(/^'([\s\S]*)'$/, '$1').replace(/^"(\{[\s\S]*\})"$/, '$1');
-  if (!raw) { console.error('[contact] PRESSLANE_CRM is not set on this deployment'); return {}; }
+  const v = String(process.env.PRESSLANE_CRM || '');
+  const a = v.indexOf('{'), b = v.lastIndexOf('}');
+  const raw = a >= 0 && b > a ? v.slice(a, b + 1) : '';
+  if (!v.trim()) { console.error('[contact] PRESSLANE_CRM is not set on this deployment'); return {}; }
+  if (!raw) { console.error('[contact] PRESSLANE_CRM holds no JSON object (' + v.length + ' chars, starts ' + JSON.stringify(v.slice(0, 2)) + ')'); return {}; }
   try { return JSON.parse(raw); } catch (e) { console.error('[contact] PRESSLANE_CRM is not valid JSON (' + raw.length + ' chars, starts ' + JSON.stringify(raw.slice(0, 2)) + ')'); return {}; }
 }
 

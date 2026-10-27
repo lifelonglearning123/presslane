@@ -65,7 +65,8 @@ Vercel environment variable, `PRESSLANE_CRM`, as JSON keyed like `agencies.js`:
 {"leonardopower": {"locationId": "abc123", "token": "pit-..."}, "octopusup": {"locationId": "def456", "token": "pit-..."}}
 ```
 
-The token is a Private Integration token with the `contacts.write` scope. Redeploy after changing the variable.
+The token is a Private Integration token with the `contacts.write` scope. Paste the JSON as the variable's value;
+the function also copes with the whole `PRESSLANE_CRM='…'` line or quotes around the JSON. Redeploy after changing the variable.
 Never put a token in any file in this folder: everything here is public.
 
 ## Deploy
