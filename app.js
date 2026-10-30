@@ -198,7 +198,7 @@
   /* ---------- Films: pick a row, the player plays it ---------- */
   const films = (function () {
     const video = $('#filmVideo'); if (!video) return null;
-    const track = $('#filmTrack'), now = $('#filmNow');
+    const player = video.closest('.player'), now = $('#filmNow');
     const FILMS = {
       storefront: { title: 'Storefront', file: 'storefront-setup', len: '0:48' },
       clubshops: { title: 'Club shops', file: 'club-shop-setup', len: '1:14' },
@@ -208,24 +208,46 @@
       voice: { title: 'Phone answering', file: 'voice-ai', len: '1:27' }
     };
     const rows = $$('.frow');
-    let cur = 'storefront';
+    // Root-absolute, so the same script serves the main page and pages a folder down. Resolved in full,
+    // so it compares with video.src however the page wrote its own.
+    const url = (f, ext) => new URL('/assets/system/' + f.file + ext, location.href).href;
+    const caption = (f) => f.title + ' · ' + f.len + ' · recorded in Presslane, with captions';
+
+    // A fresh track element each time: changing a live track's src leaves the old cues behind in some browsers.
+    // Captions stay on or off as the viewer left them: a track marked default is switched back on when the
+    // film loads, so it is only marked default while they are on.
+    function setTrack(f) {
+      const old = video.querySelector('track');
+      const showing = old ? old.track.mode === 'showing' : true;
+      const t = document.createElement('track');
+      t.id = 'filmTrack'; t.kind = 'captions'; t.srclang = 'en'; t.label = 'English'; t.default = showing; t.src = url(f, '.vtt');
+      if (old) old.replaceWith(t); else video.appendChild(t);
+      t.track.mode = showing ? 'showing' : 'disabled';
+    }
     function select(id, play) {
       const f = FILMS[id]; if (!f) return;
       rows.forEach((r) => r.setAttribute('aria-pressed', String(r.dataset.film === id)));
-      if (id !== cur) {
-        cur = id;
+      now.textContent = caption(f);
+      // Load when it is a different film, or the same one after a failed load. Picking the film that is already
+      // in the player leaves it be, so a pick never restarts what is playing.
+      if (video.src !== url(f, '.mp4') || video.error) {
         video.pause();
-        // Root-absolute, so the same script serves the main page and pages a folder down.
-        video.poster = '/assets/system/' + f.file + '-poster.webp';
-        track.src = '/assets/system/' + f.file + '.vtt';
-        video.src = '/assets/system/' + f.file + '.mp4';
+        video.poster = url(f, '-poster.webp');
+        setTrack(f);
+        video.src = url(f, '.mp4');
         video.load();
-        now.textContent = f.title + ' · ' + f.len + ' · recorded in Presslane, with captions';
       }
       if (play) { const p = video.play(); if (p && p.catch) p.catch(() => {}); }
     }
-    rows.forEach((r) => r.addEventListener('click', () => select(r.dataset.film, true)));
-    $$('[data-film].val').forEach((a) => a.addEventListener('click', () => { select(a.dataset.film, false); }));
+    // On a phone the player sits above the list, so a pick further down would play out of sight.
+    function reveal() {
+      const top = player.getBoundingClientRect().top;
+      if (top < 0 || top > window.innerHeight * 0.6) player.scrollIntoView({ block: 'start', behavior: reduce ? 'auto' : 'smooth' });
+    }
+    video.addEventListener('error', () => { now.textContent = 'That film did not load. Pick it again to try once more.'; });
+    rows.forEach((r) => r.addEventListener('click', () => { select(r.dataset.film, true); reveal(); }));
+    // The "Watch" links in the box: the link itself brings the page to the player.
+    $$('[data-film].val').forEach((a) => a.addEventListener('click', () => select(a.dataset.film, true)));
     return { select };
   })();
 
