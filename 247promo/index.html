@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en-GB" class="js">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Presslane for 24-7 Promo</title>
+  <meta name="description" content="A proposal for 24-7 Promo: your whole brochure online, quotes that chase themselves, live on 1 December.">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="/assets/fonts/manrope-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    /* A proposal page for one shop, in the site's styles. Unlisted. Same pattern as /fitwell. */
+    :root { --fw-dark: #0c221d; --fw-pale: #BFD8D5; --fw-mint: #8FD1B8; }
+    .fw { background: var(--paper); }
+    .fw-wrap { max-width: 1120px; margin: 0 auto; padding: 0 var(--margin); }
+    .fw-top { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 20px 0; }
+    .fw-top .lockup { width: clamp(140px, 16vw, 220px); }
+    .fw-top nav { display: flex; gap: 24px; font-size: var(--step-small); font-weight: 600; }
+    .fw-top nav a { text-decoration: none; }
+    .eyebrow { font-size: var(--step-small); font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); }
+    .fw-hero { background: var(--fw-dark); color: #F3F2F2; padding: 72px 0 80px; }
+    .fw-hero .eyebrow { color: var(--fw-mint); }
+    .fw-hero h1 { font-size: clamp(2.75rem, 1.2rem + 5vw, 6rem); line-height: 1; letter-spacing: -0.035em; margin: 20px 0 24px; }
+    .fw-hero .sub { font-size: var(--step-lead); line-height: 1.4; color: var(--fw-pale); max-width: 34ch; }
+    .fw-hero .by { font-size: var(--step-small); color: var(--fw-pale); margin-top: 40px; }
+    .fw-section { padding: 88px 0 0; }
+    .fw-section h2 { font-size: clamp(2rem, 1rem + 3vw, 3.75rem); line-height: 1.05; letter-spacing: -0.03em; margin: 12px 0 32px; max-width: 18ch; }
+    .cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+    .cards.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .card { background: var(--ground, #F3F2F2); padding: 28px; border-radius: 12px; }
+    .card h3 { font-size: var(--step-lead); font-weight: 800; margin-bottom: 6px; line-height: 1.2; }
+    .card p { color: var(--muted); line-height: 1.45; }
+    .card .tag { font-size: var(--step-small); font-weight: 700; color: var(--accent); margin-bottom: 8px; }
+    .card.ink { background: var(--accent); color: #fff; display: grid; align-content: center; }
+    .card.ink p { color: #fff; font-weight: 800; font-size: var(--step-lead); line-height: 1.25; }
+    .line { font-size: var(--step-lead); font-weight: 800; margin-top: 28px; max-width: 34ch; line-height: 1.3; }
+    .film { margin: 0; }
+    .film video { width: 100%; aspect-ratio: 16 / 9; background: var(--fw-dark); border-radius: 12px; display: block; }
+    .film figcaption { font-size: var(--step-small); color: var(--muted); margin-top: 10px; }
+    .films2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 32px; }
+    .offer { background: var(--accent); color: #fff; margin-top: 88px; padding: 72px 0 64px; }
+    .offer .eyebrow { color: var(--fw-pale); }
+    .offer h2 { font-size: clamp(2rem, 1rem + 3vw, 3.75rem); line-height: 1.05; letter-spacing: -0.03em; margin: 12px 0 32px; max-width: 20ch; }
+    .price { display: grid; grid-template-columns: 1.4fr 1fr; gap: 16px; }
+    .panel { background: #fff; color: var(--ink); padding: 28px; border-radius: 12px; }
+    .panel .when { font-size: var(--step-small); font-weight: 700; color: var(--accent); }
+    .panel .big { font-size: clamp(3rem, 2rem + 3vw, 4.5rem); font-weight: 800; line-height: 1; letter-spacing: -0.03em; margin: 16px 0 6px; }
+    .panel .list { font-size: var(--step-small); color: var(--muted); }
+    .rows { display: grid; gap: 0; margin-top: 8px; }
+    .rows div { display: flex; justify-content: space-between; gap: 16px; padding: 10px 0; border-bottom: 1px solid #e3e3e3; }
+    .rows div:last-child { border-bottom: 0; font-weight: 800; }
+    .rows span:last-child { text-decoration: line-through; color: var(--muted); }
+    .rows div:last-child span:last-child { text-decoration: none; color: var(--ink); }
+    .offer .small { font-size: var(--step-small); color: var(--fw-pale); margin-top: 28px; max-width: 70ch; }
+    .steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; counter-reset: s; }
+    .step { background: var(--ground, #F3F2F2); padding: 28px; border-radius: 12px; }
+    .step .when { font-size: var(--step-small); font-weight: 700; color: var(--accent); margin-bottom: 6px; }
+    .step h3 { font-size: var(--step-lead); font-weight: 800; line-height: 1.15; margin-bottom: 10px; }
+    .step ul, .need ul { padding-left: 20px; display: grid; gap: 6px; line-height: 1.4; color: var(--muted); }
+    .step.ink { background: var(--accent); color: #fff; }
+    .step.ink .when { color: var(--fw-pale); }
+    .step.ink ul { color: #fff; }
+    .needs { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .need { background: var(--ground, #F3F2F2); padding: 28px; border-radius: 12px; }
+    .need h3 { font-size: var(--step-lead); font-weight: 800; margin-bottom: 4px; }
+    .need .when { font-size: var(--step-small); font-weight: 700; color: var(--accent); margin-bottom: 14px; }
+    .need li strong { color: var(--ink); }
+    .note { color: var(--muted); margin-top: 24px; max-width: 70ch; line-height: 1.45; }
+    .sign { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; margin-top: 8px; }
+    .sign div { border-bottom: 2px solid var(--ink); padding-top: 48px; font-size: var(--step-small); color: var(--muted); }
+    .fw-foot { margin-top: 88px; padding: 0 0 30px; font-size: var(--step-small); color: var(--muted); display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+    @media (max-width: 899px) {
+      .cards, .cards.two, .films2, .price, .steps, .needs, .sign { grid-template-columns: 1fr; }
+      .fw-section { padding-top: 64px; }
+      .offer { margin-top: 64px; padding: 56px 0 48px; }
+    }
+    @media print {
+      .fw-top nav, .films2 { display: none; }
+      .fw-section, .offer { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body class="fw">
+<a class="skip" href="#main">Skip to content</a>
+
+<div class="fw-wrap">
+  <header class="fw-top">
+    <a class="lockup" href="/" aria-label="Presslane, home"><img src="/assets/presslane-lockup.svg" alt="Presslane" width="220" height="28"></a>
+    <nav aria-label="Page"><a class="link" href="#get">What you get</a><a class="link" href="#offer">The offer</a><a class="link" href="#need">What we need</a></nav>
+  </header>
+</div>
+
+<main id="main">
+
+  <section class="fw-hero" aria-labelledby="h1">
+    <div class="fw-wrap">
+      <p class="eyebrow">A proposal for 24-7 Promo</p>
+      <h1 id="h1">Your whole brochure.<br>Online. Orderable.</h1>
+      <p class="sub">Quotes that chase themselves. Proofs that get approved. Live on 1 December.</p>
+      <p class="by">For Lesley and Steve · from Chao Liu, Presslane · 19 November 2026 · prices plus VAT</p>
+    </div>
+  </section>
+
+  <section class="fw-section fw-wrap" id="today" data-reveal>
+    <p class="eyebrow">Your site today</p>
+    <h2>Thirty years of know-how. 58 products online.</h2>
+    <div class="cards">
+      <div class="card"><h3>58 products</h3><p>Your brochure holds hundreds more. Google can't see them.</p></div>
+      <div class="card"><h3>17 thin descriptions</h3><p>Too short for Google to rank.</p></div>
+      <div class="card"><h3>Every product by hand</h3><p>Not touched since launch, because it takes too long.</p></div>
+      <div class="card"><h3>"T-shirts" shows teddy bears</h3><p>The site search mixes things up.</p></div>
+      <div class="card"><h3>"Water bottle" shows a bottle opener</h3><p>Google sees the mismatch too.</p></div>
+      <div class="card ink"><p>Buyers can't find what you sell. Nor can Google.</p></div>
+    </div>
+  </section>
+
+  <section class="fw-section fw-wrap" id="get" data-reveal>
+    <p class="eyebrow">What you get</p>
+    <h2>Everything, joined up</h2>
+    <div class="cards">
+      <div class="card">
+        <p class="tag">Website</p>
+        <h3>A new shop front</h3>
+        <p>The full Laltex range, plus garments from BTC, Pencarrie and Ralawise. Thousands of products, each with a proper description. Bundles for small firms. Same name, same colours.</p>
+      </div>
+      <div class="card">
+        <p class="tag">Presslane</p>
+        <h3>Orders, start to finish</h3>
+        <p>Quotes your customer can change, sign and pay. Orders to the right printer by your rules. Artwork chased, proofs approved, customer told when it ships.</p>
+      </div>
+      <div class="card">
+        <p class="tag">GoHighLevel</p>
+        <h3>Your CRM, kept</h3>
+        <p>Your contacts, notes and invoices moved across. It looks and works as it does now. Invoices still export for your accountant.</p>
+      </div>
+      <div class="card">
+        <p class="tag">Self-serve artwork</p>
+        <h3>They place the logo</h3>
+        <p>Customers put their logo on the product, where and how big. You see what they want before you start. Watermarked.</p>
+      </div>
+      <div class="card">
+        <p class="tag">Quote follow-up</p>
+        <h3>No quote goes quiet</h3>
+        <p>A polite nudge by email, text or WhatsApp, on the days you choose. You see every message.</p>
+      </div>
+      <div class="card">
+        <p class="tag">SEO toolkit</p>
+        <h3>Found on Google, and by AI</h3>
+        <p>Every product listed. Your same-day and express service made plain, so it shows up when people search for it.</p>
+      </div>
+      <div class="card">
+        <p class="tag">Social media toolkit</p>
+        <h3>Know what to post</h3>
+        <p>A calendar for the year, month and week. Snap a job on your phone; it becomes a post in your brand, crocodile and all. Facebook, Instagram, LinkedIn.</p>
+      </div>
+      <div class="card">
+        <p class="tag">Support</p>
+        <h3>A WhatsApp group</h3>
+        <p>You, Steve and our team of three. Ask anything, get an answer the same day.</p>
+      </div>
+      <div class="card ink"><p>One login. Quote to door.</p></div>
+    </div>
+    <div class="films2">
+      <figure class="film">
+        <video controls playsinline preload="none" src="/assets/system/client-quotes.mp4" poster="/assets/system/client-quotes-poster.webp" width="1920" height="1080">
+          <track kind="captions" srclang="en" label="English" src="/assets/system/client-quotes.vtt" default>
+        </video>
+        <figcaption>A quote sent, changed by the customer, accepted · 1:42</figcaption>
+      </figure>
+      <figure class="film">
+        <video controls playsinline preload="none" src="/assets/system/order-pipeline.mp4" poster="/assets/system/order-pipeline-poster.webp" width="1920" height="1080">
+          <track kind="captions" srclang="en" label="English" src="/assets/system/order-pipeline.vtt" default>
+        </video>
+        <figcaption>The order board: artwork, proof, shipped · 1:07</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="fw-section fw-wrap" id="printers" data-reveal>
+    <p class="eyebrow">Built round how you work</p>
+    <h2>Your printers. Your label. Your rules.</h2>
+    <div class="cards">
+      <div class="card"><h3>Pick the printer by job</h3><p>Small runs to Laltex, bigger runs to your own printer, or any rule you like.</p></div>
+      <div class="card"><h3>Your garments, your margin</h3><p>Garments go straight to the printer you choose.</p></div>
+      <div class="card"><h3>White label</h3><p>The printer gets an order sheet with a QR code. They scan it when it ships. They never see your customer's email.</p></div>
+    </div>
+  </section>
+
+  <section class="offer" id="offer">
+    <div class="fw-wrap">
+      <p class="eyebrow">A partner offer for 24-7 Promo</p>
+      <h2>Everything above, £100 a month</h2>
+      <div class="price">
+        <div class="panel">
+          <p class="when">What it would normally cost</p>
+          <div class="rows">
+            <div><span>Presslane, with GoHighLevel</span><span>£199</span></div>
+            <div><span>Quote follow-up</span><span>£250</span></div>
+            <div><span>Self-serve artwork</span><span>£100</span></div>
+            <div><span>SEO toolkit</span><span>£250</span></div>
+            <div><span>Social media toolkit</span><span>£500</span></div>
+            <div><span>Your price, a month</span><span>£100</span></div>
+          </div>
+          <p class="list">List £1,299 a month</p>
+        </div>
+        <div class="panel">
+          <p class="when">One-off</p>
+          <p class="big">£500</p>
+          <p class="list">To build the website and load your products. Invoiced once, paid by bank transfer.</p>
+          <p class="when" style="margin-top:28px">Monthly</p>
+          <p class="big">£100</p>
+          <p class="list">Starts on 1 December, the day you go live.</p>
+        </div>
+      </div>
+      <p class="small">Prices plus VAT. A partner rate: you help us into promotional merchandise, we bring you the digital side.</p>
+    </div>
+  </section>
+
+  <section class="fw-section fw-wrap" id="plan" data-reveal>
+    <p class="eyebrow">The plan</p>
+    <h2>Sign now. Live on 1 December.</h2>
+    <div class="steps">
+      <div class="step">
+        <p class="when">This week</p>
+        <h3>You say yes</h3>
+        <ul>
+          <li>Sign below</li>
+          <li>Send us the items on the list</li>
+          <li>We add you to the WhatsApp group</li>
+        </ul>
+      </div>
+      <div class="step">
+        <p class="when">The next two weeks</p>
+        <h3>We build it</h3>
+        <ul>
+          <li>Your current site copied across</li>
+          <li>Laltex joined up</li>
+          <li>BTC, Pencarrie and Ralawise garments loaded</li>
+          <li>Your contacts moved into the new GoHighLevel</li>
+          <li>Your prices, printers and rules set up</li>
+          <li>You try it out and tell us what to change</li>
+        </ul>
+      </div>
+      <div class="step ink">
+        <p class="when">1 December</p>
+        <h3>You go live</h3>
+        <ul>
+          <li>Your domain points to the new site</li>
+          <li>Quotes, orders and proofs run through Presslane</li>
+          <li>Your first £100 month starts</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="fw-section fw-wrap" id="yours" data-reveal>
+    <p class="eyebrow">Peace of mind</p>
+    <h2>It stays yours</h2>
+    <div class="cards">
+      <div class="card"><h3>Your domain</h3><p>Stays in your GoDaddy account. We only point it at the new site.</p></div>
+      <div class="card"><h3>Your email</h3><p>Office 365 carries on as it is. We don't touch it.</p></div>
+      <div class="card"><h3>Your data</h3><p>Lives in GoHighLevel. If you ever leave, we move it to whoever you choose.</p></div>
+    </div>
+  </section>
+
+  <section class="fw-section fw-wrap" id="need" data-reveal>
+    <p class="eyebrow">Your part</p>
+    <h2>What we need from you</h2>
+    <div class="needs">
+      <div class="need">
+        <h3>To start</h3>
+        <p class="when">This week, so we can make 1 December</p>
+        <ul>
+          <li><strong>Laltex:</strong> ask them for API access on your trade account. If they have no API, your trade login lets us load the range for you.</li>
+          <li><strong>GoDaddy:</strong> give us delegate access, so we can point your domain on the day.</li>
+          <li><strong>WordPress:</strong> an admin login, so we can copy your products and pages from the back end.</li>
+          <li><strong>GoHighLevel:</strong> ask your current provider to move your sub-account to us. Or make a private integration key in Settings and send it to us.</li>
+          <li><strong>Garment suppliers:</strong> your account numbers for BTC, Pencarrie and Ralawise.</li>
+        </ul>
+      </div>
+      <div class="need">
+        <h3>To set it up your way</h3>
+        <p class="when">Before 30 November</p>
+        <ul>
+          <li><strong>Your printers:</strong> who they are, where orders go, and which jobs go to whom.</li>
+          <li><strong>Your prices:</strong> your mark-up, volume breaks, print and embroidery prices, set-up charges and delivery.</li>
+          <li><strong>Express service:</strong> what you offer, how fast, and what it costs.</li>
+          <li><strong>Card payments:</strong> the account you take payments with, so quotes can be paid in full on acceptance.</li>
+          <li><strong>Business details:</strong> company name, address, VAT number and bank details for invoices.</li>
+          <li><strong>Your brand:</strong> logo files, crocodile included, and any photos of past jobs.</li>
+          <li><strong>Social and Google:</strong> admin access to your Facebook, Instagram and LinkedIn pages, and your Google Business Profile.</li>
+          <li><strong>Hosting:</strong> your notice date with your current host, so you don't pay for a month you don't use.</li>
+        </ul>
+      </div>
+    </div>
+    <p class="note">Not sure about any of these? Send what you have and ask in the WhatsApp group. We'll help you find the rest.</p>
+  </section>
+
+  <section class="fw-section fw-wrap" id="agree" data-reveal>
+    <p class="eyebrow">To go ahead</p>
+    <h2>Agreed</h2>
+    <p class="note" style="margin-top:0">24-7 Promo takes up the partner offer above: £500 one-off for the website build, then £100 a month plus VAT from 1 December 2026.</p>
+    <div class="sign">
+      <div>Name</div>
+      <div>Signature</div>
+      <div>Date</div>
+    </div>
+  </section>
+
+  <footer class="fw-foot fw-wrap">
+    <span>Presslane for 24-7 Promo · 19 November 2026</span>
+    <span>Prices plus VAT · <a class="link-plain" href="/">presslane</a></span>
+  </footer>
+
+</main>
+
+<script src="/assets/vendor/gsap.min.js" defer></script>
+<script src="/assets/vendor/ScrollTrigger.min.js" defer></script>
+<script src="/agencies.js" defer></script>
+<script src="/app.js" defer></script>
+</body>
+</html>
